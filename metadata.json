@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix: EBM Digital Learning Ecosystem",
+  "description": "An AI-powered online education platform enabling Grade 5 to O Level acceleration within 3 years using the Ejaz Bukhari Method.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

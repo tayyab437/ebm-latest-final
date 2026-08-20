@@ -1,0 +1,12 @@
+export * from "./WhyEBMSection";
+export * from "./FeatureGrid";
+export * from "./FeatureCard";
+export * from "./ComparisonTable";
+export * from "./LearningPrinciples";
+export * from "./StatisticsRow";
+export * from "./FeatureBadge";
+export * from "./why-ebm.types";
+export * from "./why-ebm.constants";
+export * from "./why-ebm.data";
+export * from "./animations";
+export { default as WhyEBMSection } from "./WhyEBMSection";

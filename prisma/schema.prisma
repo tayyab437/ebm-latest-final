@@ -1,0 +1,921 @@
+// Prisma Schema for EBM Student Onboarding & Personalization Module
+// Database: Cloud SQL (MySQL 8.x)
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model StudentProfile {
+  id                    String    @id @default(uuid()) @db.VarChar(36)
+  userId                String    @unique @db.VarChar(191)
+  preferredName         String    @db.VarChar(100)
+  avatarUrl             String?   @db.Text
+  gender                String?   @db.VarChar(50)
+  dateOfBirth           DateTime  @db.Date
+  country               String    @db.VarChar(100)
+  city                  String    @db.VarChar(100)
+  preferredLanguage     String    @db.VarChar(50)
+  timezone              String    @db.VarChar(100)
+  emergencyContactName  String?   @db.VarChar(150)
+  emergencyContactPhone String?   @db.VarChar(50)
+  
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  deletedAt             DateTime? @map("deleted_at")
+  createdBy             String    @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy             String    @default("system") @map("updated_by") @db.VarChar(100)
+
+  // Relations
+  preferences           StudentPreference?
+  availability          StudyAvailability?
+  technology            TechnologyProfile?
+  goals                 StudentGoal[]
+  progress              OnboardingProgress?
+  
+  // Dashboard Relations
+  statistics            LearningStatistics?
+  streaks               LearningStreak?
+  subjectProgress       SubjectProgress[]
+  dailyLearning         DailyLearning[]
+  dashboardWidgets      DashboardWidget[]
+  dashboardNotifications DashboardNotification[]
+  achievements          StudentAchievement[]
+  calendarEvents        StudentCalendarEvent[]
+  quickActions          QuickAction[]
+
+  @@index([userId])
+  @@map("student_profiles")
+}
+
+// ==========================================
+// LEARNING MODULE MODELS
+// ==========================================
+
+model Subject {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  code             String         @unique @db.VarChar(20)
+  name             String         @db.VarChar(150)
+  description      String         @db.Text
+  color            String         @default("bg-blue-500") @db.VarChar(50)
+  icon             String         @default("book-open") @db.VarChar(50)
+  totalUnits       Int            @default(0) @map("total_units")
+  totalLessons     Int            @default(0) @map("total_lessons")
+  estimatedHours   Int            @default(0) @map("estimated_hours")
+  difficulty       String         @default("INTERMEDIATE") @db.VarChar(20)
+  
+  units            Unit[]
+  curriculumNodes  CurriculumTree[]
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  @@map("subjects")
+}
+
+model Unit {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  subjectId        String         @map("subject_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  description      String         @db.Text
+  orderIndex       Int            @default(0) @map("order_index")
+  totalLessons     Int            @default(0) @map("total_lessons")
+
+  chapters         Chapter[]
+  lessons          Lesson[]
+  
+  subject          Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+
+  @@index([subjectId])
+  @@map("units")
+}
+
+model Chapter {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  unitId           String         @map("unit_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  orderIndex       Int            @default(0) @map("order_index")
+
+  lessons          Lesson[]
+  
+  unit             Unit           @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@index([unitId])
+  @@map("chapters")
+}
+
+model Lesson {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  unitId           String         @map("unit_id") @db.VarChar(36)
+  chapterId        String?        @map("chapter_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  description      String         @db.Text
+  type             String         @db.VarChar(50) // VIDEO, TEXT, INTERACTIVE
+  durationMinutes  Int            @default(0) @map("duration_minutes")
+  orderIndex       Int            @default(0) @map("order_index")
+  videoUrl         String?        @map("video_url") @db.VarChar(255)
+  content          String?        @db.Text
+  
+  resources        LessonResource[]
+  notes            StudentNote[]
+  progress         LessonProgress[]
+  transcripts      LessonTranscript[]
+
+  unit             Unit           @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  chapter          Chapter?       @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+
+  @@index([unitId])
+  @@index([chapterId])
+  @@map("lessons")
+}
+
+model LessonResource {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  lessonId         String         @map("lesson_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  type             String         @db.VarChar(50) // PDF, SLIDES, WORKSHEET
+  url              String         @db.VarChar(255)
+  sizeBytes        Int?           @map("size_bytes")
+  
+  lesson           Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@index([lessonId])
+  @@map("lesson_resources")
+}
+
+model LessonProgress {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  lessonId         String         @map("lesson_id") @db.VarChar(36)
+  isCompleted      Boolean        @default(false) @map("is_completed")
+  timeSpentMinutes Int            @default(0) @map("time_spent_minutes")
+  lastPositionSeconds Int         @default(0) @map("last_position_seconds")
+  lastAccessedAt   DateTime       @default(now()) @map("last_accessed_at")
+
+  lesson           Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@unique([studentProfileId, lessonId])
+  @@index([studentProfileId])
+  @@map("lesson_progress")
+}
+
+model StudentNote {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  lessonId         String         @map("lesson_id") @db.VarChar(36)
+  content          String         @db.Text
+  timestampSeconds Int            @default(0) @map("timestamp_seconds")
+  
+  lesson           Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@index([studentProfileId])
+  @@index([lessonId])
+  @@map("student_notes")
+}
+
+model Bookmark {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  targetId         String         @map("target_id") @db.VarChar(36)
+  targetType       String         @map("target_type") @db.VarChar(50) // LESSON, VIDEO, NOTE
+  title            String         @db.VarChar(200)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+
+  @@index([studentProfileId])
+  @@map("bookmarks")
+}
+
+model Download {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  resourceId       String         @map("resource_id") @db.VarChar(36)
+  downloadedAt     DateTime       @default(now()) @map("downloaded_at")
+
+  @@index([studentProfileId])
+  @@map("downloads")
+}
+
+model LearningSession {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  startTime        DateTime       @map("start_time")
+  endTime          DateTime?      @map("end_time")
+  durationMinutes  Int?           @map("duration_minutes")
+  platform         String         @default("WEB") @db.VarChar(50)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+
+  @@index([studentProfileId])
+  @@map("learning_sessions")
+}
+
+model CurriculumTree {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  subjectId        String         @map("subject_id") @db.VarChar(36)
+  treeJson         String         @db.Text // Cached hierarchical structure
+
+  subject          Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@index([subjectId])
+  @@map("curriculum_tree")
+}
+
+model LessonTranscript {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  lessonId         String         @map("lesson_id") @db.VarChar(36)
+  language         String         @default("en") @db.VarChar(10)
+  transcriptJson   String         @db.Text // VTT or JSON format
+
+  lesson           Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+  @@map("lesson_transcripts")
+}
+
+model LessonHistory {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  lessonId         String         @map("lesson_id") @db.VarChar(36)
+  viewedAt         DateTime       @default(now()) @map("viewed_at")
+
+  @@index([studentProfileId])
+  @@map("lesson_history")
+}
+
+
+model LearningStatistics {
+  id                          String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId            String         @unique @map("student_profile_id") @db.VarChar(36)
+  overallCompletionPercentage Decimal        @default(0.00) @map("overall_completion_percentage") @db.Decimal(5,2)
+  currentAcademicYear         String         @map("current_academic_year") @db.VarChar(50)
+  weeklyStudyHours            String         @default("[]") @map("weekly_study_hours") @db.Text // JSON Array
+  monthlyStudyHours           Decimal        @default(0.00) @map("monthly_study_hours") @db.Decimal(10,2)
+  learningTrend               String         @default("FLAT") @map("learning_trend") @db.VarChar(20) // UP, DOWN, FLAT
+  masteryScore                Int            @default(0) @map("mastery_score")
+  totalXp                     Int            @default(0) @map("total_xp")
+
+  createdAt                   DateTime       @default(now()) @map("created_at")
+  updatedAt                   DateTime       @updatedAt @map("updated_at")
+  deletedAt                   DateTime?      @map("deleted_at")
+  createdBy                   String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy                   String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile              StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("learning_statistics")
+}
+
+model LearningStreak {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @unique @map("student_profile_id") @db.VarChar(36)
+  currentStreak    Int            @default(0) @map("current_streak")
+  longestStreak    Int            @default(0) @map("longest_streak")
+  lastActiveDate   DateTime?      @map("last_active_date") @db.Date
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("learning_streaks")
+}
+
+model SubjectProgress {
+  id                 String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId   String         @map("student_profile_id") @db.VarChar(36)
+  subjectId          String         @map("subject_id") @db.VarChar(50)
+  subjectName        String         @map("subject_name") @db.VarChar(150)
+  subjectCode        String         @map("subject_code") @db.VarChar(20)
+  colorCode          String         @default("bg-blue-500") @map("color_code") @db.VarChar(50)
+  progressPercentage Decimal        @default(0.00) @map("progress_percentage") @db.Decimal(5,2)
+  lessonsCompleted   Int            @default(0) @map("lessons_completed")
+  totalLessons       Int            @default(0) @map("total_lessons")
+  nextLessonTitle    String?        @map("next_lesson_title") @db.VarChar(200)
+  pendingAssignments Int            @default(0) @map("pending_assignments")
+  aiMasteryScore     Int            @default(0) @map("ai_mastery_score")
+
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+  deletedAt          DateTime?      @map("deleted_at")
+  createdBy          String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy          String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile     StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([studentProfileId])
+  @@index([subjectId])
+  @@map("subject_progress")
+}
+
+model DailyLearning {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  date             DateTime       @db.Date
+  activityType     String         @map("activity_type") @db.VarChar(50) // LESSON, ASSIGNMENT, QUIZ
+  activityId       String         @map("activity_id") @db.VarChar(50)
+  title            String         @db.VarChar(200)
+  durationMinutes  Int            @default(0) @map("duration_minutes")
+  completed        Boolean        @default(false)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([studentProfileId])
+  @@index([date])
+  @@map("daily_learning")
+}
+
+model DashboardWidget {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  widgetType       String         @map("widget_type") @db.VarChar(50)
+  isEnabled        Boolean        @default(true) @map("is_enabled")
+  orderIndex       Int            @default(0) @map("order_index")
+  settingsJson     String?        @map("settings_json") @db.Text
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([studentProfileId])
+  @@map("dashboard_widgets")
+}
+
+model DashboardNotification {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  message          String         @db.Text
+  type             String         @db.VarChar(50) // ASSIGNMENT, MESSAGE, SYSTEM, ALERT
+  isRead           Boolean        @default(false) @map("is_read")
+  referenceId      String?        @map("reference_id") @db.VarChar(100) // ID of assignment/message
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([studentProfileId])
+  @@index([isRead])
+  @@map("dashboard_notifications")
+}
+
+model StudentAchievement {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  achievementId    String         @map("achievement_id") @db.VarChar(50)
+  title            String         @db.VarChar(150)
+  description      String         @db.Text
+  iconUrl          String?        @map("icon_url") @db.VarChar(255)
+  xpAwarded        Int            @default(0) @map("xp_awarded")
+
+  earnedAt         DateTime       @default(now()) @map("earned_at")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([studentProfileId])
+  @@map("student_achievements")
+}
+
+model StudentCalendarEvent {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  eventDate        DateTime       @map("event_date") @db.Date
+  eventTime        String?        @map("event_time") @db.VarChar(10) // "HH:MM"
+  eventType        String         @map("event_type") @db.VarChar(50) // LESSON, DEADLINE, REVISION
+  subjectId        String?        @map("subject_id") @db.VarChar(50)
+  
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([studentProfileId])
+  @@index([eventDate])
+  @@map("student_calendar")
+}
+
+model QuickAction {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  actionId         String         @map("action_id") @db.VarChar(50)
+  label            String         @db.VarChar(100)
+  icon             String         @db.VarChar(50)
+  orderIndex       Int            @default(0) @map("order_index")
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([studentProfileId])
+  @@map("quick_actions")
+}
+
+model StudentPreference {
+  id                            String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId              String         @unique @map("student_profile_id") @db.VarChar(36)
+  preferredFormat               String         @db.VarChar(50) // VIDEO, READING, PRACTICE, MIXED
+  preferredSessionLengthMinutes Int            @default(45) @map("preferred_session_length")
+  preferredStudyTime            String         @db.VarChar(50) // MORNING, AFTERNOON, EVENING, NIGHT
+  learningPace                  String         @db.VarChar(50) // STEADY, ACCELERATED, FAST_TRACK
+  revisionFrequency             String         @db.VarChar(50) // DAILY, WEEKLY, BI_WEEKLY, BEFORE_EXAMS
+  reminderChannel               String         @db.VarChar(50) // EMAIL, SMS, PORTAL, NONE
+  aiInteractionLevel            String         @db.VarChar(50) // MINIMAL, STANDARD, HIGH_ASSISTED
+  explanationStyle              String         @db.VarChar(50) // ANALOGICAL, DEDUCTIVE, VISUAL, STEP_BY_STEP
+  gamificationEnabled           Boolean        @default(true) @map("gamification_enabled")
+
+  createdAt                     DateTime       @default(now()) @map("created_at")
+  updatedAt                     DateTime       @updatedAt @map("updated_at")
+  createdBy                     String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy                     String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile                StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("student_preferences")
+}
+
+model StudentGoal {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  goalId           String         @map("goal_id") @db.VarChar(50) // e.g., "goal-o-level", "goal-math"
+  title            String         @db.VarChar(150)
+  description      String         @db.Text
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([studentProfileId])
+  @@map("student_goals")
+}
+
+model StudyAvailability {
+  id                    String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId      String         @unique @map("student_profile_id") @db.VarChar(36)
+  availableDays         String         @db.Text // Serialized JSON array of days e.g. ["MONDAY", "TUESDAY"]
+  availableHoursStart   String         @map("available_hours_start") @db.VarChar(10) // "HH:MM"
+  availableHoursEnd     String         @map("available_hours_end") @db.VarChar(10) // "HH:MM"
+  maxDailyHours         Int            @default(3) @map("max_daily_hours")
+  weekendAvailability   Boolean        @default(false) @map("weekend_availability")
+  holidayModePreference String         @db.VarChar(50) // CONTINUOUS, REDUCED_LOAD, FULL_BREAK
+
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+  createdBy             String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy             String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile        StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("study_availability")
+}
+
+model TechnologyProfile {
+  id                   String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId     String         @unique @map("student_profile_id") @db.VarChar(36)
+  primaryDevice        String         @db.VarChar(50) // LAPTOP, DESKTOP, TABLET, PHONE
+  internetQuality      String         @db.VarChar(50) // POOR, STABLE, HIGH_SPEED_FIBER
+  cameraAvailable      Boolean        @default(true) @map("camera_available")
+  microphoneAvailable  Boolean        @default(true) @map("microphone_available")
+  headphonesAvailable  Boolean        @default(true) @map("headphones_available")
+  typingSpeedWpm       Int?           @map("typing_speed_wpm")
+  digitalConfidence    Int            @default(3) @map("digital_confidence")
+
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
+  createdBy            String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy            String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile       StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("technology_profiles")
+}
+
+model OnboardingProgress {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  studentProfileId String         @unique @map("student_profile_id") @db.VarChar(36)
+  currentStep      String         @default("WELCOME") @map("current_step") @db.VarChar(50)
+  completedSteps   String         @db.Text // Serialized JSON array of steps completed e.g. ["WELCOME", "PROFILE"]
+  isComplete       Boolean        @default(false) @map("is_complete")
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  createdBy        String         @default("system") @map("created_by") @db.VarChar(100)
+  updatedBy        String         @default("system") @map("updated_by") @db.VarChar(100)
+
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("onboarding_progress")
+}
+
+// ==========================================
+// LIVE LEARNING MODULE MODELS
+// ==========================================
+
+model LiveClass {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  description      String?        @db.Text
+  subject          String         @db.VarChar(100)
+  teacherId        String         @map("teacher_id") @db.VarChar(36)
+  teacherName      String         @map("teacher_name") @db.VarChar(150)
+  startTime        DateTime       @map("start_time")
+  endTime          DateTime       @map("end_time")
+  status           String         @default("SCHEDULED") @db.VarChar(50) // SCHEDULED, LIVE, COMPLETED, CANCELLED
+  meetLink         String?        @map("meet_link") @db.VarChar(255)
+  calendarEventId  String?        @map("calendar_event_id") @db.VarChar(255)
+  maxStudents      Int            @default(30) @map("max_students")
+  currentStudents  Int            @default(0) @map("current_students")
+  
+  attendance       AttendanceRecord[]
+  resources        LiveClassResource[]
+  aiSummaries      LiveAISummary[]
+  recordings       LiveRecording[]
+  
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@index([teacherId])
+  @@index([startTime])
+  @@map("live_classes")
+}
+
+model AttendanceRecord {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  classId          String         @map("class_id") @db.VarChar(36)
+  studentProfileId String         @map("student_profile_id") @db.VarChar(36)
+  status           String         @db.VarChar(50) // PRESENT, ABSENT, LATE, EXCUSED
+  joinTime         DateTime?      @map("join_time")
+  leaveTime        DateTime?      @map("leave_time")
+  participationScore Int?         @default(0) @map("participation_score")
+  
+  class            LiveClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student          StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@unique([classId, studentProfileId])
+  @@index([studentProfileId])
+  @@map("attendance_records")
+}
+
+model LiveClassResource {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  classId          String         @map("class_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  type             String         @db.VarChar(50) // PDF, DOCS, SLIDES, LINK
+  url              String         @db.VarChar(255)
+  sizeBytes        Int?           @map("size_bytes")
+  
+  class            LiveClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@index([classId])
+  @@map("live_class_resources")
+}
+
+model LiveAISummary {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  classId          String         @unique @map("class_id") @db.VarChar(36)
+  summaryJson      String         @map("summary_json") @db.Text // Key concepts, vocabulary, insights
+  
+  class            LiveClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@map("live_ai_summaries")
+}
+
+model LiveRecording {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  classId          String         @map("class_id") @db.VarChar(36)
+  r2Url            String         @map("r2_url") @db.VarChar(255)
+  durationSeconds  Int            @map("duration_seconds")
+  thumbnailUrl     String?        @map("thumbnail_url") @db.VarChar(255)
+  fileSizeBytes    Int?           @map("file_size_bytes")
+  
+  class            LiveClass      @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@index([classId])
+  @@map("live_recordings")
+}
+
+// ==========================================
+// EBM GROWTH SYSTEM MODELS
+// ==========================================
+
+model GrowthProfile {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  userId           String         @unique @map("user_id") @db.VarChar(36)
+  level            Int            @default(1)
+  currentXP        Int            @default(0) @map("current_xp")
+  nextLevelXP      Int            @default(1000) @map("next_level_xp")
+  growthScore      Int            @default(0) @map("growth_score")
+  tokens           Int            @default(0)
+  
+  badges           UserBadge[]
+  achievements     UserAchievement[]
+  missionProgress  MissionProgress[]
+  habits           HabitTracking[]
+  competencies     CompetencyProgress[]
+  portfolio        DigitalPortfolio?
+  events           GrowthEvent[]
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@map("growth_profiles")
+}
+
+model UserBadge {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  profileId        String         @map("profile_id") @db.VarChar(36)
+  badgeId          String         @map("badge_id") @db.VarChar(36)
+  unlockedAt       DateTime       @default(now()) @map("unlocked_at")
+  
+  profile          GrowthProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, badgeId])
+  @@map("user_badges")
+}
+
+model UserAchievement {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  profileId        String         @map("profile_id") @db.VarChar(36)
+  achievementId    String         @map("achievement_id") @db.VarChar(36)
+  progress         Int            @default(0)
+  isUnlocked       Boolean        @default(false) @map("is_unlocked")
+  unlockedAt       DateTime?      @map("unlocked_at")
+  
+  profile          GrowthProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, achievementId])
+  @@map("user_achievements")
+}
+
+model MissionProgress {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  profileId        String         @map("profile_id") @db.VarChar(36)
+  missionId        String         @map("mission_id") @db.VarChar(36)
+  status           String         @default("AVAILABLE") @db.VarChar(50) // AVAILABLE, IN_PROGRESS, COMPLETED, CLAIMED
+  progress         Int            @default(0)
+  
+  profile          GrowthProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, missionId])
+  @@map("mission_progress")
+}
+
+model HabitTracking {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  profileId        String         @map("profile_id") @db.VarChar(36)
+  name             String         @db.VarChar(100)
+  category         String         @db.VarChar(50)
+  currentStreak    Int            @default(0) @map("current_streak")
+  longestStreak    Int            @default(0) @map("longest_streak")
+  lastLoggedAt     DateTime?      @map("last_logged_at")
+  
+  profile          GrowthProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("habit_tracking")
+}
+
+model CompetencyProgress {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  profileId        String         @map("profile_id") @db.VarChar(36)
+  competency       String         @db.VarChar(100) // Critical Thinking, AI Literacy, etc.
+  score            Int            @default(0)
+  
+  profile          GrowthProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, competency])
+  @@map("competency_progress")
+}
+
+model DigitalPortfolio {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  profileId        String         @unique @map("profile_id") @db.VarChar(36)
+  
+  items            PortfolioItem[]
+  profile          GrowthProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("digital_portfolios")
+}
+
+model PortfolioItem {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  portfolioId      String         @map("portfolio_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  type             String         @db.VarChar(50) // PROJECT, ASSIGNMENT, CERTIFICATE, REFLECTION
+  url              String?        @db.VarChar(255)
+  date             DateTime       @default(now())
+  tags             String?        @db.Text // JSON or comma-separated
+  
+  portfolio        DigitalPortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@map("portfolio_items")
+}
+
+model GrowthEvent {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  profileId        String         @map("profile_id") @db.VarChar(36)
+  type             String         @db.VarChar(50) // XP_EARNED, LEVEL_UP, BADGE_UNLOCKED
+  description      String         @db.Text
+  xpEarned         Int            @default(0) @map("xp_earned")
+  tokenEarned      Int            @default(0) @map("token_earned")
+  
+  profile          GrowthProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("growth_events")
+}
+
+// ==========================================
+// ASSESSMENT & EXAMINATION MODELS
+// ==========================================
+
+model Exam {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  description      String?        @db.Text
+  type             String         @db.VarChar(50) // DIAGNOSTIC, CHAPTER, UNIT, MOCK, FINAL, CERTIFICATION
+  durationMinutes  Int            @map("duration_minutes")
+  totalPoints      Int            @map("total_points")
+  passingScore     Int            @map("passing_score")
+  status           String         @default("DRAFT") @db.VarChar(50) // DRAFT, PUBLISHED, ARCHIVED
+  startTime        DateTime?      @map("start_time")
+  endTime          DateTime?      @map("end_time")
+  
+  sections         ExamSection[]
+  attempts         ExamAttempt[]
+  certificates     Certificate[]
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@map("exams")
+}
+
+model ExamSection {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  examId           String         @map("exam_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  description      String?        @db.Text
+  order            Int            @default(0)
+  
+  questions        ExamQuestion[]
+  exam             Exam           @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@map("exam_sections")
+}
+
+model QuestionBank {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  type             String         @db.VarChar(50) // MCQ, TRUE_FALSE, etc.
+  content          String         @db.Text
+  options          String?        @db.Text // JSON array
+  correctAnswer    String?        @map("correct_answer") @db.Text
+  points           Int            @default(1)
+  difficulty       String         @db.VarChar(50) // EASY, MEDIUM, HARD
+  subject          String         @db.VarChar(100)
+  topic            String?        @db.VarChar(100)
+  learningOutcome  String?        @map("learning_outcome") @db.VarChar(255)
+  explanation      String?        @db.Text
+  hints            String?        @db.Text // JSON array
+  bloomLevel       String?        @map("bloom_level") @db.VarChar(50)
+  competency       String?        @db.VarChar(50)
+  
+  examQuestions    ExamQuestion[]
+
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@map("question_bank")
+}
+
+model ExamQuestion {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  sectionId        String         @map("section_id") @db.VarChar(36)
+  questionId       String         @map("question_id") @db.VarChar(36)
+  order            Int            @default(0)
+  pointsOverride   Int?           @map("points_override")
+  
+  section          ExamSection    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  question         QuestionBank   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([sectionId, questionId])
+  @@map("exam_questions")
+}
+
+model ExamAttempt {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  examId           String         @map("exam_id") @db.VarChar(36)
+  studentId        String         @map("student_id") @db.VarChar(36)
+  startTime        DateTime       @default(now()) @map("start_time")
+  endTime          DateTime?      @map("end_time")
+  status           String         @default("IN_PROGRESS") @db.VarChar(50) // IN_PROGRESS, COMPLETED, MARKED
+  score            Float?         @default(0)
+  totalPossible    Int?           @map("total_possible")
+  feedback         String?        @db.Text
+  
+  answers          ExamAnswer[]
+  exam             Exam           @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@map("exam_attempts")
+}
+
+model ExamAnswer {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  attemptId        String         @map("attempt_id") @db.VarChar(36)
+  questionId       String         @map("question_id") @db.VarChar(36)
+  answerText       String?        @map("answer_text") @db.Text
+  isCorrect        Boolean?       @map("is_correct")
+  marksEarned      Float?         @map("marks_earned")
+  aiFeedback       String?        @map("ai_feedback") @db.Text
+  
+  attempt          ExamAttempt    @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@map("exam_answers")
+}
+
+model Certificate {
+  id               String         @id @default(uuid()) @db.VarChar(36)
+  examId           String?        @map("exam_id") @db.VarChar(36)
+  studentId        String         @map("student_id") @db.VarChar(36)
+  title            String         @db.VarChar(200)
+  issueDate        DateTime       @default(now()) @map("issue_date")
+  verificationId   String         @unique @map("verification_id") @db.VarChar(100)
+  pdfUrl           String?        @map("pdf_url") @db.VarChar(255)
+  qrCodeUrl        String?        @map("qr_code_url") @db.VarChar(255)
+  
+  exam             Exam?          @relation(fields: [examId], references: [id], onDelete: SetNull)
+
+  @@map("certificates")
+}

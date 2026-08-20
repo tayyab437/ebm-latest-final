@@ -1,0 +1,18 @@
+export { default as AnnouncementBar } from "./AnnouncementBar";
+export { default as EBMHomepage } from "./EBMHomepage";
+export { default as Hero } from "./hero/Hero";
+export { HeroSlider } from "./hero";
+export { default as Journey } from "./journey/JourneySection";
+export { default as WhyChooseEBM } from "./why-ebm/WhyEBMSection";
+export { default as Subjects } from "./curriculum/CurriculumSection";
+export { default as AILearning } from "./ai-learning/AILearningSection";
+export { default as PlatformShowcase } from "./platform-showcase/PlatformShowcase";
+export { default as StudentSuccess } from "./success/SuccessSection";
+export { AdmissionsSection } from "./admissions";
+export { default as Membership } from "./Membership";
+export { default as FAQ } from "./FAQ";
+export { default as CTA } from "./CTA";
+export { default as Newsletter } from "./Newsletter";
+export { default as Footer } from "./Footer";
+export * from "./types";
+export * from "./constants";

@@ -1,0 +1,35 @@
+{
+  "logoText": "EBM Digital Learning",
+  "logoType": "icon",
+  "logoIcon": "GraduationCap",
+  "logoImageUrl": "",
+  "faviconUrl": "https://cdn-icons-png.flaticon.com/512/2201/2201552.png",
+  "heroBackgroundImage": "",
+  "heroSlides": [
+    {
+      "id": "slide-1",
+      "title": "Start Your O-Level Journey Today",
+      "subtitle": "Accelerated 3-year structured paths guided by the Ejaz Bukhari Method learning methodology.",
+      "ctaText": "Start Learning Now",
+      "ctaUrl": "auth-login",
+      "imageUrl": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop"
+    },
+    {
+      "id": "slide-2",
+      "title": "AI-Powered Socratic Tutoring",
+      "subtitle": "Continuous diagnostics, custom study plans, and live chat co-pilots helping students build elite STEM confidence.",
+      "ctaText": "Explore Education",
+      "ctaUrl": "roadmap",
+      "imageUrl": "/src/assets/images/academic_portal_mockup_1784360050225.jpg"
+    },
+    {
+      "id": "slide-3",
+      "title": "Parent Dashboard & Live Analytics",
+      "subtitle": "Real-time cognitive progress, detailed class attendance, and direct mentor alignment tracking.",
+      "ctaText": "Contact Admissions",
+      "ctaUrl": "contact",
+      "imageUrl": "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=1200&auto=format&fit=crop"
+    }
+  ],
+  "showThemeToggle": true
+}

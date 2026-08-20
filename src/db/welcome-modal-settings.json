@@ -1,0 +1,13 @@
+{
+  "showWelcomeModal": true,
+  "title": "First time here?",
+  "highlightText": "1 in 4 students",
+  "middleText": "uses EBM Digital Learning for academic",
+  "boldText": "help and enrichment.",
+  "gradeRangeText": "Pre-K through 12th grade",
+  "ctaText": "Sign up now",
+  "ctaUrl": "auth-register",
+  "exploreText": "Keep exploring",
+  "headerBgGradientStart": "#05c4a6",
+  "headerBgGradientEnd": "#00a3e0"
+}
