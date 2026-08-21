@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   ArrowRight, 
@@ -533,6 +534,7 @@ export function AudiencePerspectiveSection({ onSignIn }: { onSignIn?: () => void
 }
 
 export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () => void; onNavigateToTab?: (tab: string) => void }) {
+  const navigate = useNavigate();
   // Real active state to toggle subject in the Arena mockup (Math vs Language Arts)
   const [selectedSubject, setSelectedSubject] = useState<"math" | "ela">("math");
   
@@ -954,15 +956,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-center">
-                <button 
-                  onClick={onSignIn}
-                  className="w-full sm:w-auto bg-[#00a3e0] hover:bg-cyan-500 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 px-8 rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center space-x-2"
-                >
-                  <span>Explore EBM Diagnostic Arena</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+
             </div>
 
           </div>
@@ -1019,13 +1013,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 ))}
               </div>
 
-              <button 
-                onClick={onSignIn}
-                className="w-full sm:w-auto bg-[#00a3e0] hover:bg-cyan-500 text-white font-extrabold text-xs uppercase tracking-wider py-4 px-8 rounded-2xl shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center space-x-2"
-              >
-                <span>Get Started with EBM Diagnostics</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
+
             </div>
 
             {/* Right Column: EBM Diagnostic Action Plan Container */}
@@ -1177,13 +1165,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 </p>
               </div>
 
-              <button 
-                onClick={onSignIn}
-                className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs uppercase tracking-wider py-4 px-8 rounded-2xl shadow-lg shadow-purple-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center space-x-2"
-              >
-                <span>Explore Continuous Insights</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
+
             </div>
 
             {/* Right Column: Visual Continuous Updating Flow & Live Dashboard Preview */}
@@ -1336,13 +1318,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 </div>
               </div>
 
-              <button 
-                onClick={onSignIn}
-                className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs uppercase tracking-wider py-4 px-8 rounded-2xl shadow-lg shadow-amber-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center space-x-2"
-              >
-                <span>View Progress Rewards</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
+
             </div>
 
             {/* Right Column: EBM Achievement Interactive Card Showcase */}
@@ -1404,125 +1380,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
         </div>
       </section>
 
-      {/* ================= ONE DIAGNOSTIC. THREE PERSPECTIVES. SUMMARY SECTION ================= */}
-      <section className="py-16 sm:py-24 bg-white border-b border-slate-200/80 px-4">
-        <div className="max-w-7xl mx-auto space-y-12">
-          
-          {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto space-y-4">
-            <span className="text-xs sm:text-sm font-extrabold text-[#00a3e0] uppercase tracking-widest bg-cyan-50 px-4 py-1.5 rounded-full border border-cyan-200/80 inline-block">
-              One Diagnostic. Three Perspectives.
-            </span>
-            <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-              See EBM from your perspective.
-            </h3>
-            <p className="text-slate-600 text-base sm:text-lg font-medium leading-relaxed">
-              The EBM Diagnostic creates one connected evidence base that serves the learner, the family, and the educator.
-            </p>
-          </div>
 
-          {/* 3 Perspective Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            {/* 1. For Students */}
-            <div className="bg-slate-50 border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:shadow-xl hover:border-cyan-300 transition-all duration-300 space-y-6 group">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2.5 bg-cyan-100 text-[#00a3e0] rounded-2xl group-hover:bg-[#00a3e0] group-hover:text-white transition-colors">
-                    <GraduationCap className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-black uppercase tracking-widest text-[#00a3e0]">
-                    For Students
-                  </span>
-                </div>
-
-                <h4 className="text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                  Understand your level. Know what to focus on next.
-                </h4>
-
-                <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                  See your current performance in Mathematics and English Comprehension, track your progress, and receive clear recommendations for your next stage of learning.
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-200/80">
-                <button
-                  onClick={onSignIn}
-                  className="w-full bg-[#00a3e0] hover:bg-cyan-500 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center space-x-2"
-                >
-                  <span>Start the EBM Diagnostic</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* 2. For Parents */}
-            <div className="bg-slate-50 border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:shadow-xl hover:border-emerald-300 transition-all duration-300 space-y-6 group">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2.5 bg-emerald-100 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                    <Award className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-black uppercase tracking-widest text-emerald-600">
-                    For Parents
-                  </span>
-                </div>
-
-                <h4 className="text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                  Understand your child's progress with clarity.
-                </h4>
-
-                <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                  See your child's Mathematics and English Comprehension performance, follow growth over time, and understand the areas where additional learning support may help.
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-200/80">
-                <button
-                  onClick={onSignIn}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center space-x-2"
-                >
-                  <span>Start Your Child's Diagnostic</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* 3. For Educators & Schools */}
-            <div className="bg-slate-50 border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:shadow-xl hover:border-purple-300 transition-all duration-300 space-y-6 group">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2.5 bg-purple-100 text-purple-600 rounded-2xl group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                    <BookOpen className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-black uppercase tracking-widest text-purple-600">
-                    For Educators &amp; Schools
-                  </span>
-                </div>
-
-                <h4 className="text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                  Turn assessment evidence into action.
-                </h4>
-
-                <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                  See class and cohort performance in Mathematics and English Comprehension, identify priority areas, and use diagnostic evidence to guide targeted teaching support.
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-200/80">
-                <button
-                  onClick={onSignIn}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center space-x-2"
-                >
-                  <span>Explore EBM for Educators</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
 
 
 
@@ -1628,20 +1486,17 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button 
-              onClick={onSignIn}
-              className="w-full sm:w-auto bg-[#00a3e0] hover:bg-cyan-500 text-white font-extrabold text-xs uppercase tracking-wider py-4 px-8 rounded-2xl shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center space-x-2"
-            >
-              <span>Start the EBM Diagnostic</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
+
 
             <button 
-              onClick={onSignIn}
-              className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-extrabold text-xs uppercase tracking-wider py-4 px-8 rounded-2xl shadow-sm transition-all cursor-pointer flex items-center justify-center space-x-2"
+              onClick={() => {
+                if (onSignIn) onSignIn();
+                navigate("/register");
+              }}
+              className="w-full sm:w-auto bg-[#00a3e0] hover:bg-cyan-500 text-white font-extrabold text-xs uppercase tracking-wider py-4 px-8 rounded-2xl shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center space-x-2"
             >
-              <span>Explore EBM for Schools</span>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+              <span>Explore EBM</span>
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
