@@ -88,7 +88,6 @@ export default function Footer({ onNavigate }: FooterProps) {
             <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Resources</h5>
             <ul className="space-y-2 text-xs">
               <li><a href="#faq" onClick={(e) => handleAnchorClick(e, "faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">FAQs</a></li>
-              <li><a href="#testimonials" onClick={(e) => handleAnchorClick(e, "testimonials")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Student Outcomes</a></li>
               <li><Link to="/contact" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Contact Us</Link></li>
             </ul>
           </div>
@@ -99,7 +98,6 @@ export default function Footer({ onNavigate }: FooterProps) {
             <ul className="space-y-2 text-xs">
               <li><Link to="/privacy" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Privacy Policy</Link></li>
               <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Terms of Service</Link></li>
-              <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Cookie Settings</Link></li>
               <li className="pt-2 text-[10px] text-slate-500 dark:text-slate-400 flex flex-col gap-1.5 font-mono">
                 <a href="mailto:syedejazbukari@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1">
                   <Mail className="h-3 w-3" /> syedejazbukari@gmail.com
