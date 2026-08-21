@@ -65,7 +65,6 @@ export function TeacherSidebar({
     { id: TeacherView.ASSESSMENTS, label: "Assessments", icon: Target },
     { id: TeacherView.GRADEBOOK, label: "Gradebook", icon: Award },
     { id: TeacherView.CURRICULUM, label: "Curriculum", icon: BookOpen },
-    { id: "STUDENT_SUCCESS" as any, label: "Student Success Hub", icon: Users },
   ];
 
   const communicationItems = [

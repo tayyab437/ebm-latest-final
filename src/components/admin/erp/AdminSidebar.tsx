@@ -95,7 +95,6 @@ export function AdminSidebar({ currentView, setCurrentView, onLogout }: AdminSid
     {
       title: "Academic ERP",
       items: [
-        { id: "STUDENT_SUCCESS" as any, label: "Student Success Hub", icon: Users },
         { id: AdminView.CLASSES, label: "Classes & Sections", icon: Users },
         { id: AdminView.TIMETABLE, label: "Timetable", icon: Calendar },
         { id: AdminView.EXAMINATIONS, label: "Examinations", icon: Target },
