@@ -65,7 +65,7 @@ export function DashboardSidebar({ activeContext = 'dashboard' }: { activeContex
     localStorage.removeItem("ebm_user");
     localStorage.removeItem("ebm_onboarding_progress");
     localStorage.removeItem("ebm_dashboard_data_cache");
-    window.location.reload();
+    window.location.href = "/";
   };
 
   const groups = [...new Set(SIDEBAR_ITEMS.map(item => item.group))];

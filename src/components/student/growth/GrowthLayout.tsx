@@ -31,7 +31,7 @@ export function GrowthLayout() {
   }, []);
 
   return (
-    <div className="flex h-full bg-[#030712] overflow-hidden">
+    <div className="flex h-screen w-full bg-[#030712] overflow-hidden">
       <GrowthSidebar currentView={currentView} setCurrentView={setCurrentView} />
 
       <div className="flex-1 flex flex-col min-w-0 relative">

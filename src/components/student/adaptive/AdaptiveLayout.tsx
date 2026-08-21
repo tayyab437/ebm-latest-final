@@ -27,7 +27,7 @@ export function AdaptiveLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-full bg-[#030712] overflow-hidden relative rounded-3xl border border-white/10 shadow-2xl">
+    <div className="flex w-full h-screen bg-[#030712] overflow-hidden relative">
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div 

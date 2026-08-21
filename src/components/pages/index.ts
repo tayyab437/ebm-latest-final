@@ -6,4 +6,8 @@ export * from "./AnalyticsPage";
 export * from "./InspirationPage";
 export * from "./LearningPage";
 export * from "./CaseStudiesPage";
+export * from "./AboutUs";
+export * from "./PricingPage";
+export * from "./ProgramsPage";
+export * from "./NotFoundPage";
 

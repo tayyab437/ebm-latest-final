@@ -48,12 +48,12 @@ export function AdminLayout({ onLogout }: AdminLayoutProps = {}) {
       localStorage.removeItem("ebm_user");
       localStorage.removeItem("ebm_onboarding_progress");
       localStorage.removeItem("ebm_dashboard_data_cache");
-      window.location.reload();
+      window.location.href = "/";
     }
   };
 
   return (
-    <div className="flex h-full bg-[#F8FAFC] overflow-hidden relative rounded-3xl border border-slate-200 shadow-2xl">
+    <div className="flex w-full h-screen bg-[#F8FAFC] overflow-hidden relative">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 

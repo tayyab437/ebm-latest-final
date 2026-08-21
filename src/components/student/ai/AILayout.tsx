@@ -19,7 +19,7 @@ export function AILayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-full w-full bg-slate-50 relative">
+    <div className="flex h-screen w-full bg-slate-50 relative">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 

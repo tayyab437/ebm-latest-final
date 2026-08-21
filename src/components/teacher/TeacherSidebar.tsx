@@ -29,11 +29,13 @@ import { useBrandingStore, BRANDING_ICONS } from "../../lib/branding.store";
 interface TeacherSidebarProps {
   currentView: TeacherView;
   setCurrentView: (view: TeacherView) => void;
+  onLogout?: () => void;
 }
 
 export function TeacherSidebar({
   currentView,
   setCurrentView,
+  onLogout
 }: TeacherSidebarProps) {
   const { logoText, logoType, logoIcon, logoImageUrl } = useBrandingStore();
   const isSidebarCollapsed = useTeacherStore((state) => state.isSidebarCollapsed);
@@ -288,11 +290,15 @@ export function TeacherSidebar({
             <div className={clsx("grid gap-2", isSidebarCollapsed ? "grid-cols-1" : "grid-cols-2")}>
               <button
                 onClick={() => {
-                  localStorage.removeItem("ebm_token");
-                  localStorage.removeItem("ebm_user");
-                  localStorage.removeItem("ebm_onboarding_progress");
-                  localStorage.removeItem("ebm_dashboard_data_cache");
-                  window.location.reload();
+                  if (onLogout) {
+                    onLogout();
+                  } else {
+                    localStorage.removeItem("ebm_token");
+                    localStorage.removeItem("ebm_user");
+                    localStorage.removeItem("ebm_onboarding_progress");
+                    localStorage.removeItem("ebm_dashboard_data_cache");
+                    window.location.href = "/";
+                  }
                 }}
                 className="py-2 px-2 bg-red-600 text-white font-extrabold text-xs rounded-xl hover:bg-red-700 transition-colors cursor-pointer text-center truncate"
               >

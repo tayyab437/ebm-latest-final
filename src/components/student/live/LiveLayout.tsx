@@ -48,7 +48,7 @@ export function LiveLayout() {
   }, []);
 
   return (
-    <div className="flex h-full bg-[#030712] overflow-hidden">
+    <div className="flex h-screen w-full bg-[#030712] overflow-hidden">
       {/* Sidebar */}
       <aside className="w-64 border-r border-white/5 shrink-0 hidden md:block">
         <LiveSidebar currentView={currentView} setCurrentView={setCurrentView} />

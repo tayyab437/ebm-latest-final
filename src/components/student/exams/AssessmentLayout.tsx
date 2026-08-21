@@ -31,7 +31,7 @@ export function AssessmentLayout() {
   }, []);
 
   return (
-    <div className="flex h-full bg-[#030712] overflow-hidden">
+    <div className="flex h-screen w-full bg-[#030712] overflow-hidden">
       {currentView === ExamView.PLAYER && <ExamPlayer />}
       <ExamSidebar currentView={currentView} setCurrentView={setCurrentView} />
 

@@ -16,7 +16,11 @@ import { TeacherGradebook } from "./TeacherGradebook";
 import { ProfileSettings } from "../ProfileSettings";
 import { Menu } from "lucide-react";
 
-export function TeacherLayout() {
+interface TeacherLayoutProps {
+  onLogout?: () => void;
+}
+
+export function TeacherLayout({ onLogout }: TeacherLayoutProps = {}) {
   const currentView = useTeacherStore((state) => state.currentView);
   const setCurrentView = useTeacherStore((state) => state.setCurrentView);
   const fetchClasses = useTeacherStore((state) => state.fetchClasses);
@@ -32,7 +36,7 @@ export function TeacherLayout() {
   }, [fetchClasses, fetchStudents, fetchAssignments]);
 
   return (
-    <div className="flex h-full bg-slate-50 overflow-hidden relative rounded-3xl border border-slate-200 shadow-sm">
+    <div className="flex w-full h-screen bg-slate-50 overflow-hidden relative">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div
@@ -51,6 +55,7 @@ export function TeacherLayout() {
       >
         <TeacherSidebar
           currentView={currentView}
+          onLogout={onLogout}
           setCurrentView={(view) => {
             setCurrentView(view);
             setIsSidebarOpen(false);

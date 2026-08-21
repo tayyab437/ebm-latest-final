@@ -1,5 +1,6 @@
 import React from "react";
-import { GraduationCap, Shield, Facebook, Twitter, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { GraduationCap, Shield, Facebook, Twitter, Linkedin, Mail, Phone } from "lucide-react";
 import { useBrandingStore, BRANDING_ICONS } from "../../lib/branding.store";
 
 interface FooterProps {
@@ -8,15 +9,20 @@ interface FooterProps {
 
 export default function Footer({ onNavigate }: FooterProps) {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
   const { logoText, logoType, logoIcon, logoImageUrl } = useBrandingStore();
   
-  const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, tab: string) => {
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, anchor: string) => {
     e.preventDefault();
-    if (onNavigate) {
-      onNavigate(tab);
-      if (!tab.startsWith("#")) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+    if (window.location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const el = document.getElementById(anchor);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 150);
+    } else {
+      const el = document.getElementById(anchor);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -29,7 +35,7 @@ export default function Footer({ onNavigate }: FooterProps) {
           
           {/* Brand Bio */}
           <div className="col-span-2 space-y-4 text-left">
-            <div className="flex items-center gap-2">
+            <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-2">
               {logoType === "icon" ? (
                 <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black shadow-lg shadow-blue-500/15 shrink-0">
                   {(() => {
@@ -54,7 +60,7 @@ export default function Footer({ onNavigate }: FooterProps) {
               <span className="text-slate-900 dark:text-white font-black tracking-tight text-lg">
                 {logoText || "EBM Learning"}
               </span>
-            </div>
+            </Link>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-xs">
               Empowering academic acceleration under the Ejaz Bukhari Method. Delivering high-yielding cognitive frameworks globally.
             </p>
@@ -70,10 +76,10 @@ export default function Footer({ onNavigate }: FooterProps) {
           <div className="text-left space-y-3">
             <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Learning</h5>
             <ul className="space-y-2 text-xs">
-              <li><a href="#assessment" onClick={(e) => handleNav(e, "assessment")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Assessment Arena</a></li>
-              <li><a href="#analytics" onClick={(e) => handleNav(e, "analytics")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Learning Analytics</a></li>
-              <li><a href="#inspiration" onClick={(e) => handleNav(e, "inspiration")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Inspiration Hub</a></li>
-              <li><a href="#casestudies" onClick={(e) => handleNav(e, "casestudies")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Case Studies & Videos</a></li>
+              <li><Link to="/assessment" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Assessment Arena</Link></li>
+              <li><Link to="/analytics" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Learning Analytics</Link></li>
+              <li><Link to="/inspiration" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Inspiration Hub</Link></li>
+              <li><Link to="/case-studies" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Case Studies & Videos</Link></li>
             </ul>
           </div>
  
@@ -81,9 +87,9 @@ export default function Footer({ onNavigate }: FooterProps) {
           <div className="text-left space-y-3">
             <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Resources</h5>
             <ul className="space-y-2 text-xs">
-              <li><a href="#faq" onClick={(e) => handleNav(e, "#faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">FAQs</a></li>
-              <li><a href="#testimonials" onClick={(e) => handleNav(e, "#testimonials")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Student Outcomes</a></li>
-              <li><a href="#contact" onClick={(e) => handleNav(e, "contact")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Contact Us</a></li>
+              <li><a href="#faq" onClick={(e) => handleAnchorClick(e, "faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">FAQs</a></li>
+              <li><a href="#testimonials" onClick={(e) => handleAnchorClick(e, "testimonials")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Student Outcomes</a></li>
+              <li><Link to="/contact" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Contact Us</Link></li>
             </ul>
           </div>
  
@@ -91,9 +97,9 @@ export default function Footer({ onNavigate }: FooterProps) {
           <div className="text-left space-y-3">
             <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Legal</h5>
             <ul className="space-y-2 text-xs">
-              <li><a href="#privacy" onClick={(e) => handleNav(e, "privacy")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Privacy Policy</a></li>
-              <li><a href="#terms" onClick={(e) => handleNav(e, "terms")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Terms of Service</a></li>
-              <li><a href="#cookie" onClick={(e) => handleNav(e, "terms")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Cookie Settings</a></li>
+              <li><Link to="/privacy" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Privacy Policy</Link></li>
+              <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Terms of Service</Link></li>
+              <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Cookie Settings</Link></li>
               <li className="pt-2 text-[10px] text-slate-500 dark:text-slate-400 flex flex-col gap-1.5 font-mono">
                 <a href="mailto:syedejazbukari@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1">
                   <Mail className="h-3 w-3" /> syedejazbukari@gmail.com

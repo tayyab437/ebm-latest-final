@@ -718,32 +718,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
             Understand where every learner is in Mathematics and English Comprehension—and know what to focus on next.
           </motion.p>
 
-          {/* ================= PURPLE EDUCATOR LINK ================= */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="max-w-3xl mx-auto pt-2"
-          >
-            <div className="bg-[#f0edff]/95 hover:bg-white text-slate-800 p-4 sm:p-5 rounded-2xl shadow-md hover:shadow-lg border border-[#d6cfff] flex flex-col sm:flex-row items-center justify-between gap-4 text-left transition-all duration-300 cursor-pointer group">
-              <div className="flex items-center space-x-4">
-                <div className="bg-purple-100 text-purple-600 p-3 rounded-xl group-hover:scale-110 transition-transform">
-                  {/* High Fidelity Custom SVG School Icon */}
-                  <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                    <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="text-purple-900 font-extrabold text-base sm:text-lg">Educators & District Leaders</h4>
-                  <p className="text-slate-600 text-xs sm:text-sm">See why EBM is the perfect adaptive assessment solution for your school or district.</p>
-                </div>
-              </div>
-              <div className="bg-purple-600 text-white p-2.5 rounded-full group-hover:translate-x-1.5 transition-transform shrink-0">
-                <ChevronRight className="w-5 h-5 stroke-[2.5]" />
-              </div>
-            </div>
-          </motion.div>
+
         </div>
       </section>
 

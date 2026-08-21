@@ -600,10 +600,10 @@ export function ParentDashboard({ notifications, onReadNotification, onLogout }:
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-140px)] bg-slate-50 relative rounded-3xl border border-slate-200 shadow-sm font-sans flex-col md:flex-row items-stretch">
+    <div className="flex h-screen w-full bg-slate-50 relative font-sans flex-col md:flex-row items-stretch overflow-hidden">
       
       {/* Parent Sidebar Navigation */}
-      <div className="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-slate-200 shrink-0 flex flex-col md:sticky md:top-20 md:self-start md:max-h-[calc(100vh-90px)] rounded-t-3xl md:rounded-tr-none md:rounded-l-3xl z-10">
+      <div className="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-slate-200 shrink-0 flex flex-col h-auto md:h-screen z-10 overflow-y-auto">
         {/* Branding Title */}
         <div className="p-6 border-b border-slate-100 flex items-center gap-3">
           <div className="bg-blue-600 text-white p-2.5 rounded-2xl shadow-md">
@@ -770,7 +770,9 @@ export function ParentDashboard({ notifications, onReadNotification, onLogout }:
             onClick={onLogout || (() => {
               localStorage.removeItem("ebm_token");
               localStorage.removeItem("ebm_user");
-              window.location.reload();
+              localStorage.removeItem("ebm_onboarding_progress");
+              localStorage.removeItem("ebm_dashboard_data_cache");
+              window.location.href = "/";
             })}
             className="w-full flex items-center justify-center gap-2 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-all text-xs font-bold border border-rose-200/50 cursor-pointer"
           >
@@ -896,7 +898,7 @@ export function ParentDashboard({ notifications, onReadNotification, onLogout }:
       </div>
 
       {/* Main Container Content */}
-      <div className="flex-grow flex flex-col bg-slate-50 min-w-0 rounded-b-3xl md:rounded-bl-none md:rounded-r-3xl">
+      <div className="flex-1 flex flex-col bg-slate-50 min-w-0 h-full overflow-y-auto">
         
         {/* Upper Dashboard Statistics Header */}
         <div className="p-6 bg-white border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shrink-0 md:rounded-tr-3xl">
@@ -925,7 +927,7 @@ export function ParentDashboard({ notifications, onReadNotification, onLogout }:
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Users className="h-4.5 w-4.5 text-indigo-500" />
-                      <h3 className="text-sm font-black text-slate-800">Linked Scholar Profiles</h3>
+                      <h3 className="text-sm font-black text-slate-800">Child Profiles</h3>
                     </div>
                     <span className="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg uppercase tracking-wider">
                       {(children || []).length} Scholars Connected
