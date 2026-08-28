@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation, Routes, Route, Navigate } from "react-router-dom";
+import { useNavigate, useLocation, Routes, Route, Navigate, Link } from "react-router-dom";
 import { SEOHead } from "./components/SEOHead";
 import { 
   BookOpen, 
@@ -921,9 +921,9 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           {/* Logo & Platform Tagline */}
           <div className="flex items-center gap-3 sm:gap-4">
-            <a
-              href="/"
-              onClick={(e) => { e.preventDefault(); handleNavigatePath("/"); }}
+            <Link
+              to="/"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className={`tracking-tighter hover:opacity-95 transition-opacity cursor-pointer flex items-center gap-2 ${
                 (logoType === "image" || logoImageUrl)
                   ? "bg-transparent p-0 shadow-none border-none"
@@ -951,7 +951,7 @@ export default function App() {
               ) : (
                 <span className="text-2xl sm:text-3xl font-black text-[#00a3e0]">{logoText || "EBM"}</span>
               )}
-            </a>
+            </Link>
 
             {/* Digital learning platform tagline */}
             <div className="hidden sm:flex items-center pl-3.5 border-l border-slate-300/80">
@@ -962,15 +962,16 @@ export default function App() {
           </div>
 
           {/* Navigation Menus Centered */}
-          <nav className="hidden md:flex items-center justify-center space-x-4 lg:space-x-6">
+          <nav aria-label="Main navigation" className="hidden md:flex items-center justify-center space-x-4 lg:space-x-6">
             {headerNavTabs.map((tab) => {
               const isActive = location.pathname === tab.path || (tab.path !== "/" && location.pathname.startsWith(tab.path));
               return (
-                <button
+                <Link
                   key={tab.id}
+                  to={tab.path}
                   id={`nav-btn-${tab.id}`}
-                  onClick={(e) => { e.preventDefault(); handleNavigatePath(tab.path); }}
-                  className={`relative py-1.5 transition-colors duration-200 cursor-pointer select-none text-xs lg:text-sm font-bold ${
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  className={`relative py-1.5 transition-colors duration-200 cursor-pointer select-none text-xs lg:text-sm font-bold inline-block ${
                     isActive ? "text-[#00a3e0]" : "text-slate-600 dark:text-slate-300 hover:text-[#00a3e0]"
                   }`}
                 >
@@ -982,7 +983,7 @@ export default function App() {
                       transition={{ type: "spring", stiffness: 380, damping: 28 }}
                     />
                   )}
-                </button>
+                </Link>
               );
             })}
           </nav>
@@ -991,25 +992,27 @@ export default function App() {
           <div className="flex items-center space-x-3 sm:space-x-4">
             {!token ? (
               <>
-                <button
+                <Link
                   id="header-signin-btn"
-                  onClick={() => handleNavigatePath("/login")}
+                  to="/login"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                   className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] bg-[#00a3e0] hover:bg-[#0089bd] text-white text-xs sm:text-sm font-bold rounded-md shadow-sm hover:shadow-md transition-all cursor-pointer"
                 >
                   <span className="inline-flex items-center gap-1.5 transform skew-x-[18deg]">
                     <User className="w-3.5 h-3.5 fill-current" />
                     Sign in
                   </span>
-                </button>
-                <button
+                </Link>
+                <Link
                   id="header-register-btn"
-                  onClick={() => handleNavigatePath("/register")}
+                  to="/register"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                   className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] border-2 border-[#00a3e0] text-[#00a3e0] hover:bg-[#00a3e0]/10 text-xs sm:text-sm font-bold rounded-md transition-all cursor-pointer bg-white/90 backdrop-blur-xs"
                 >
                   <span className="inline-block transform skew-x-[18deg]">
                     Registration
                   </span>
-                </button>
+                </Link>
               </>
             ) : (
               <div className="flex items-center space-x-3">
@@ -1041,15 +1044,16 @@ export default function App() {
       </header>
 
       {/* Mobile Nav Header */}
-      <div className="bg-white/85 backdrop-blur-md text-slate-700 md:hidden flex justify-around py-2 border-t border-slate-200/60 text-xs font-semibold shadow-xs overflow-x-auto whitespace-nowrap px-2 gap-1.5">
+      <nav aria-label="Mobile navigation" className="bg-white/85 backdrop-blur-md text-slate-700 md:hidden flex justify-around py-2 border-t border-slate-200/60 text-xs font-semibold shadow-xs overflow-x-auto whitespace-nowrap px-2 gap-1.5">
         {headerNavTabs.map((tab) => {
           const isActive = location.pathname === tab.path || (tab.path !== "/" && location.pathname.startsWith(tab.path));
           return (
-            <button
+            <Link
               key={tab.id}
+              to={tab.path}
               id={`mob-nav-${tab.id}`}
-              onClick={() => handleNavigatePath(tab.path)}
-              className={`relative px-3 py-1 rounded-full text-xs font-bold transition-colors ${
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className={`relative px-3 py-1 rounded-full text-xs font-bold transition-colors inline-block ${
                 isActive ? "text-[#00a3e0]" : "text-slate-600 hover:text-[#00a3e0]"
               }`}
             >
@@ -1061,10 +1065,10 @@ export default function App() {
                 />
               )}
               <span className="relative z-10">{tab.label}</span>
-            </button>
+            </Link>
           );
         })}
-      </div>
+      </nav>
       </>
     )}
 

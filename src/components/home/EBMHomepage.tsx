@@ -10,6 +10,7 @@ import GradeThreeMathModal from "./GradeThreeMathModal";
 import GradeThreeEnglishModal from "./GradeThreeEnglishModal";
 import GradeFourMathModal from "./GradeFourMathModal";
 import GradeFourEnglishModal from "./GradeFourEnglishModal";
+import { SEOHead } from "../SEOHead";
 
 interface EBMHomepageProps {
   onSignIn?: () => void;
@@ -410,6 +411,11 @@ export default function EBMHomepage({
 
   return (
     <div className="bg-[#f2f4f5] text-[#4a4a4a] font-sans antialiased min-h-screen">
+      <SEOHead 
+        title="EBM Diagnostic Assessment | Adaptive Learning & Skill Evaluation"
+        description="Discover EBM Diagnostic Assessment, an adaptive learning and skill evaluation solution that helps educators identify student strengths, learning needs, and personalized next steps."
+        canonicalUrl="https://ejazbukharimethod.com/"
+      />
       {/* ================= HERO BANNER ================= */}
       <section 
         className="relative overflow-hidden flex flex-col items-center justify-between pt-8 pb-10 px-4 min-h-[520px] bg-cover bg-center bg-no-repeat transition-all duration-500"
@@ -420,15 +426,27 @@ export default function EBMHomepage({
 
         {/* Content Container */}
         <div className="max-w-6xl mx-auto w-full relative z-10 flex flex-col items-center">
-          {/* Main Title: "EBM is personalized learning" */}
+          {/* Main Title: "EBM: A Personalized Learning Platform for Every Student" */}
           <h1 
-            className="text-3xl md:text-[48px] font-serif text-[#00a3e0] font-semibold tracking-wide text-center mb-8 drop-shadow-[0_4px_12px_rgba(255,255,255,1)]"
+            id="ebm-hero-title"
+            className="text-3xl md:text-[48px] font-serif text-[#00a3e0] font-semibold tracking-wide text-center mb-3 drop-shadow-[0_4px_12px_rgba(255,255,255,1)]"
             style={{
               textShadow: "0 0 20px #ffffff, 0 0 35px #ffffff, 0 0 10px #ffffff, 0 0 4px #ffffff, 0 2px 10px rgba(0, 32, 64, 0.6)"
             }}
           >
-            EBM <span className="font-bold text-[#00a3e0] italic">is</span> personalized learning platform
+            EBM: A Personalized Learning Platform for Every Student
           </h1>
+
+          {/* Subtitle Paragraph */}
+          <p
+            id="ebm-hero-subtitle"
+            className="text-base sm:text-lg md:text-[19px] text-slate-800 font-medium text-center max-w-3xl mx-auto mb-8 px-4 leading-relaxed"
+            style={{
+              textShadow: "0 0 18px #ffffff, 0 0 28px #ffffff, 0 0 8px #ffffff, 0 1px 4px rgba(255, 255, 255, 0.95)"
+            }}
+          >
+            EBM combines structured learning, personalized guidance, and AI-enhanced tools to help students build strong academic foundations and progress with confidence.
+          </p>
 
           {/* Three Feature Clouds Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full items-stretch">

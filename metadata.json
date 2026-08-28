@@ -1,6 +1,6 @@
 {
   "name": "Remix Remix Remix: EBM Digital Learning Ecosystem",
-  "description": "An AI-powered online education platform enabling Grade 5 to O Level acceleration within 3 years using the Ejaz Bukhari Method.",
+  "description": "Discover EBM Diagnostic Assessment, an adaptive learning and skill evaluation solution that helps educators identify student strengths, learning needs, and personalized next steps.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

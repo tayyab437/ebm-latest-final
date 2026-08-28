@@ -43,7 +43,6 @@ import {
   Circle,
   Eye,
   Search,
-  ChevronDown,
   ChevronUp,
   RotateCcw,
   HeartHandshake,
@@ -324,19 +323,6 @@ export function AnalyticsPage() {
               </motion.div>
             </div>
 
-          </div>
-
-          {/* Bottom Transition & Subtle Scroll Indicator */}
-          <div className="pt-12 sm:pt-16 flex flex-col items-center justify-center space-y-2">
-            {/* Lead-in Evidence Trace Line */}
-            <div className="h-6 w-px bg-gradient-to-b from-[#00a3e0]/40 to-[#00a3e0]/10" />
-            <button
-              onClick={handleScrollToReports}
-              className="group inline-flex items-center space-x-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-[#0076a5] transition-colors cursor-pointer"
-            >
-              <span>EXPLORE THE EVIDENCE</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#00a3e0] group-hover:translate-y-0.5 transition-transform" />
-            </button>
           </div>
         </div>
       </section>

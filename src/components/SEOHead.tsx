@@ -10,15 +10,18 @@ interface SEOHeadProps {
 }
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
-  title = "EBM Diagnostic & Digital Learning Platform | Ejaz Bukhari Method",
-  description = "EBM Diagnostic creates one connected evidence base for Mathematics and English Comprehension from Grade 1 to O/A Levels. Accelerated academic success powered by the Ejaz Bukhari Method.",
+  title = "EBM Diagnostic Assessment | Adaptive Learning & Skill Evaluation",
+  description = "Discover EBM Diagnostic Assessment, an adaptive learning and skill evaluation solution that helps educators identify student strengths, learning needs, and personalized next steps.",
   keywords = "EBM, Ejaz Bukhari Method, EBM Diagnostic, Mathematics, English Comprehension, Cambridge O Levels, A Levels, Accelerated Learning, Assessment, Analytics",
   canonicalUrl,
   ogType = "website",
 }) => {
   const location = useLocation();
-  const currentOrigin = typeof window !== "undefined" ? window.location.origin : "https://ejazbukharimethod.com";
-  const fullCanonical = canonicalUrl || `${currentOrigin}${location.pathname}`;
+  const currentOrigin = typeof window !== "undefined" && window.location.origin && !window.location.origin.includes("run.app") && !window.location.origin.includes("localhost")
+    ? window.location.origin
+    : "https://ejazbukharimethod.com";
+  const defaultCanonical = location.pathname === "/" ? `${currentOrigin}/` : `${currentOrigin}${location.pathname}`;
+  const fullCanonical = canonicalUrl || defaultCanonical;
 
   useEffect(() => {
     // 1. Update Title
