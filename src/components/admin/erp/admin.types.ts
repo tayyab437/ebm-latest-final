@@ -25,6 +25,7 @@ export enum AdminView {
   PROFILE = "PROFILE",
   PARENTING_ACADEMY = "PARENTING_ACADEMY",
   PTM_SCHEDULE = "PTM_SCHEDULE",
+  BLOG_MANAGER = "BLOG_MANAGER",
 }
 
 export interface Admission {

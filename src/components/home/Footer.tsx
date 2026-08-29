@@ -102,6 +102,7 @@ export default function Footer({ onNavigate }: FooterProps) {
           <div className="text-left space-y-3">
             <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Resources</h5>
             <ul className="space-y-2 text-xs">
+              <li><Link to="/blog" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer font-medium text-blue-600 dark:text-blue-400">EBM Blog & Publications</Link></li>
               <li><a href="#faq" onClick={(e) => handleAnchorClick(e, "faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">FAQs</a></li>
               <li><Link to="/contact" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Contact Us</Link></li>
             </ul>

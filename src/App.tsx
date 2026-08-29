@@ -96,6 +96,7 @@ import { MyClassesView } from "./components/student/dashboard/MyClassesView";
 
 import { ProfileSettings } from "./components/ProfileSettings";
 import { ContactUs, PrivacyPolicy, TermsConditions, AssessmentPage, AnalyticsPage, InspirationPage, CaseStudiesPage, AboutUs, PricingPage, ProgramsPage, LearningPage, NotFoundPage } from "./components/pages";
+import { BlogList, BlogPostView, BlogCategoryView } from "./components/blog";
 
 function StudentDashboardView() {
   const { currentView, showCelebration, setShowCelebration, newGrade, setView } = useDashboardStore();
@@ -868,6 +869,7 @@ export default function App() {
     { id: "assessment", label: "Assessment", path: "/assessment" },
     { id: "analytics", label: "Analytics", path: "/analytics" },
     { id: "inspiration", label: "Inspiration", path: "/inspiration" },
+    { id: "blog", label: "Blog", path: "/blog" },
     { id: "contact", label: "Contact", path: "/contact" },
   ];
 
@@ -1214,11 +1216,15 @@ export default function App() {
           <Route path="/assessment" element={<div className="flex-grow animate-fade-in"><AssessmentPage /></div>} />
           <Route path="/analytics" element={<div className="flex-grow animate-fade-in"><AnalyticsPage /></div>} />
           <Route path="/inspiration" element={<div className="flex-grow animate-fade-in"><InspirationPage /></div>} />
+          <Route path="/blog" element={<div className="flex-grow animate-fade-in"><BlogList /></div>} />
+          <Route path="/blog/category/:slug" element={<div className="flex-grow animate-fade-in"><BlogCategoryView /></div>} />
+          <Route path="/blog/:slug" element={<div className="flex-grow animate-fade-in"><BlogPostView /></div>} />
           <Route path="/casestudies" element={<div className="flex-grow animate-fade-in"><CaseStudiesPage /></div>} />
           <Route path="/case-studies" element={<div className="flex-grow animate-fade-in"><CaseStudiesPage /></div>} />
           <Route path="/contact" element={<div className="flex-grow"><ContactUs /></div>} />
           <Route path="/privacy" element={<div className="flex-grow"><PrivacyPolicy /></div>} />
           <Route path="/terms" element={<div className="flex-grow"><TermsConditions /></div>} />
+          <Route path="/about" element={<div className="flex-grow animate-fade-in"><AboutUs /></div>} />
           <Route path="/programs" element={
             <div className="flex-grow animate-fade-in">
               <ProgramsPage 

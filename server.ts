@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import { getDb } from "./src/db/index.js";
 import * as schema from "./src/db/schema.js";
 import { eq, and, desc, ne } from "drizzle-orm";
+import { blogRouter, generateSitemapXml, generateRssXml } from "./src/server/blog-routes.js";
 
 export function extractUserIdFromToken(token: string | undefined): string | null {
   if (!token) return null;
@@ -612,6 +613,39 @@ app.post("/api/student/promote", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", time: new Date().toISOString() });
 });
+
+// Dynamic XML Sitemap (Includes core pages + published blog posts + active categories)
+app.get("/sitemap.xml", async (req, res) => {
+  try {
+    const sitemapXml = await generateSitemapXml();
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    return res.send(sitemapXml);
+  } catch (err: any) {
+    console.error("Sitemap generation error:", err);
+    // Fallback to static sitemap if error
+    const sitemapPath = path.join(process.cwd(), "public", "sitemap.xml");
+    if (fs.existsSync(sitemapPath)) {
+      res.header("Content-Type", "application/xml; charset=utf-8");
+      return res.sendFile(sitemapPath);
+    }
+    return res.status(500).send("Error generating sitemap.");
+  }
+});
+
+// Dynamic RSS Feed (Standard RSS 2.0 with all published blog posts)
+app.get(["/rss.xml", "/blog/rss.xml"], async (req, res) => {
+  try {
+    const rssXml = await generateRssXml();
+    res.header("Content-Type", "application/rss+xml; charset=utf-8");
+    return res.send(rssXml);
+  } catch (err: any) {
+    console.error("RSS generation error:", err);
+    return res.status(500).send("Error generating RSS feed.");
+  }
+});
+
+// Blog REST API router
+app.use("/api/blog", blogRouter);
 
 // Featured student journeys API routes
 app.get("/api/featured-journeys", async (req, res) => {

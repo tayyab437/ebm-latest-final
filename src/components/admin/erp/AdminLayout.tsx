@@ -21,6 +21,7 @@ import { ParentingAcademyManager } from "./ParentingAcademyManager";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { ExaminationsManager } from "./ExaminationsManager";
 import { PTMSchedulerManager } from "./PTMSchedulerManager";
+import { BlogAdminManager } from "../blog/BlogAdminManager";
 import { ProfileSettings } from "../../ProfileSettings";
 import { Menu, Bell, Search, Settings, HelpCircle, LogOut } from "lucide-react";
 
@@ -167,6 +168,7 @@ export function AdminLayout({ onLogout }: AdminLayoutProps = {}) {
             {currentView === AdminView.ANALYTICS && <AnalyticsDashboard />}
             {currentView === AdminView.PARENTING_ACADEMY && <ParentingAcademyManager />}
             {currentView === AdminView.PTM_SCHEDULE && <PTMSchedulerManager />}
+            {currentView === AdminView.BLOG_MANAGER && <BlogAdminManager />}
             {currentView === AdminView.PROFILE && (
               <ProfileSettings role="ADMIN" onBack={() => setCurrentView(AdminView.DASHBOARD)} />
             )}

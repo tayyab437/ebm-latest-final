@@ -137,6 +137,14 @@ export const ROUTE_REGISTRY: Record<string, RouteMetaConfig> = {
     breadcrumbName: "Case Studies",
     pageType: "CollectionPage"
   },
+  "/blog": {
+    title: "EBM Blog | Educational Perspectives, Mathematics & Learning Insights",
+    description:
+      "Explore research-backed educational perspectives, mathematical problem-solving strategies, and personalized learning insights from the Ejaz Bukhari Method.",
+    canonicalUrl: `${BASE_URL}/blog`,
+    breadcrumbName: "Blog",
+    pageType: "CollectionPage"
+  },
   "/pricing": {
     title: "EBM Pricing & Memberships | Flexible Learning Plans",
     description:
@@ -311,6 +319,189 @@ export function generateRouteStructuredData(
       });
     }
   }
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": graph
+  };
+}
+
+/**
+ * Generates valid Schema.org JSON-LD graph specifically for an individual BlogPosting article
+ */
+export function generateBlogPostStructuredData(post: {
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content?: string;
+  featuredImage?: string;
+  categoryName?: string;
+  categorySlug?: string;
+  authorName?: string;
+  authorRole?: string;
+  authorSlug?: string;
+  publishedAt?: string | null;
+  updatedAt?: string;
+  createdAt?: string;
+  readingTime?: number;
+  tags?: string[];
+  canonicalUrl?: string;
+}) {
+  const postUrl = post.canonicalUrl || `${BASE_URL}/blog/${post.slug}`;
+  const webpageId = `${postUrl}#webpage`;
+  const articleId = `${postUrl}#article`;
+  const breadcrumbId = `${postUrl}#breadcrumb`;
+
+  const datePub = post.publishedAt || post.createdAt || new Date().toISOString();
+  const dateMod = post.updatedAt || post.publishedAt || post.createdAt || new Date().toISOString();
+
+  const graph: any[] = [
+    {
+      "@type": "WebPage",
+      "@id": webpageId,
+      url: postUrl,
+      name: `${post.title} | EBM Blog`,
+      description: post.excerpt || "Educational article from the Ejaz Bukhari Method.",
+      isPartOf: {
+        "@id": WEBSITE_ID
+      },
+      breadcrumb: {
+        "@id": breadcrumbId
+      },
+      mainEntity: {
+        "@id": articleId
+      }
+    },
+    {
+      "@type": "BlogPosting",
+      "@id": articleId,
+      isPartOf: {
+        "@id": webpageId
+      },
+      headline: post.title,
+      description: post.excerpt,
+      mainEntityOfPage: postUrl,
+      url: postUrl,
+      datePublished: datePub,
+      dateModified: dateMod,
+      articleSection: post.categoryName || "Education",
+      timeRequired: post.readingTime ? `PT${post.readingTime}M` : "PT5M",
+      ...(post.featuredImage ? { image: [post.featuredImage] } : {}),
+      ...(post.tags && post.tags.length > 0 ? { keywords: post.tags.join(", ") } : {}),
+      author: {
+        "@type": "Person",
+        name: post.authorName || "Syed Ejaz Bukhari",
+        jobTitle: post.authorRole || "Founder & Director of Pedagogy",
+        url: post.authorSlug ? `${BASE_URL}/blog/author/${post.authorSlug}` : `${BASE_URL}/about`
+      },
+      publisher: {
+        "@id": ORGANIZATION_ID
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": breadcrumbId,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: `${BASE_URL}/`
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Blog",
+          item: `${BASE_URL}/blog`
+        },
+        ...(post.categoryName && post.categorySlug
+          ? [
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: post.categoryName,
+                item: `${BASE_URL}/blog/category/${post.categorySlug}`
+              },
+              {
+                "@type": "ListItem",
+                position: 4,
+                name: post.title,
+                item: postUrl
+              }
+            ]
+          : [
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: post.title,
+                item: postUrl
+              }
+            ])
+      ]
+    }
+  ];
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": graph
+  };
+}
+
+/**
+ * Generates valid Schema.org JSON-LD graph specifically for a Blog Category page
+ */
+export function generateBlogCategoryStructuredData(category: {
+  name: string;
+  slug: string;
+  description?: string;
+  postCount?: number;
+}) {
+  const catUrl = `${BASE_URL}/blog/category/${category.slug}`;
+  const webpageId = `${catUrl}#webpage`;
+  const breadcrumbId = `${catUrl}#breadcrumb`;
+
+  const graph: any[] = [
+    {
+      "@type": "CollectionPage",
+      "@id": webpageId,
+      url: catUrl,
+      name: `${category.name} Articles | EBM Blog`,
+      description: category.description || `Explore articles on ${category.name} from the Ejaz Bukhari Method.`,
+      isPartOf: {
+        "@id": WEBSITE_ID
+      },
+      breadcrumb: {
+        "@id": breadcrumbId
+      },
+      about: {
+        "@id": ORGANIZATION_ID
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": breadcrumbId,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: `${BASE_URL}/`
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Blog",
+          item: `${BASE_URL}/blog`
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: category.name,
+          item: catUrl
+        }
+      ]
+    }
+  ];
 
   return {
     "@context": "https://schema.org",

@@ -355,6 +355,69 @@ export const branding_settings = mysqlTable('branding_settings', {
   updatedAt: timestamp('updatedAt').defaultNow(),
 });
 
+export const blog_categories = mysqlTable('blog_categories', {
+  id: varchar('id', { length: 100 }).primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  slug: varchar('slug', { length: 255 }).notNull(),
+  description: text('description'),
+  seoTitle: varchar('seoTitle', { length: 255 }),
+  seoDescription: text('seoDescription'),
+  color: varchar('color', { length: 50 }),
+  icon: varchar('icon', { length: 100 }),
+  createdAt: timestamp('createdAt').defaultNow(),
+});
+
+export const blog_authors = mysqlTable('blog_authors', {
+  id: varchar('id', { length: 100 }).primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  slug: varchar('slug', { length: 255 }).notNull(),
+  bio: text('bio'),
+  role: varchar('role', { length: 255 }),
+  avatarUrl: text('avatarUrl'),
+  email: varchar('email', { length: 255 }),
+  socialLinks: json('socialLinks'),
+  createdAt: timestamp('createdAt').defaultNow(),
+});
+
+export const blog_posts = mysqlTable('blog_posts', {
+  id: varchar('id', { length: 100 }).primaryKey(),
+  title: varchar('title', { length: 500 }).notNull(),
+  slug: varchar('slug', { length: 500 }).notNull(),
+  excerpt: text('excerpt'),
+  content: text('content').notNull(),
+  categoryId: varchar('categoryId', { length: 100 }).notNull(),
+  secondaryCategoryIds: json('secondaryCategoryIds'),
+  featuredImage: text('featuredImage'),
+  featuredImageAlt: text('featuredImageAlt'),
+  featuredImageCaption: text('featuredImageCaption'),
+  authorId: varchar('authorId', { length: 100 }),
+  status: varchar('status', { length: 50 }).default('draft').notNull(), // 'draft', 'published', 'archived', 'scheduled'
+  isFeatured: int('isFeatured').default(0).notNull(),
+  publishedAt: timestamp('publishedAt'),
+  updatedAt: timestamp('updatedAt').defaultNow(),
+  createdAt: timestamp('createdAt').defaultNow(),
+  seoTitle: varchar('seoTitle', { length: 500 }),
+  seoDescription: text('seoDescription'),
+  ogImage: text('ogImage'),
+  canonicalUrl: text('canonicalUrl'),
+  readingTime: int('readingTime').default(5),
+  tags: json('tags'),
+  relatedPostIds: json('relatedPostIds'),
+  noindex: int('noindex').default(0),
+  views: int('views').default(0),
+  ctaType: varchar('ctaType', { length: 50 }),
+  ctaLink: text('ctaLink'),
+  ctaText: varchar('ctaText', { length: 255 }),
+});
+
+export const blog_redirects = mysqlTable('blog_redirects', {
+  id: varchar('id', { length: 100 }).primaryKey(),
+  sourceSlug: varchar('sourceSlug', { length: 500 }).notNull(),
+  targetSlug: varchar('targetSlug', { length: 500 }).notNull(),
+  statusCode: int('statusCode').default(301).notNull(),
+  createdAt: timestamp('createdAt').defaultNow(),
+});
+
 
 
 

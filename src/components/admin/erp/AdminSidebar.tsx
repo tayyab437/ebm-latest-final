@@ -101,8 +101,9 @@ export function AdminSidebar({ currentView, setCurrentView, onLogout }: AdminSid
       ]
     },
     {
-      title: "Communication",
+      title: "Communication & Content",
       items: [
+        { id: AdminView.BLOG_MANAGER, label: "Blog & Publications", icon: FileText },
         { id: AdminView.PTM_SCHEDULE, label: "PTM & Conferences", icon: Calendar },
         { id: AdminView.MESSAGES, label: "Messages", icon: MessageSquare },
         { id: AdminView.ANNOUNCEMENTS, label: "Announcements", icon: Megaphone },

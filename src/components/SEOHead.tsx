@@ -7,6 +7,16 @@ interface SEOHeadProps {
   description?: string;
   canonicalUrl?: string;
   ogType?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  noindex?: boolean;
+  articleMeta?: {
+    publishedTime?: string;
+    modifiedTime?: string;
+    author?: string;
+    section?: string;
+    tags?: string[];
+  };
   customSchema?: Record<string, any>;
 }
 
@@ -15,6 +25,10 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   description,
   canonicalUrl,
   ogType = "website",
+  ogImage,
+  ogImageAlt,
+  noindex = false,
+  articleMeta,
   customSchema,
 }) => {
   const location = useLocation();
@@ -83,7 +97,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 
     // 2. Standard Meta Tags
     setMetaTag("name", "description", resolvedDescription);
-    setMetaTag("name", "robots", "index, follow");
+    setMetaTag("name", "robots", noindex ? "noindex, nofollow" : "index, follow");
 
     // 3. OpenGraph Tags
     setMetaTag("property", "og:title", resolvedTitle);
@@ -92,10 +106,39 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     setMetaTag("property", "og:url", resolvedCanonical);
     setMetaTag("property", "og:site_name", "Ejaz Bukhari Method (EBM)");
 
-    // 4. Canonical Link
+    if (ogImage) {
+      setMetaTag("property", "og:image", ogImage);
+      if (ogImageAlt) {
+        setMetaTag("property", "og:image:alt", ogImageAlt);
+      }
+    }
+
+    // Article Specific OpenGraph
+    if (ogType === "article" && articleMeta) {
+      if (articleMeta.publishedTime) setMetaTag("property", "article:published_time", articleMeta.publishedTime);
+      if (articleMeta.modifiedTime) setMetaTag("property", "article:modified_time", articleMeta.modifiedTime);
+      if (articleMeta.author) setMetaTag("property", "article:author", articleMeta.author);
+      if (articleMeta.section) setMetaTag("property", "article:section", articleMeta.section);
+      if (articleMeta.tags) {
+        articleMeta.tags.forEach((tag, idx) => {
+          setMetaTag("property", `article:tag:${idx}`, tag);
+        });
+      }
+    }
+
+    // 4. Twitter Card Tags
+    setMetaTag("name", "twitter:card", ogImage ? "summary_large_image" : "summary");
+    setMetaTag("name", "twitter:title", resolvedTitle);
+    setMetaTag("name", "twitter:description", resolvedDescription);
+    if (ogImage) {
+      setMetaTag("name", "twitter:image", ogImage);
+      if (ogImageAlt) setMetaTag("name", "twitter:image:alt", ogImageAlt);
+    }
+
+    // 5. Canonical Link
     setLinkTag("canonical", resolvedCanonical);
 
-    // 5. Schema.org Structured Data
+    // 6. Schema.org Structured Data
     let schemaScript = document.getElementById("ebm-structured-data") as HTMLScriptElement | null;
     if (!schemaScript) {
       schemaScript = document.createElement("script");
@@ -106,7 +149,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 
     schemaScript.textContent = JSON.stringify(structuredData);
 
-  }, [title, description, canonicalUrl, ogType, customSchema, location.pathname]);
+  }, [title, description, canonicalUrl, ogType, ogImage, ogImageAlt, noindex, articleMeta, customSchema, location.pathname]);
 
   return null;
 };
