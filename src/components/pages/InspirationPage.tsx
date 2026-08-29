@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { SEOHead } from "../SEOHead";
 import { 
   BookOpen, 
   Calendar, 
@@ -144,6 +145,11 @@ export function InspirationPage() {
 
   return (
     <div className="bg-[#f8fafc] dark:bg-slate-950 min-h-screen font-sans pb-16 transition-colors duration-200">
+      <SEOHead 
+        title="EBM Inspiration & Resources | Toolkits for Educators & Parents"
+        description="Explore curated teaching strategies, downloadable toolkits, printable resources, and classroom implementation guides from the EBM ecosystem."
+        canonicalUrl="https://ejazbukharimethod.com/inspiration"
+      />
       {/* ================= HEADER SECTION ================= */}
       <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm text-center">
         {/* Background Image */}

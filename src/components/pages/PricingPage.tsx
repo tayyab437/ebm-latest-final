@@ -18,6 +18,7 @@ import {
   Video
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { SEOHead } from "../SEOHead";
 import { PRICING_PLANS_DATA, FEATURE_COMPARISON_DATA, SCHOLARSHIPS_DATA } from "../home/admissions/admissions.data";
 
 interface PricingPageProps {
@@ -50,6 +51,11 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigateToTab }) => 
 
   return (
     <article className="min-h-screen bg-[#03050a] text-slate-100 selection:bg-blue-600 selection:text-white antialiased">
+      <SEOHead 
+        title="EBM Pricing & Memberships | Flexible Learning Plans"
+        description="Choose the right EBM plan for your learning journey. Transparent pricing for individual students, families, and academic institutions."
+        canonicalUrl="https://ejazbukharimethod.com/pricing"
+      />
       
       {/* ================== PREMIUM ADMISSIONS HEADER ================== */}
       <header className="relative pt-32 pb-20 overflow-hidden border-b border-blue-500/10">

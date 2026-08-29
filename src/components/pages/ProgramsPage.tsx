@@ -22,6 +22,7 @@ import {
   HelpCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { SEOHead } from "../SEOHead";
 import { EbmYear } from "../../types";
 import { EBM_ROADMAP_DETAILS } from "../../constants";
 import { TeacherTestimonials } from "../home/success/TeacherTestimonials";
@@ -147,6 +148,11 @@ export function ProgramsPage({ selectedYear, setSelectedYear, onEnterWorkspace }
 
   return (
     <div id="view-programs-redesign" className="space-y-16 animate-fade-in text-slate-100 font-sans selection:bg-blue-600 selection:text-white antialiased">
+      <SEOHead 
+        title="EBM Academic Programs | Grade 1 to O/A Level Curriculum"
+        description="Explore the comprehensive EBM learning paths from primary grades through O/A Levels, covering mathematics, critical comprehension, and diagnostic milestones."
+        canonicalUrl="https://ejazbukharimethod.com/programs"
+      />
       
       {/* ================== PREMIUM PROGRAM HERO BANNER ================== */}
       <section className="relative rounded-[32px] overflow-hidden border border-blue-500/10 text-left bg-gradient-to-b from-[#090f1d] to-[#03050a] p-8 sm:p-12 lg:p-16 shadow-2xl">

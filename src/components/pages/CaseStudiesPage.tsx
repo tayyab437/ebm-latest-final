@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SEOHead } from "../SEOHead";
 import { 
   Play, 
   Video, 
@@ -267,6 +268,11 @@ export function CaseStudiesPage() {
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
+      <SEOHead 
+        title="EBM Case Studies & School Success Stories"
+        description="Discover how schools and districts achieve measurable academic growth, test score gains, and classroom efficiency with EBM."
+        canonicalUrl="https://ejazbukharimethod.com/case-studies"
+      />
       {/* Hero Header */}
       <section className="bg-gradient-to-r from-sky-900 via-blue-900 to-indigo-950 text-white py-16 sm:py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]" />

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { SEOHead } from "../SEOHead";
+import { AssessmentFAQ } from "./AssessmentFAQ";
 import { 
   ArrowRight, 
   Sparkles, 
@@ -677,6 +679,11 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
 
   return (
     <div className="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen">
+      <SEOHead 
+        title="EBM Diagnostic Assessment | Adaptive Learning & Skill Evaluation"
+        description="Discover EBM Diagnostic Assessment, an adaptive learning and skill evaluation solution that helps educators identify student strengths, learning needs, and personalized next steps."
+        canonicalUrl="https://ejazbukharimethod.com/assessment"
+      />
       
       {/* ================= HERO HEADER BANNER ================= */}
       <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm">
@@ -1470,6 +1477,9 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
 
         </div>
       </section>
+
+      {/* ================= ASSESSMENT FAQ SECTION ================= */}
+      <AssessmentFAQ />
 
       {/* ================= BOTTOM CTA BANNER ================= */}
       <section className="bg-gradient-to-br from-cyan-50/90 via-white to-blue-50/80 text-slate-900 py-16 sm:py-24 text-center px-4 relative overflow-hidden border-t border-slate-200/80">

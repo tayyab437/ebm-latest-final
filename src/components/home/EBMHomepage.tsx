@@ -1246,14 +1246,19 @@ export default function EBMHomepage({
             </div>
 
             {/* Impact 2: Flexible for any classroom */}
-            <div className="flex flex-col items-center">
-              <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[4px] border-[#33c3f0] mb-5 bg-white/10 flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-300">
-                <img 
-                  src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=250&h=250" 
-                  alt="Flexible for any classroom teacher" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+            <div className="flex flex-col items-center relative">
+              <div className="relative mb-5">
+                <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[4px] border-[#33c3f0] bg-white/10 flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-300">
+                  <img 
+                    src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=250&h=250" 
+                    alt="Flexible for any classroom teacher" 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 text-[11px] font-extrabold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md whitespace-nowrap border border-amber-300">
+                  Example
+                </span>
               </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-3 tracking-tight font-serif text-white">Flexible for any classroom</h3>
               <p className="text-[13px] sm:text-sm mb-7 px-4 opacity-95 font-medium leading-relaxed max-w-[280px]">

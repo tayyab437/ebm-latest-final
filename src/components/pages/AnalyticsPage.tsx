@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { SEOHead } from "../SEOHead";
 import { EbmAtmosphericCanvas, EbmEvidenceParticles } from "../analytics/design-system";
 import { EbmAnalyticsEngine } from "../analytics/EbmAnalyticsEngine";
 import { EbmMasteryExperience } from "../analytics/EbmMasteryExperience";
@@ -218,6 +219,11 @@ export function AnalyticsPage() {
   return (
     <EbmAtmosphericCanvas className="min-h-screen">
       <div className="text-slate-800 font-sans antialiased">
+        <SEOHead 
+          title="EBM Analytics & Insights | Classroom, Group & Student Reporting"
+          description="Actionable analytics that uncover student learning curves, mastery tracking, and skill progression with EBM's reporting dashboard."
+          canonicalUrl="https://ejazbukharimethod.com/analytics"
+        />
         
         {/* ================= HERO HEADER BANNER ================= */}
       <section className="relative overflow-hidden pt-12 pb-16 sm:pt-18 sm:pb-24 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 border-b border-sky-100/80 shadow-xs">

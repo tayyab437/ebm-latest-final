@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Gavel, FileText, AlertTriangle } from "lucide-react";
+import { SEOHead } from "../SEOHead";
 
 export const TermsConditions: React.FC = () => {
   const [activeSection, setActiveSection] = useState("acceptance");
@@ -32,6 +33,11 @@ export const TermsConditions: React.FC = () => {
 
   return (
     <article className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 lg:py-20 text-slate-800 dark:text-slate-200 transition-colors duration-300">
+      <SEOHead 
+        title="Terms and Conditions | EBM Digital Learning Platform"
+        description="Review the terms of service, acceptable use policies, and user agreements for the EBM platform."
+        canonicalUrl="https://ejazbukharimethod.com/terms"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <header className="mb-12 border-b border-slate-200 dark:border-slate-800 pb-8 text-center md:text-left">

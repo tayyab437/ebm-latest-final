@@ -25,6 +25,7 @@ import {
   Sparkle
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { SEOHead } from "../SEOHead";
 
 const satinBg = "/src/assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
 
@@ -234,6 +235,11 @@ export const AboutUs: React.FC = () => {
 
   return (
     <article className="min-h-screen bg-[#03050a] text-slate-100 font-sans selection:bg-blue-600 selection:text-white antialiased subpixel-antialiased">
+      <SEOHead 
+        title="About EBM | Mission, Pedagogy & Methodology"
+        description="Learn about the Ejaz Bukhari Method (EBM) — empowering students with deep foundational mastery, cognitive speed, and conceptual learning."
+        canonicalUrl="https://ejazbukharimethod.com/about"
+      />
       
       {/* ================== PREMIUM HERO HEADER ================== */}
       <header 

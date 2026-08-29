@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Mail, Phone, Globe, Send, HelpCircle, ChevronDown, MessageSquare, Sparkles } from "lucide-react";
+import { SEOHead } from "../SEOHead";
 import { useInquiryStore } from "../../services/inquiries.store";
 
 export const ContactUs: React.FC = () => {
@@ -57,6 +58,11 @@ export const ContactUs: React.FC = () => {
 
   return (
     <article className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300">
+      <SEOHead 
+        title="Contact EBM | Admissions, Consultations & Support"
+        description="Get in touch with the EBM team for admissions inquiries, diagnostic scheduling, academic consultations, and technical support."
+        canonicalUrl="https://ejazbukharimethod.com/contact"
+      />
       {/* Header with Background Image & Light Overlay */}
       <header className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm">
         {/* Background Image */}

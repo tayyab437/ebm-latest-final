@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 interface SEOHeadProps {
   title?: string;
   description?: string;
-  keywords?: string;
   canonicalUrl?: string;
   ogType?: string;
 }
@@ -12,7 +11,6 @@ interface SEOHeadProps {
 export const SEOHead: React.FC<SEOHeadProps> = ({
   title = "EBM | Personalized Learning Platform for Grade 1 to O/A Levels",
   description = "EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools.",
-  keywords = "EBM, Ejaz Bukhari Method, EBM Diagnostic, Mathematics, English Comprehension, Cambridge O Levels, A Levels, Accelerated Learning, Assessment, Analytics",
   canonicalUrl,
   ogType = "website",
 }) => {
@@ -38,6 +36,14 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       element.setAttribute("content", contentValue);
     };
 
+    // Helper to remove meta tag if it exists
+    const removeMetaTag = (nameAttr: string, attrValue: string) => {
+      const element = document.querySelector(`meta[${nameAttr}="${attrValue}"]`);
+      if (element) {
+        element.remove();
+      }
+    };
+
     // Helper to set or create link tags
     const setLinkTag = (relValue: string, hrefValue: string) => {
       let element = document.querySelector(`link[rel="${relValue}"]`) as HTMLLinkElement | null;
@@ -49,9 +55,11 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       element.setAttribute("href", hrefValue);
     };
 
+    // Remove legacy meta keywords tag
+    removeMetaTag("name", "keywords");
+
     // 2. Standard Meta Tags
     setMetaTag("name", "description", description);
-    setMetaTag("name", "keywords", keywords);
     setMetaTag("name", "robots", "index, follow");
 
     // 3. OpenGraph Tags
@@ -88,7 +96,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 
     schemaScript.textContent = JSON.stringify(structuredData);
 
-  }, [title, description, keywords, fullCanonical, ogType, location.pathname]);
+  }, [title, description, fullCanonical, ogType, location.pathname]);
 
   return null;
 };
