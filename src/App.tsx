@@ -1090,13 +1090,8 @@ export default function App() {
           } />
 
           <Route path="/about" element={
-            <div id="ebm-homepage" className="flex-grow animate-fade-in">
-              <EBMHomepage 
-                onSignIn={() => handleNavigatePath("/login")}
-                onJoinNow={() => handleNavigatePath("/register")}
-                onNavigateToTab={(tabId) => handleNavigatePath(tabId === "home" ? "/" : `/${tabId}`)}
-                onSelectSkill={() => handleNavigatePath("/login")}
-              />
+            <div id="ebm-about-page" className="flex-grow animate-fade-in">
+              <AboutUs />
             </div>
           } />
 
@@ -1226,21 +1221,17 @@ export default function App() {
           <Route path="/terms" element={<div className="flex-grow"><TermsConditions /></div>} />
           <Route path="/programs" element={
             <div className="flex-grow animate-fade-in">
-              <EBMHomepage 
-                onSignIn={() => handleNavigatePath("/login")}
-                onJoinNow={() => handleNavigatePath("/register")}
-                onNavigateToTab={(tabId) => handleNavigatePath(tabId === "home" ? "/" : `/${tabId}`)}
-                onSelectSkill={() => handleNavigatePath("/login")}
+              <ProgramsPage 
+                selectedYear={selectedYear}
+                setSelectedYear={setSelectedYear}
+                onEnterWorkspace={() => handleNavigatePath("/dashboard")}
               />
             </div>
           } />
           <Route path="/pricing" element={
             <div className="flex-grow animate-fade-in">
-              <EBMHomepage 
-                onSignIn={() => handleNavigatePath("/login")}
-                onJoinNow={() => handleNavigatePath("/register")}
+              <PricingPage 
                 onNavigateToTab={(tabId) => handleNavigatePath(tabId === "home" ? "/" : `/${tabId}`)}
-                onSelectSkill={() => handleNavigatePath("/login")}
               />
             </div>
           } />

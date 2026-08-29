@@ -220,7 +220,7 @@ export function AnalyticsPage() {
     <EbmAtmosphericCanvas className="min-h-screen">
       <div className="text-slate-800 font-sans antialiased">
         <SEOHead 
-          title="EBM Analytics & Insights | Classroom, Group & Student Reporting"
+          title="EBM Learning Analytics: Turn Student Data Into Action"
           description="Actionable analytics that uncover student learning curves, mastery tracking, and skill progression with EBM's reporting dashboard."
           canonicalUrl="https://ejazbukharimethod.com/analytics"
         />

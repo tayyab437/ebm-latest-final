@@ -66,32 +66,12 @@ export function AssessmentFAQ() {
     setOpenId((prev) => (prev === id ? null : id));
   };
 
-  // Structured Data JSON-LD for FAQPage
-  const faqStructuredData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": ASSESSMENT_FAQS.map((faq) => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
-      }
-    }))
-  };
-
   return (
     <section 
       id="assessment-faqs" 
       aria-label="Frequently Asked Questions About EBM Diagnostic Assessment"
       className="relative py-16 sm:py-24 bg-[#eaf6f9] overflow-hidden border-t border-b border-[#ccebf2]"
     >
-      {/* JSON-LD Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
-      />
-
       {/* Atmospheric faint repeating watermark pattern */}
       <div 
         aria-hidden="true" 

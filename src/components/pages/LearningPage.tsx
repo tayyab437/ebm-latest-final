@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SEOHead } from "../SEOHead";
 import {
   Search,
   BookOpen,
@@ -228,6 +229,11 @@ export function LearningPage({ onSignIn, onNavigateToTab, userRole, token }: Lea
 
   return (
     <div id="learning-page-container" className="w-full min-h-screen bg-slate-50 text-slate-800 pb-16">
+      <SEOHead 
+        title="EBM Learning Portal | Courses, Curriculum & Practice"
+        description="Access EBM learning modules, interactive lessons, syllabus plans, and diagnostic practice tools across grade levels."
+        canonicalUrl="https://ejazbukharimethod.com/learning"
+      />
       {/* Top Banner Header with Background Image & Light Overlay */}
       <div className="relative overflow-hidden shadow-sm py-14 px-4 sm:px-6 lg:px-8 border-b border-sky-100">
         {/* Background Image */}
