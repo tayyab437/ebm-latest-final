@@ -412,8 +412,8 @@ export default function EBMHomepage({
   return (
     <div className="bg-[#f2f4f5] text-[#4a4a4a] font-sans antialiased min-h-screen">
       <SEOHead 
-        title="EBM Diagnostic Assessment | Adaptive Learning & Skill Evaluation"
-        description="Discover EBM Diagnostic Assessment, an adaptive learning and skill evaluation solution that helps educators identify student strengths, learning needs, and personalized next steps."
+        title="EBM | Personalized Learning Platform for Grade 1 to O/A Levels"
+        description="EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools."
         canonicalUrl="https://ejazbukharimethod.com/"
       />
       {/* ================= HERO BANNER ================= */}
@@ -488,8 +488,8 @@ export default function EBMHomepage({
               </svg>
               <div className="relative z-10 w-full max-w-[245px] sm:max-w-[260px] mx-auto flex flex-col items-center justify-center h-full py-2 px-1">
                 <div>
-                  <h2 className="text-[19px] sm:text-[21px] lg:text-[22px] font-serif text-[#8e24aa] font-normal leading-[1.2] tracking-tight mb-2">
-                    From Learning to<br />Real-World Results
+                  <h2 className="text-[18px] sm:text-[20px] lg:text-[21px] font-serif text-[#8e24aa] font-normal leading-[1.2] tracking-tight mb-2">
+                    Build Skills for Academic<br />and Real-World Success
                   </h2>
                   <p className="text-gray-600 text-[11px] sm:text-xs leading-snug font-sans font-medium">
                     Practical Methods <span className="text-purple-400 mx-0.5">•</span> Educator Support<br />Learner Growth
@@ -512,8 +512,8 @@ export default function EBMHomepage({
               </svg>
               <div className="relative z-10 w-full max-w-[245px] sm:max-w-[260px] mx-auto flex flex-col items-center justify-center h-full py-2 px-1">
                 <div>
-                  <h2 className="text-[19px] sm:text-[21px] lg:text-[22px] font-serif text-[#00a3e0] font-normal leading-[1.2] tracking-tight mb-2">
-                    AI-Enhanced Learning
+                  <h2 className="text-[18px] sm:text-[20px] lg:text-[21px] font-serif text-[#00a3e0] font-normal leading-[1.2] tracking-tight mb-2">
+                    AI-Enhanced Personalized Learning
                   </h2>
                   <p className="text-gray-600 text-[11px] sm:text-xs leading-snug font-sans font-medium">
                     Personalized Guidance <span className="text-sky-400 mx-0.5">•</span> Smart Learning Support<br />
@@ -1075,7 +1075,7 @@ export default function EBMHomepage({
 
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-4xl font-serif text-[#00a3e0] font-normal mb-3 tracking-wide">
-            The exact skills you need
+            Build the Academic and Life Skills You Need to Succeed
           </h2>
           <p className="text-gray-600 mb-10 max-w-3xl mx-auto text-sm sm:text-base font-sans">
             We've custom-built EBM skills to perfectly match each concept within your textbooks, state standards, and assessments.
@@ -1142,7 +1142,7 @@ export default function EBMHomepage({
       >
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-serif font-bold mb-3">
-            A better way to help every learner learn, grow, and succeed
+            A Better Way to Help Every Learner Grow and Succeed
           </h2>
           <p className="text-base md:text-lg mb-12 opacity-95 max-w-4xl mx-auto">
             EBM brings together practical learning strategies, modern teaching methods, and personalized guidance to help educators and learners achieve better outcomes.
@@ -1220,7 +1220,7 @@ export default function EBMHomepage({
       >
         <div className="max-w-5xl mx-auto px-6 relative z-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-14 tracking-tight drop-shadow-xs" style={{ fontFamily: 'Georgia, serif' }}>
-            See how EBM is making a difference in learning
+            See How EBM Supports Student Learning
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-14">
             {/* Impact 1: Proven effective */}
@@ -1430,7 +1430,7 @@ export default function EBMHomepage({
 
         <div className="max-w-4xl mx-auto bg-white/95 p-8 md:p-12 rounded-xl shadow-xl border border-white/10 relative z-20 backdrop-blur-xs">
           <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#00a3e0] mb-6">
-            Testimonials
+            What Students, Parents, and Educators Say About EBM
           </h2>
           <p className="text-base md:text-lg italic text-gray-700 mb-6 max-w-3xl mx-auto leading-relaxed">
             Considering the amount of content we have to cover in a year, we have very little time to get in adequate practice before moving on. EBM has solved that problem. It has also allowed us <strong className="font-bold text-gray-900">a VERY easy way to go back and review skills throughout the year</strong> we have already covered.

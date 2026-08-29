@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { GraduationCap, Shield, Facebook, Twitter, Linkedin, Mail, Phone } from "lucide-react";
+import { GraduationCap, Shield, Facebook, Instagram, Mail, Phone } from "lucide-react";
 import { useBrandingStore, BRANDING_ICONS } from "../../lib/branding.store";
 
 interface FooterProps {
@@ -66,9 +66,24 @@ export default function Footer({ onNavigate }: FooterProps) {
             </p>
             {/* Social icons */}
             <div className="flex gap-4 text-slate-400 dark:text-slate-550">
-              <a href="#facebook" className="hover:text-blue-600 dark:hover:text-blue-400 transition"><Facebook className="h-4 w-4" /></a>
-              <a href="#twitter" className="hover:text-blue-600 dark:hover:text-blue-400 transition"><Twitter className="h-4 w-4" /></a>
-              <a href="#linkedin" className="hover:text-blue-600 dark:hover:text-blue-400 transition"><Linkedin className="h-4 w-4" /></a>
+              <a 
+                href="https://www.facebook.com/syedejazbukhari/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="EBM Facebook Page"
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a 
+                href="https://www.instagram.com/syedejaz_bukhari/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="EBM Instagram Profile"
+                className="hover:text-pink-600 dark:hover:text-pink-400 transition"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
             </div>
           </div>
  

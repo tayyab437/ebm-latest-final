@@ -10,8 +10,8 @@ interface SEOHeadProps {
 }
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
-  title = "EBM Diagnostic Assessment | Adaptive Learning & Skill Evaluation",
-  description = "Discover EBM Diagnostic Assessment, an adaptive learning and skill evaluation solution that helps educators identify student strengths, learning needs, and personalized next steps.",
+  title = "EBM | Personalized Learning Platform for Grade 1 to O/A Levels",
+  description = "EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools.",
   keywords = "EBM, Ejaz Bukhari Method, EBM Diagnostic, Mathematics, English Comprehension, Cambridge O Levels, A Levels, Accelerated Learning, Assessment, Analytics",
   canonicalUrl,
   ogType = "website",
@@ -81,9 +81,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       logo: `${currentOrigin}/favicon.ico`,
       description: description,
       sameAs: [
-        "https://facebook.com",
-        "https://twitter.com",
-        "https://linkedin.com"
+        "https://www.facebook.com/syedejazbukhari/",
+        "https://www.instagram.com/syedejaz_bukhari/"
       ]
     };
 
