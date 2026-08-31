@@ -33,8 +33,15 @@ export default function EBMHomepage({
   const heroBackgroundImage = useBrandingStore((state) => state.heroBackgroundImage);
   const effectiveHeroBackground = (heroBackgroundImage && heroBackgroundImage.trim() !== "") ? heroBackgroundImage : heroBgImage;
 
-  const [visibleCount, setVisibleCount] = useState(5);
-  const [isMobile, setIsMobile] = useState(false);
+  const [visibleCount, setVisibleCount] = useState<number>(() => {
+    if (typeof window === "undefined") return 5;
+    const w = window.innerWidth;
+    return w < 640 ? 2 : w < 1024 ? 4 : 5;
+  });
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 640;
+  });
 
   // Welcome Modal state
   const [showWelcome, setShowWelcome] = useState(false);
@@ -65,23 +72,36 @@ export default function EBMHomepage({
   const [showGradeFourEnglishModal, setShowGradeFourEnglishModal] = useState(false);
 
   React.useEffect(() => {
+    let rAF: number;
     const handleResize = () => {
-      const width = window.innerWidth;
-      setIsMobile(width < 640);
-      if (width < 640) {
-        setVisibleCount(2);
-      } else if (width < 1024) {
-        setVisibleCount(4);
-      } else {
-        setVisibleCount(5);
-      }
+      cancelAnimationFrame(rAF);
+      rAF = requestAnimationFrame(() => {
+        const width = window.innerWidth;
+        setIsMobile(width < 640);
+        if (width < 640) {
+          setVisibleCount(2);
+        } else if (width < 1024) {
+          setVisibleCount(4);
+        } else {
+          setVisibleCount(5);
+        }
+      });
     };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      cancelAnimationFrame(rAF);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   React.useEffect(() => {
+    // Only fetch welcome modal configuration if user hasn't visited yet
+    if (typeof window !== "undefined") {
+      const hasVisitedBefore = localStorage.getItem("ebm_welcome_visited_v1");
+      if (hasVisitedBefore) return;
+    }
+
     const checkWelcomeModal = async () => {
       try {
         const res = await fetch("/api/welcome-modal-settings");
@@ -90,7 +110,6 @@ export default function EBMHomepage({
           setWelcomeConfig(config);
           
           if (config && config.showWelcomeModal) {
-            // Check localStorage to target first-time visitors
             const hasVisitedBefore = localStorage.getItem("ebm_welcome_visited_v1");
             if (!hasVisitedBefore) {
               setShowWelcome(true);
@@ -102,11 +121,7 @@ export default function EBMHomepage({
       }
     };
 
-    const timer = setTimeout(() => {
-      checkWelcomeModal();
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    checkWelcomeModal();
   }, []);
 
   const handleCloseWelcome = () => {
@@ -282,9 +297,9 @@ export default function EBMHomepage({
       id: "1",
       badge: "1",
       title: "First Grade",
-      borderColor: "border-[#388e3c]",
-      badgeBg: "bg-[#388e3c]",
-      titleColor: "text-[#388e3c]",
+      borderColor: "border-[#2e7d32]",
+      badgeBg: "bg-[#2e7d32]",
+      titleColor: "text-[#1b5e20]",
       description: "Adding and subtracting, tens and ones, short and long vowel words, phonics, reading foundations, and more.",
       subjects: [
         { name: "Math", skills: "357 skills", videos: "347 videos", tag: "Foundations" },
@@ -297,7 +312,7 @@ export default function EBMHomepage({
       title: "Second Grade",
       borderColor: "border-[#d84315]",
       badgeBg: "bg-[#d84315]",
-      titleColor: "text-[#d84315]",
+      titleColor: "text-[#bf360c]",
       description: "Place-value models, contractions, irregular plurals, reading comprehension, arithmetic fluency, and more.",
       subjects: [
         { name: "Math", skills: "354 skills", videos: "339 videos", tag: "Arithmetic" },
@@ -310,7 +325,7 @@ export default function EBMHomepage({
       title: "Third Grade",
       borderColor: "border-[#0288d1]",
       badgeBg: "bg-[#0288d1]",
-      titleColor: "text-[#0288d1]",
+      titleColor: "text-[#01579b]",
       description: "Multiplying and dividing, bar graphs, grammar, pronouns, reading analysis, mental math, and more.",
       subjects: [
         { name: "Math", skills: "413 skills", videos: "365 videos", tag: "Multiplication" },
@@ -323,7 +338,7 @@ export default function EBMHomepage({
       title: "Fourth Grade",
       borderColor: "border-[#7b1fa2]",
       badgeBg: "bg-[#7b1fa2]",
-      titleColor: "text-[#7b1fa2]",
+      titleColor: "text-[#6a1b9a]",
       description: "Fractions and decimals, synonyms and antonyms, multi-step problem solving, paragraph composition, and more.",
       subjects: [
         { name: "Math", skills: "401 skills", videos: "390 videos", tag: "Fractions" },
@@ -334,9 +349,9 @@ export default function EBMHomepage({
       id: "5",
       badge: "5",
       title: "Fifth Grade",
-      borderColor: "border-[#00897b]",
-      badgeBg: "bg-[#00897b]",
-      titleColor: "text-[#00897b]",
+      borderColor: "border-[#00796b]",
+      badgeBg: "bg-[#00796b]",
+      titleColor: "text-[#005a4e]",
       description: "Multiplying fractions and decimals, idioms, prepositions, geometry, advanced vocabulary, and more.",
       subjects: [
         { name: "Math", skills: "392 skills", videos: "389 videos", tag: "Decimals" },
@@ -347,9 +362,9 @@ export default function EBMHomepage({
       id: "6",
       badge: "6",
       title: "Sixth Grade",
-      borderColor: "border-[#ef6c00]",
-      badgeBg: "bg-[#ef6c00]",
-      titleColor: "text-[#ef6c00]",
+      borderColor: "border-[#c2410c]",
+      badgeBg: "bg-[#c2410c]",
+      titleColor: "text-[#b43403]",
       description: "Ratios and percentages, variable expressions, reading analysis, grammar mastery, and more.",
       subjects: [
         { name: "Math", skills: "393 skills", videos: "375 videos", tag: "Pre-Algebra" },
@@ -362,7 +377,7 @@ export default function EBMHomepage({
       title: "Seventh Grade",
       borderColor: "border-[#2e7d32]",
       badgeBg: "bg-[#2e7d32]",
-      titleColor: "text-[#2e7d32]",
+      titleColor: "text-[#1b5e20]",
       description: "Proportional relationships, rational numbers, phrases and clauses, analytical writing, algebra, and more.",
       subjects: [
         { name: "Math", skills: "366 skills", videos: "348 videos", tag: "Algebra" },
@@ -373,9 +388,9 @@ export default function EBMHomepage({
       id: "8",
       badge: "8",
       title: "Eighth Grade",
-      borderColor: "border-[#fbc02d]",
-      badgeBg: "bg-[#fbc02d]",
-      titleColor: "text-[#fbc02d]",
+      borderColor: "border-[#b45309]",
+      badgeBg: "bg-[#b45309]",
+      titleColor: "text-[#92400e]",
       description: "Linear functions, the Pythagorean theorem, active and passive voice, essay development, and foundational Cambridge prep.",
       subjects: [
         { name: "Math", skills: "371 skills", videos: "334 videos", tag: "Functions" },
@@ -386,9 +401,9 @@ export default function EBMHomepage({
       id: "olevel",
       badge: "O",
       title: "O Levels (IGCSE)",
-      borderColor: "border-[#d81b60]",
-      badgeBg: "bg-[#d81b60]",
-      titleColor: "text-[#d81b60]",
+      borderColor: "border-[#ad1457]",
+      badgeBg: "bg-[#ad1457]",
+      titleColor: "text-[#880e4f]",
       description: "Cambridge & Edexcel O Level / IGCSE core curriculum: Mathematics, Statistics, English Language, Literature, and Comprehension.",
       subjects: [
         { name: "O Level Mathematics (4024 / 0580)", skills: "420 skills", videos: "310 videos", tag: "Cambridge" },
@@ -401,7 +416,7 @@ export default function EBMHomepage({
       title: "A Levels (AS & A2)",
       borderColor: "border-[#1565c0]",
       badgeBg: "bg-[#1565c0]",
-      titleColor: "text-[#1565c0]",
+      titleColor: "text-[#0d47a1]",
       description: "Advanced Level AS & A2 preparation: Pure Mathematics, Mechanics, Statistics, and English Academic Writing.",
       subjects: [
         { name: "A Level Pure Mathematics & Mechanics (9709)", skills: "380 skills", videos: "290 videos", tag: "Calculus" },
@@ -434,7 +449,7 @@ export default function EBMHomepage({
           {/* Main Title: "EBM: A Personalized Learning Platform for Every Student" */}
           <h1 
             id="ebm-hero-title"
-            className="text-3xl md:text-[48px] font-serif text-[#00a3e0] font-semibold tracking-wide text-center mb-3 drop-shadow-[0_4px_12px_rgba(255,255,255,1)]"
+            className="text-3xl md:text-[48px] font-serif text-[#005d8f] font-bold tracking-wide text-center mb-3 drop-shadow-[0_4px_12px_rgba(255,255,255,1)]"
             style={{
               textShadow: "0 0 20px #ffffff, 0 0 35px #ffffff, 0 0 10px #ffffff, 0 0 4px #ffffff, 0 2px 10px rgba(0, 32, 64, 0.6)"
             }}
@@ -446,9 +461,6 @@ export default function EBMHomepage({
           <p
             id="ebm-hero-subtitle"
             className="text-base sm:text-lg md:text-[19px] text-slate-800 font-medium text-center max-w-3xl mx-auto mb-8 px-4 leading-relaxed"
-            style={{
-              textShadow: "0 0 18px #ffffff, 0 0 28px #ffffff, 0 0 8px #ffffff, 0 1px 4px rgba(255, 255, 255, 0.95)"
-            }}
           >
             EBM combines structured learning, personalized guidance, and AI-enhanced tools to help students build strong academic foundations and progress with confidence.
           </p>
@@ -462,18 +474,18 @@ export default function EBMHomepage({
                   d="M 60,65 C 50,30 100,20 140,38 C 160,12 215,12 235,38 C 275,20 315,35 310,70 C 335,95 330,140 300,155 C 295,185 250,195 225,182 C 200,200 145,200 120,182 C 90,195 45,185 45,155 C 15,135 20,85 60,65 Z"
                   fill="#ffffff"
                   fillOpacity="0.97"
-                  stroke="#00a3e0"
+                  stroke="#0077aa"
                   strokeWidth="3.5"
                   vectorEffect="non-scaling-stroke"
                 />
               </svg>
               <div className="relative z-10 w-full max-w-[245px] sm:max-w-[260px] mx-auto flex flex-col items-center justify-center h-full py-2 px-1">
                 <div>
-                  <h2 className="text-[19px] sm:text-[21px] lg:text-[22px] font-serif text-[#00a3e0] font-normal leading-[1.2] tracking-tight mb-2">
+                  <h2 className="text-[19px] sm:text-[21px] lg:text-[22px] font-serif text-[#006699] font-bold leading-[1.2] tracking-tight mb-2">
                     Learning Support from<br />Grade 1 to O/A Levels
                   </h2>
-                  <p className="text-gray-600 text-[11px] sm:text-xs leading-snug font-sans font-medium">
-                    Mathematics <span className="text-sky-400 mx-0.5">•</span> English
+                  <p className="text-slate-700 text-[11px] sm:text-xs leading-snug font-sans font-medium">
+                    Mathematics <span className="text-sky-600 mx-0.5">•</span> English
                   </p>
                 </div>
               </div>
@@ -486,18 +498,18 @@ export default function EBMHomepage({
                   d="M 60,65 C 50,30 100,20 140,38 C 160,12 215,12 235,38 C 275,20 315,35 310,70 C 335,95 330,140 300,155 C 295,185 250,195 225,182 C 200,200 145,200 120,182 C 90,195 45,185 45,155 C 15,135 20,85 60,65 Z"
                   fill="#ffffff"
                   fillOpacity="0.97"
-                  stroke="#8e24aa"
+                  stroke="#7b1fa2"
                   strokeWidth="3.5"
                   vectorEffect="non-scaling-stroke"
                 />
               </svg>
               <div className="relative z-10 w-full max-w-[245px] sm:max-w-[260px] mx-auto flex flex-col items-center justify-center h-full py-2 px-1">
                 <div>
-                  <h2 className="text-[18px] sm:text-[20px] lg:text-[21px] font-serif text-[#8e24aa] font-normal leading-[1.2] tracking-tight mb-2">
+                  <h2 className="text-[18px] sm:text-[20px] lg:text-[21px] font-serif text-[#6a1b9a] font-bold leading-[1.2] tracking-tight mb-2">
                     Build Skills for Academic<br />and Real-World Success
                   </h2>
-                  <p className="text-gray-600 text-[11px] sm:text-xs leading-snug font-sans font-medium">
-                    Practical Methods <span className="text-purple-400 mx-0.5">•</span> Educator Support<br />Learner Growth
+                  <p className="text-slate-700 text-[11px] sm:text-xs leading-snug font-sans font-medium">
+                    Practical Methods <span className="text-purple-600 mx-0.5">•</span> Educator Support<br />Learner Growth
                   </p>
                 </div>
               </div>
@@ -510,19 +522,19 @@ export default function EBMHomepage({
                   d="M 60,65 C 50,30 100,20 140,38 C 160,12 215,12 235,38 C 275,20 315,35 310,70 C 335,95 330,140 300,155 C 295,185 250,195 225,182 C 200,200 145,200 120,182 C 90,195 45,185 45,155 C 15,135 20,85 60,65 Z"
                   fill="#ffffff"
                   fillOpacity="0.97"
-                  stroke="#00a3e0"
+                  stroke="#0077aa"
                   strokeWidth="3.5"
                   vectorEffect="non-scaling-stroke"
                 />
               </svg>
               <div className="relative z-10 w-full max-w-[245px] sm:max-w-[260px] mx-auto flex flex-col items-center justify-center h-full py-2 px-1">
                 <div>
-                  <h2 className="text-[18px] sm:text-[20px] lg:text-[21px] font-serif text-[#00a3e0] font-normal leading-[1.2] tracking-tight mb-2">
+                  <h2 className="text-[18px] sm:text-[20px] lg:text-[21px] font-serif text-[#006699] font-bold leading-[1.2] tracking-tight mb-2">
                     AI-Enhanced Personalized Learning
                   </h2>
-                  <p className="text-gray-600 text-[11px] sm:text-xs leading-snug font-sans font-medium">
-                    Personalized Guidance <span className="text-sky-400 mx-0.5">•</span> Smart Learning Support<br />
-                    Learning Insights <span className="text-sky-400 mx-0.5">•</span> AI-Powered Tools
+                  <p className="text-slate-700 text-[11px] sm:text-xs leading-snug font-sans font-medium">
+                    Personalized Guidance <span className="text-sky-600 mx-0.5">•</span> Smart Learning Support<br />
+                    Learning Insights <span className="text-sky-600 mx-0.5">•</span> AI-Powered Tools
                   </p>
                 </div>
               </div>
@@ -532,8 +544,9 @@ export default function EBMHomepage({
           {/* Become a member Button */}
           <div className="mt-8 text-center relative z-20">
             <button
+              id="ebm-become-member-btn"
               onClick={onJoinNow}
-              className="bg-[#00a3e0] hover:bg-[#008bc2] text-white font-bold py-3.5 px-10 rounded-xl shadow-lg text-lg transition-transform transform hover:scale-105 cursor-pointer border border-[#0084b4]"
+              className="bg-[#0077aa] hover:bg-[#006692] text-white font-bold py-3.5 px-10 rounded-xl shadow-lg text-lg transition-transform transform hover:scale-105 cursor-pointer border border-[#005d85] animate-ebm-pulse"
             >
               Become a member!
             </button>
@@ -556,17 +569,17 @@ export default function EBMHomepage({
                 {/* Stars */}
                 <svg className="w-full h-full" viewBox="0 0 100 60" fill="none">
                   {/* Teal star */}
-                  <polygon points="25,25 28,32 35,32 30,36 32,43 25,39 18,43 20,36 15,32 22,32" fill="#00a3e0" transform="rotate(-15 25 30) scale(0.7)" />
+                  <polygon points="25,25 28,32 35,32 30,36 32,43 25,39 18,43 20,36 15,32 22,32" fill="#0077aa" transform="rotate(-15 25 30) scale(0.7)" />
                   {/* Light blue top star */}
-                  <polygon points="50,10 54,19 63,19 56,25 58,34 50,29 42,34 44,25 37,19 46,19" fill="#42a5f5" transform="rotate(5 50 20) scale(0.9)" />
+                  <polygon points="50,10 54,19 63,19 56,25 58,34 50,29 42,34 44,25 37,19 46,19" fill="#1976d2" transform="rotate(5 50 20) scale(0.9)" />
                   {/* Orange star */}
-                  <polygon points="75,20 78,26 84,26 80,30 81,36 75,32 69,36 70,30 66,26 72,26" fill="#ff9800" transform="rotate(15 75 25) scale(0.7)" />
+                  <polygon points="75,20 78,26 84,26 80,30 81,36 75,32 69,36 70,30 66,26 72,26" fill="#e65100" transform="rotate(15 75 25) scale(0.7)" />
                 </svg>
               </div>
 
               {/* O Level Card (Back Left) */}
               <div className="w-16 h-20 bg-white rounded-lg shadow-md border border-gray-200/80 p-1 transform -rotate-12 absolute left-1 bottom-1 z-10 flex flex-col items-center justify-center">
-                <div className="w-13 h-13 rounded-full bg-gradient-to-br from-pink-600 via-rose-600 to-purple-700 flex flex-col items-center justify-center text-white text-[8px] font-extrabold tracking-tighter text-center leading-none p-0.5">
+                <div className="w-13 h-13 rounded-full bg-gradient-to-br from-pink-700 via-rose-700 to-purple-800 flex flex-col items-center justify-center text-white text-[8px] font-extrabold tracking-tighter text-center leading-none p-0.5">
                   <span className="text-[6px] opacity-90">CAMBRIDGE</span>
                   <span className="text-[10px] font-black">O LEVEL</span>
                   <span className="text-[6px] opacity-90">IGCSE</span>
@@ -575,7 +588,7 @@ export default function EBMHomepage({
 
               {/* A Level Card (Front Right) */}
               <div className="w-16 h-20 bg-white rounded-lg shadow-lg border border-gray-200/80 p-1 transform rotate-8 absolute left-9 bottom-2 z-20 flex flex-col items-center justify-center">
-                <div className="w-13 h-13 rounded-full bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 flex flex-col items-center justify-center text-white text-[8px] font-extrabold tracking-tighter text-center leading-none p-0.5">
+                <div className="w-13 h-13 rounded-full bg-gradient-to-br from-sky-600 via-blue-700 to-indigo-800 flex flex-col items-center justify-center text-white text-[8px] font-extrabold tracking-tighter text-center leading-none p-0.5">
                   <span className="text-[6px] opacity-90">ADVANCED</span>
                   <span className="text-[11px] font-black tracking-tight">A LEVEL</span>
                   <span className="text-[6px] opacity-90">AS & A2</span>
@@ -585,18 +598,18 @@ export default function EBMHomepage({
 
             {/* Banner Text Content */}
             <div className="flex-1 pr-2">
-              <h2 className="text-[23px] sm:text-[26px] font-serif text-[#388e3c] font-normal leading-tight tracking-tight">
+              <h2 className="text-[23px] sm:text-[26px] font-serif text-[#1b5e20] font-bold leading-tight tracking-tight">
                 EBM for O & A Levels
               </h2>
-              <p className="text-[#4a4a4a] text-xs sm:text-[14px] leading-snug my-1 font-sans">
+              <p className="text-slate-800 text-xs sm:text-[14px] leading-snug my-1 font-sans">
                 EBM provides full Cambridge & Edexcel syllabus mastery for O Level and A Level students.
               </p>
               <button
                 onClick={() => onNavigateToTab?.("roadmap")}
-                className="text-[#388e3c] hover:underline text-xs sm:text-[15px] font-medium inline-flex items-center gap-1.5 mt-0.5 cursor-pointer group"
+                className="text-[#1b5e20] hover:underline text-xs sm:text-[15px] font-bold inline-flex items-center gap-1.5 mt-0.5 cursor-pointer group"
               >
                 <span>Explore Roadmap</span>
-                <span className="w-5 h-5 rounded-full bg-[#388e3c] text-white flex items-center justify-center text-[12px] font-bold group-hover:bg-[#2e7d32] transition-colors">
+                <span className="w-5 h-5 rounded-full bg-[#1b5e20] text-white flex items-center justify-center text-[12px] font-bold group-hover:bg-[#145217] transition-colors">
                   ›
                 </span>
               </button>
@@ -616,7 +629,7 @@ export default function EBMHomepage({
 
               {/* Foundation Prep Card (Front Left) */}
               <div className="w-16 h-20 bg-white rounded-lg shadow-lg border border-gray-200/80 p-1 transform -rotate-8 absolute left-2 bottom-2 z-20 flex flex-col items-center justify-center">
-                <div className="w-13 h-13 rounded-full bg-[#00a3e0] flex items-center justify-center text-white text-[10px] font-black tracking-tight transform -rotate-6 text-center leading-none">
+                <div className="w-13 h-13 rounded-full bg-[#0077aa] flex items-center justify-center text-white text-[10px] font-black tracking-tight transform -rotate-6 text-center leading-none">
                   CLASS<br />1–8
                 </div>
               </div>
@@ -645,18 +658,18 @@ export default function EBMHomepage({
 
             {/* Banner Text Content */}
             <div className="flex-1 pr-2">
-              <h2 className="text-[23px] sm:text-[26px] font-serif text-[#00897b] font-normal leading-tight tracking-tight">
+              <h2 className="text-[23px] sm:text-[26px] font-serif text-[#004d40] font-bold leading-tight tracking-tight">
                 EBM for independent learners
               </h2>
-              <p className="text-[#4a4a4a] text-xs sm:text-[14px] leading-snug my-1 font-sans">
+              <p className="text-slate-800 text-xs sm:text-[14px] leading-snug my-1 font-sans">
                 Adaptive pacing for self-study, homeschoolers, and competitive exams.
               </p>
               <button
                 onClick={() => onNavigateToTab?.("roadmap")}
-                className="text-[#00897b] hover:underline text-xs sm:text-[15px] font-medium inline-flex items-center gap-1.5 mt-0.5 cursor-pointer group"
+                className="text-[#004d40] hover:underline text-xs sm:text-[15px] font-bold inline-flex items-center gap-1.5 mt-0.5 cursor-pointer group"
               >
                 <span>Explore Roadmap</span>
-                <span className="w-5 h-5 rounded-full bg-[#00897b] text-white flex items-center justify-center text-[12px] font-bold group-hover:bg-[#00695c] transition-colors">
+                <span className="w-5 h-5 rounded-full bg-[#004d40] text-white flex items-center justify-center text-[12px] font-bold group-hover:bg-[#00382e] transition-colors">
                   ›
                 </span>
               </button>
@@ -668,15 +681,15 @@ export default function EBMHomepage({
         <div>
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-2xl font-serif font-bold text-gray-800">
+              <h2 className="text-2xl font-serif font-bold text-slate-800">
                 Explore by Class & Level
               </h2>
-              <p className="text-xs text-gray-500 font-sans mt-0.5">First Grade through Eighth Grade, Cambridge O Levels, and A Levels</p>
+              <p className="text-xs text-slate-700 font-sans mt-0.5">First Grade through Eighth Grade, Cambridge O Levels, and A Levels</p>
             </div>
             {selectedGradeFilter && (
               <button
                 onClick={() => setSelectedGradeFilter(null)}
-                className="text-xs text-[#00a3e0] font-semibold hover:underline cursor-pointer"
+                className="text-xs text-[#006699] font-bold hover:underline cursor-pointer"
               >
                 Show all classes & levels
               </button>
@@ -1047,7 +1060,7 @@ export default function EBMHomepage({
                         className="flex justify-between items-center hover:bg-gray-50 p-2.5 -mx-1.5 rounded-lg cursor-pointer transition-colors group/sub gap-2"
                       >
                         <div className="flex flex-wrap items-center gap-1.5 min-w-0 flex-1">
-                          <span className="text-gray-800 font-semibold text-[13px] group-hover/sub:text-[#00a3e0] transition-colors break-words">{sub.name}</span>
+                          <span className="text-gray-800 font-semibold text-[13px] group-hover/sub:text-[#006699] transition-colors break-words">{sub.name}</span>
                           {sub.tag && (
                             <span className={`inline-flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full ${grade.badgeBg} text-white shadow-2xs shrink-0`}>
                               <Sparkles className="w-2.5 h-2.5" />
@@ -1055,7 +1068,7 @@ export default function EBMHomepage({
                             </span>
                           )}
                         </div>
-                        <div className="text-[#00a3e0] flex items-center space-x-1 font-semibold text-xs group-hover/sub:translate-x-0.5 transition-transform shrink-0">
+                        <div className="text-[#006699] flex items-center space-x-1 font-bold text-xs group-hover/sub:translate-x-0.5 transition-transform shrink-0">
                           <span>Explore</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </div>
@@ -1079,10 +1092,10 @@ export default function EBMHomepage({
         </div>
 
         <div className="max-w-6xl mx-auto px-4 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-serif text-[#00a3e0] font-normal mb-3 tracking-wide">
+          <h2 className="text-3xl md:text-4xl font-serif text-[#006699] font-bold mb-3 tracking-wide">
             Build the Academic and Life Skills You Need to Succeed
           </h2>
-          <p className="text-gray-600 mb-10 max-w-3xl mx-auto text-sm sm:text-base font-sans">
+          <p className="text-slate-700 mb-10 max-w-3xl mx-auto text-sm sm:text-base font-sans font-medium">
             We've custom-built EBM skills to perfectly match each concept within your textbooks, state standards, and assessments.
           </p>
 
@@ -1091,7 +1104,7 @@ export default function EBMHomepage({
             {/* Left Chevron Arrow */}
             <button
               onClick={handlePrevSkillPlan}
-              className="absolute left-0 top-1/2 -translate-y-1/2 text-[#00a3e0] hover:text-[#0081cb] text-4xl sm:text-5xl font-light transition-transform hover:scale-125 cursor-pointer z-20 p-2 select-none"
+              className="absolute left-0 top-1/2 -translate-y-1/2 text-[#006699] hover:text-[#004e75] text-4xl sm:text-5xl font-bold transition-transform hover:scale-125 cursor-pointer z-20 p-2 select-none"
               aria-label="Previous skill plans"
             >
               ‹
@@ -1107,10 +1120,10 @@ export default function EBMHomepage({
                   <div
                     key={card.id}
                     onClick={onSignIn}
-                    className="w-28 sm:w-32 flex-shrink-0 bg-white rounded-2xl p-2.5 shadow-sm border border-gray-100/90 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-300 ease-out hover:scale-105 hover:-translate-y-1.5 hover:shadow-lg active:scale-[0.98] h-[160px] sm:h-[170px] group"
+                    className="w-28 sm:w-32 flex-shrink-0 bg-white rounded-2xl p-2.5 shadow-sm border border-gray-200 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-300 ease-out hover:scale-105 hover:-translate-y-1.5 hover:shadow-lg active:scale-[0.98] h-[160px] sm:h-[170px] group"
                   >
                     {card.icon}
-                    <span className="text-[11px] sm:text-xs font-medium text-gray-700 leading-tight mt-2 line-clamp-2">
+                    <span className="text-[11px] sm:text-xs font-semibold text-slate-800 leading-tight mt-2 line-clamp-2">
                       {card.title}
                     </span>
                   </div>
@@ -1121,7 +1134,7 @@ export default function EBMHomepage({
             {/* Right Chevron Arrow */}
             <button
               onClick={handleNextSkillPlan}
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-[#00a3e0] hover:text-[#0081cb] text-4xl sm:text-5xl font-light transition-transform hover:scale-125 cursor-pointer z-20 p-2 select-none"
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-[#006699] hover:text-[#004e75] text-4xl sm:text-5xl font-bold transition-transform hover:scale-125 cursor-pointer z-20 p-2 select-none"
               aria-label="Next skill plans"
             >
               ›
@@ -1131,7 +1144,7 @@ export default function EBMHomepage({
           {/* Build your skills Button */}
           <button
             onClick={onJoinNow}
-            className="bg-[#00a3e0] hover:bg-[#008bc2] text-white font-bold py-2.5 px-8 rounded-lg shadow-md text-base transition-transform hover:scale-105 cursor-pointer border border-[#0084b4]"
+            className="bg-[#0077aa] hover:bg-[#006692] text-white font-bold py-2.5 px-8 rounded-lg shadow-md text-base transition-transform hover:scale-105 cursor-pointer border border-[#005d85]"
           >
             Build your skills
           </button>
@@ -1142,7 +1155,7 @@ export default function EBMHomepage({
       <section 
         className="relative py-16 text-center text-white bg-cover bg-center overflow-hidden"
         style={{
-          backgroundImage: "linear-gradient(to bottom, rgba(0, 163, 224, 0.85), rgba(0, 163, 224, 0.85)), url('https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=80&w=1200')",
+          backgroundImage: "linear-gradient(to bottom, rgba(0, 102, 153, 0.90), rgba(0, 80, 128, 0.90)), url('https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=80&w=1200')",
         }}
       >
         <div className="max-w-6xl mx-auto px-4">
@@ -1155,53 +1168,53 @@ export default function EBMHomepage({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             {/* Card 1: Modern Learning Methods */}
-            <div className="bg-white text-gray-800 rounded-xl p-6 flex flex-col items-center shadow-md border border-sky-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-16 h-16 rounded-full border-2 border-[#00a3e0] flex items-center justify-center mb-4 bg-sky-50 shadow-xs">
-                <BookOpen className="w-8 h-8 text-[#00a3e0]" />
+            <div className="bg-white text-slate-800 rounded-xl p-6 flex flex-col items-center shadow-md border border-sky-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="w-16 h-16 rounded-full border-2 border-[#0077aa] flex items-center justify-center mb-4 bg-sky-50 shadow-xs">
+                <BookOpen className="w-8 h-8 text-[#006699]" />
               </div>
-              <h3 className="text-[#00a3e0] text-xl font-serif font-bold text-center mb-3 min-h-[50px] flex items-center justify-center leading-tight">
+              <h3 className="text-[#006699] text-xl font-serif font-bold text-center mb-3 min-h-[50px] flex items-center justify-center leading-tight">
                 Modern Learning Methods
               </h3>
-              <p className="text-xs text-gray-600 text-center leading-relaxed">
+              <p className="text-xs text-slate-700 text-center leading-relaxed">
                 Interactive pedagogy, evidence-based instructional frameworks, and engaging digital resources designed to inspire deep conceptual understanding.
               </p>
             </div>
 
             {/* Card 2: Personalized Learning */}
-            <div className="bg-white text-gray-800 rounded-xl p-6 flex flex-col items-center shadow-md border border-emerald-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-16 h-16 rounded-full border-2 border-[#58b700] flex items-center justify-center mb-4 bg-emerald-50 shadow-xs">
-                <Target className="w-8 h-8 text-[#58b700]" />
+            <div className="bg-white text-slate-800 rounded-xl p-6 flex flex-col items-center shadow-md border border-emerald-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="w-16 h-16 rounded-full border-2 border-[#2e7d32] flex items-center justify-center mb-4 bg-emerald-50 shadow-xs">
+                <Target className="w-8 h-8 text-[#1b5e20]" />
               </div>
-              <h3 className="text-[#58b700] text-xl font-serif font-bold text-center mb-3 min-h-[50px] flex items-center justify-center leading-tight">
+              <h3 className="text-[#1b5e20] text-xl font-serif font-bold text-center mb-3 min-h-[50px] flex items-center justify-center leading-tight">
                 Personalized Learning
               </h3>
-              <p className="text-xs text-gray-600 text-center leading-relaxed">
+              <p className="text-xs text-slate-700 text-center leading-relaxed">
                 Adaptive skill paths and targeted recommendations tailored to each learner's unique pace, strengths, and personal growth goals.
               </p>
             </div>
 
             {/* Card 3: Teacher & Educator Development */}
-            <div className="bg-white text-gray-800 rounded-xl p-6 flex flex-col items-center shadow-md border border-purple-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-16 h-16 rounded-full border-2 border-[#7b1fa2] flex items-center justify-center mb-4 bg-purple-50 shadow-xs">
-                <Award className="w-8 h-8 text-[#7b1fa2]" />
+            <div className="bg-white text-slate-800 rounded-xl p-6 flex flex-col items-center shadow-md border border-purple-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="w-16 h-16 rounded-full border-2 border-[#6a1b9a] flex items-center justify-center mb-4 bg-purple-50 shadow-xs">
+                <Award className="w-8 h-8 text-[#6a1b9a]" />
               </div>
-              <h3 className="text-[#7b1fa2] text-xl font-serif font-bold text-center mb-3 min-h-[50px] flex items-center justify-center leading-tight">
+              <h3 className="text-[#6a1b9a] text-xl font-serif font-bold text-center mb-3 min-h-[50px] flex items-center justify-center leading-tight">
                 Teacher & Educator Development
               </h3>
-              <p className="text-xs text-gray-600 text-center leading-relaxed">
+              <p className="text-xs text-slate-700 text-center leading-relaxed">
                 Comprehensive tools, professional development resources, and actionable analytics to empower teachers in every classroom.
               </p>
             </div>
 
             {/* Card 4: AI-Powered Education */}
-            <div className="bg-white text-gray-800 rounded-xl p-6 flex flex-col items-center shadow-md border border-amber-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-16 h-16 rounded-full border-2 border-[#f57f17] flex items-center justify-center mb-4 bg-amber-50 shadow-xs">
-                <Cpu className="w-8 h-8 text-[#f57f17]" />
+            <div className="bg-white text-slate-800 rounded-xl p-6 flex flex-col items-center shadow-md border border-amber-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="w-16 h-16 rounded-full border-2 border-[#c2410c] flex items-center justify-center mb-4 bg-amber-50 shadow-xs">
+                <Cpu className="w-8 h-8 text-[#b43403]" />
               </div>
-              <h3 className="text-[#f57f17] text-xl font-serif font-bold text-center mb-3 min-h-[50px] flex items-center justify-center leading-tight">
+              <h3 className="text-[#b43403] text-xl font-serif font-bold text-center mb-3 min-h-[50px] flex items-center justify-center leading-tight">
                 AI-Powered Education
               </h3>
-              <p className="text-xs text-gray-600 text-center leading-relaxed">
+              <p className="text-xs text-slate-700 text-center leading-relaxed">
                 Cutting-edge intelligence engines that deliver instant feedback, automated grading insights, and smart tutoring assistants.
               </p>
             </div>
@@ -1209,7 +1222,7 @@ export default function EBMHomepage({
 
           <button
             onClick={onJoinNow}
-            className="bg-[#00a3e0] hover:bg-[#008bc2] text-white font-bold py-2.5 px-8 rounded-full shadow-md text-base transition-colors cursor-pointer border border-[#0084b4]"
+            className="bg-[#0077aa] hover:bg-[#006692] text-white font-bold py-2.5 px-8 rounded-full shadow-md text-base transition-colors cursor-pointer border border-[#005d85]"
           >
             Join now
           </button>
@@ -1445,13 +1458,13 @@ export default function EBMHomepage({
           <p className="text-base md:text-lg italic text-gray-700 mb-6 max-w-3xl mx-auto leading-relaxed">
             Considering the amount of content we have to cover in a year, we have very little time to get in adequate practice before moving on. EBM has solved that problem. It has also allowed us <strong className="font-bold text-gray-900">a VERY easy way to go back and review skills throughout the year</strong> we have already covered.
           </p>
-          <p className="text-gray-500 text-xs md:text-sm font-medium mb-6">
+          <p className="text-slate-700 text-xs md:text-sm font-semibold mb-6">
             Sandye Kabalen, 6th grade teacher<br />
             Richmond, Kentucky
           </p>
           <button
             onClick={() => onNavigateToTab?.("about")}
-            className="text-[#00a3e0] hover:underline text-xs md:text-sm font-bold cursor-pointer"
+            className="text-[#006699] hover:underline text-xs md:text-sm font-bold cursor-pointer"
           >
             Read more ›
           </button>
@@ -1548,12 +1561,12 @@ export default function EBMHomepage({
             <div 
               className="relative p-8 pb-12 text-center text-white rounded-t-xl overflow-hidden"
               style={{
-                background: `linear-gradient(135deg, ${welcomeConfig.headerBgGradientStart || '#05c4a6'}, ${welcomeConfig.headerBgGradientEnd || '#00a3e0'})`
+                background: `linear-gradient(135deg, ${welcomeConfig.headerBgGradientStart || '#0077aa'}, ${welcomeConfig.headerBgGradientEnd || '#005d8f'})`
               }}
             >
               <button 
                 onClick={handleCloseWelcome}
-                className="absolute top-4 right-4 text-white/80 hover:text-white text-xl font-bold transition-all w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer z-40"
+                className="absolute top-4 right-4 text-white/90 hover:text-white text-xl font-bold transition-all w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer z-40"
               >
                 ✕
               </button>
@@ -1574,19 +1587,19 @@ export default function EBMHomepage({
             <div className="p-6 sm:p-8 text-center space-y-6 bg-white rounded-b-xl relative z-20">
               
               {/* Colorful stylized main copy matching the screenshot colors */}
-              <p className="text-base sm:text-lg text-slate-600 font-bold leading-relaxed px-1">
-                <span className="text-[#e15b51] font-black">{welcomeConfig.highlightText || "1 in 4 students"}</span>{' '}
-                <span className="font-medium text-slate-500">{welcomeConfig.middleText || "uses EBM Digital Learning for academic"}</span>{' '}
-                <span className="text-[#e15b51] font-black">{welcomeConfig.boldText || "help and enrichment."}</span>
+              <p className="text-base sm:text-lg text-slate-700 font-bold leading-relaxed px-1">
+                <span className="text-[#b91c1c] font-black">{welcomeConfig.highlightText || "1 in 4 students"}</span>{' '}
+                <span className="font-semibold text-slate-700">{welcomeConfig.middleText || "uses EBM Digital Learning for academic"}</span>{' '}
+                <span className="text-[#b91c1c] font-black">{welcomeConfig.boldText || "help and enrichment."}</span>
               </p>
 
               {/* Horizontal rule with centered grade details */}
               <div className="flex items-center justify-center gap-4 py-1">
-                <span className="h-[1px] bg-slate-200/90 w-16 sm:w-24" />
-                <span className="text-xs font-bold text-slate-400 select-none">
+                <span className="h-[1px] bg-slate-300 w-16 sm:w-24" />
+                <span className="text-xs font-bold text-slate-700 select-none">
                   {welcomeConfig.gradeRangeText || "Pre-K through 12th grade"}
                 </span>
-                <span className="h-[1px] bg-slate-200/90 w-16 sm:w-24" />
+                <span className="h-[1px] bg-slate-300 w-16 sm:w-24" />
               </div>
 
               {/* Horizontal Button Layout Side-by-Side as in the screenshot */}
@@ -1603,17 +1616,17 @@ export default function EBMHomepage({
                     }
                   }}
                   className="flex-1 py-3 text-white text-xs sm:text-sm font-black uppercase tracking-wider rounded-xl transition shadow-lg hover:brightness-105 active:scale-95 cursor-pointer text-center"
-                  style={{ backgroundColor: welcomeConfig.headerBgGradientStart || '#05c4a6' }}
+                  style={{ backgroundColor: welcomeConfig.headerBgGradientStart || '#0077aa' }}
                 >
                   {welcomeConfig.ctaText || "Sign up now"}
                 </button>
                 
                 <button 
                   onClick={handleCloseWelcome}
-                  className="flex-1 py-3 border-2 text-slate-600 font-black uppercase tracking-wider rounded-xl transition cursor-pointer text-center text-xs sm:text-sm hover:bg-slate-50"
+                  className="flex-1 py-3 border-2 text-[#005d8f] font-black uppercase tracking-wider rounded-xl transition cursor-pointer text-center text-xs sm:text-sm hover:bg-slate-50"
                   style={{ 
-                    borderColor: welcomeConfig.headerBgGradientStart || '#05c4a6',
-                    color: welcomeConfig.headerBgGradientStart || '#05c4a6'
+                    borderColor: welcomeConfig.headerBgGradientStart || '#0077aa',
+                    color: welcomeConfig.headerBgGradientStart || '#005d8f'
                   }}
                 >
                   {welcomeConfig.exploreText || "Keep exploring"}

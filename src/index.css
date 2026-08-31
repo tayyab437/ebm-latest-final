@@ -127,4 +127,24 @@
 .markdown-body strong { font-weight: 600; color: #0f172a; }
 .markdown-body code { background-color: #f1f5f9; padding: 0.125rem 0.25rem; rounded: 0.25rem; font-family: monospace; font-size: 0.875rem; }
 
+/* Gentle Infinite Pulsing for Primary CTA */
+@keyframes ebm-gentle-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 14px 0 rgba(0, 119, 170, 0.4);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 8px 25px 3px rgba(0, 119, 170, 0.6), 0 0 0 6px rgba(0, 119, 170, 0.2);
+  }
+}
+
+.animate-ebm-pulse {
+  animation: ebm-gentle-pulse 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-ebm-pulse:hover {
+  animation-play-state: paused;
+}
+
 

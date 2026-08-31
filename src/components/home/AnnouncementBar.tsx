@@ -136,18 +136,18 @@ export default function AnnouncementBar() {
   if (!isVisible || !announcement) return null;
 
   return (
-    <div id="ebm-announcement" className="bg-blue-600 text-white font-sans border-b border-blue-700 transition-all duration-300 shrink-0 shadow-sm">
+    <div id="ebm-announcement" className="bg-blue-700 text-white font-sans border-b border-blue-800 transition-all duration-300 shrink-0 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex justify-between items-center text-xs sm:text-sm">
         <div className="flex items-center space-x-2 mx-auto text-center font-bold">
-          <span className="bg-white text-blue-600 font-extrabold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider animate-pulse flex items-center gap-1 shadow-xs">
+          <span className="bg-white text-blue-900 font-extrabold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider animate-pulse flex items-center gap-1 shadow-xs">
             <Sparkles className="h-3 w-3 inline" /> 
             {announcement.targetRole === "ALL" ? "Admissions Open" : `${announcement.targetRole} Alert`}
           </span>
-          <span className="text-blue-50">{announcement.text}</span>
+          <span className="text-white font-medium">{announcement.text}</span>
           {announcement.ctaText && announcement.ctaUrl && (
             <a 
               href={announcement.ctaUrl} 
-              className="underline text-white hover:text-blue-100 transition font-black ml-2"
+              className="underline underline-offset-2 text-white hover:text-blue-100 transition font-black ml-2"
             >
               {announcement.ctaText} &rarr;
             </a>
@@ -156,7 +156,7 @@ export default function AnnouncementBar() {
         <button 
           id="btn-dismiss-announcement"
           onClick={handleDismiss} 
-          className="text-blue-100 hover:text-white p-1 rounded-full transition focus:outline-none shrink-0"
+          className="text-white hover:text-blue-100 p-1 rounded-full transition focus:outline-none shrink-0"
           aria-label="Dismiss Announcement"
         >
           <X className="h-4 w-4" />

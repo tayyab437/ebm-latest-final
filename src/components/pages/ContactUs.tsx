@@ -107,7 +107,7 @@ export const ContactUs: React.FC = () => {
                     <div>
                       <h4 className="font-bold text-slate-900 dark:text-white">Phone Consultation</h4>
                       <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 mb-2">Mon-Fri from 9am to 6pm EST</p>
-                      <a href="tel:+923334541572" className="font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition">+92 333 4541572</a>
+                      <a href="tel:+923334541572" className="inline-flex items-center min-h-[44px] py-1 font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition">+92 333 4541572</a>
                     </div>
                   </div>
                   
@@ -118,7 +118,7 @@ export const ContactUs: React.FC = () => {
                     <div>
                       <h4 className="font-bold text-slate-900 dark:text-white">Email Direct</h4>
                       <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 mb-2">Our team responds within 24 hours</p>
-                      <a href="mailto:syedejazbukari@gmail.com" className="font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition">syedejazbukari@gmail.com</a>
+                      <a href="mailto:syedejazbukari@gmail.com" className="inline-flex items-center min-h-[44px] py-1 font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition">syedejazbukari@gmail.com</a>
                     </div>
                   </div>
                   

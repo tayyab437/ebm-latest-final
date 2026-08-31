@@ -48,6 +48,7 @@ export default defineConfig(() => {
       chunkSizeWarningLimit: 1000,
       modulePreload: false,
       cssCodeSplit: true,
+      sourcemap: true,
       minify: 'esbuild' as const,
     },
     server: {

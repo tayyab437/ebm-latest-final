@@ -873,8 +873,8 @@ export default function App() {
             </Link>
 
             {/* Digital learning platform tagline */}
-            <div className="hidden sm:flex items-center pl-3.5 border-l border-slate-300/80">
-              <span className="text-slate-700 dark:text-slate-300 font-bold tracking-tight text-xs sm:text-sm leading-tight">
+            <div className="hidden sm:flex items-center pl-3.5 border-l border-slate-300 dark:border-slate-700">
+              <span className="text-slate-800 dark:text-slate-200 font-bold tracking-tight text-xs sm:text-sm leading-tight">
                 Digital learning<br />platform
               </span>
             </div>
@@ -891,15 +891,13 @@ export default function App() {
                   id={`nav-btn-${tab.id}`}
                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                   className={`relative py-1.5 transition-colors duration-200 cursor-pointer select-none text-xs lg:text-sm font-bold inline-block ${
-                    isActive ? "text-[#00a3e0]" : "text-slate-600 dark:text-slate-300 hover:text-[#00a3e0]"
+                    isActive ? "text-[#006699] dark:text-sky-400" : "text-slate-700 dark:text-slate-200 hover:text-[#006699] dark:hover:text-sky-400"
                   }`}
                 >
                   <span>{tab.label}</span>
                   {isActive && (
-                    <motion.div
-                      layoutId="activeHeaderTabUnderline"
-                      className="absolute -bottom-1 inset-x-0 h-[2.5px] bg-[#00a3e0] rounded-full shadow-[0_2px_8px_rgba(0,163,224,0.5)]"
-                      transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                    <div
+                      className="absolute -bottom-1 inset-x-0 h-[2.5px] bg-[#006699] dark:bg-sky-400 rounded-full shadow-[0_2px_8px_rgba(0,102,153,0.5)] transition-all duration-200"
                     />
                   )}
                 </Link>
@@ -915,7 +913,7 @@ export default function App() {
                   id="header-signin-btn"
                   to="/login"
                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] bg-[#00a3e0] hover:bg-[#0089bd] text-white text-xs sm:text-sm font-bold rounded-md shadow-sm hover:shadow-md transition-all cursor-pointer"
+                  className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] bg-[#0077aa] hover:bg-[#006692] text-white text-xs sm:text-sm font-bold rounded-md shadow-sm hover:shadow-md transition-all cursor-pointer"
                 >
                   <span className="inline-flex items-center gap-1.5 transform skew-x-[18deg]">
                     <User className="w-3.5 h-3.5 fill-current" />
@@ -926,7 +924,7 @@ export default function App() {
                   id="header-register-btn"
                   to="/register"
                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] border-2 border-[#00a3e0] text-[#00a3e0] hover:bg-[#00a3e0]/10 text-xs sm:text-sm font-bold rounded-md transition-all cursor-pointer bg-white/90 backdrop-blur-xs"
+                  className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] border-2 border-[#0077aa] text-[#006699] dark:text-sky-300 hover:bg-[#0077aa]/10 text-xs sm:text-sm font-bold rounded-md transition-all cursor-pointer bg-white dark:bg-slate-900 shadow-2xs"
                 >
                   <span className="inline-block transform skew-x-[18deg]">
                     Registration
@@ -977,10 +975,8 @@ export default function App() {
               }`}
             >
               {isActive && (
-                <motion.div
-                  layoutId="activeMobTabPill"
-                  className="absolute inset-0 bg-[#00a3e0]/15 rounded-full border border-[#00a3e0]/30"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                <div
+                  className="absolute inset-0 bg-[#00a3e0]/15 rounded-full border border-[#00a3e0]/30 transition-all duration-200"
                 />
               )}
               <span className="relative z-10">{tab.label}</span>

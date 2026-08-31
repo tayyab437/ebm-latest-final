@@ -65,61 +65,61 @@ export default function Footer({ onNavigate }: FooterProps) {
               Empowering academic acceleration under the Ejaz Bukhari Method. Delivering high-yielding cognitive frameworks globally.
             </p>
             {/* Social icons */}
-            <div className="flex gap-4 text-slate-400 dark:text-slate-550">
+            <div className="flex gap-2 text-slate-400 dark:text-slate-550 pt-1">
               <a 
                 href="https://www.facebook.com/syedejazbukhari/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 aria-label="EBM Facebook Page"
-                className="hover:text-blue-600 dark:hover:text-blue-400 transition"
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition w-11 h-11 flex items-center justify-center rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800"
               >
-                <Facebook className="h-4 w-4" />
+                <Facebook className="h-5 w-5" />
               </a>
               <a 
                 href="https://www.instagram.com/syedejaz_bukhari/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 aria-label="EBM Instagram Profile"
-                className="hover:text-pink-600 dark:hover:text-pink-400 transition"
+                className="hover:text-pink-600 dark:hover:text-pink-400 transition w-11 h-11 flex items-center justify-center rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800"
               >
-                <Instagram className="h-4 w-4" />
+                <Instagram className="h-5 w-5" />
               </a>
             </div>
           </div>
- 
+
           {/* Column: Learning */}
           <div className="text-left space-y-3">
             <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Learning</h5>
-            <ul className="space-y-2 text-xs">
-              <li><Link to="/assessment" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Assessment Arena</Link></li>
-              <li><Link to="/analytics" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Learning Analytics</Link></li>
-              <li><Link to="/inspiration" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Inspiration Hub</Link></li>
-              <li><Link to="/case-studies" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Case Studies & Videos</Link></li>
+            <ul className="space-y-1 text-xs">
+              <li><Link to="/assessment" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Assessment Arena</Link></li>
+              <li><Link to="/analytics" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Learning Analytics</Link></li>
+              <li><Link to="/inspiration" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Inspiration Hub</Link></li>
+              <li><Link to="/case-studies" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Case Studies & Videos</Link></li>
             </ul>
           </div>
- 
+
           {/* Column: Resources */}
           <div className="text-left space-y-3">
             <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Resources</h5>
-            <ul className="space-y-2 text-xs">
-              <li><Link to="/blog" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer font-medium text-blue-600 dark:text-blue-400">EBM Blog & Publications</Link></li>
-              <li><a href="#faq" onClick={(e) => handleAnchorClick(e, "faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">FAQs</a></li>
-              <li><Link to="/contact" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Contact Us</Link></li>
+            <ul className="space-y-1 text-xs">
+              <li><Link to="/blog" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer font-medium text-blue-600 dark:text-blue-400 inline-flex items-center min-h-[44px] py-2">EBM Blog & Publications</Link></li>
+              <li><a href="#faq" onClick={(e) => handleAnchorClick(e, "faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">FAQs</a></li>
+              <li><Link to="/contact" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Contact Us</Link></li>
             </ul>
           </div>
- 
+
           {/* Column: Legal & Contact */}
           <div className="text-left space-y-3">
             <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Legal</h5>
-            <ul className="space-y-2 text-xs">
-              <li><Link to="/privacy" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Privacy Policy</Link></li>
-              <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Terms of Service</Link></li>
-              <li className="pt-2 text-[10px] text-slate-500 dark:text-slate-400 flex flex-col gap-1.5 font-mono">
-                <a href="mailto:syedejazbukari@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1">
-                  <Mail className="h-3 w-3" /> syedejazbukari@gmail.com
+            <ul className="space-y-1 text-xs">
+              <li><Link to="/privacy" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Privacy Policy</Link></li>
+              <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Terms of Service</Link></li>
+              <li className="pt-2 text-xs text-slate-600 dark:text-slate-400 flex flex-col gap-2 font-mono">
+                <a href="mailto:syedejazbukari@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition inline-flex items-center gap-2 min-h-[44px] py-2">
+                  <Mail className="h-4 w-4 shrink-0" /> <span className="break-all">syedejazbukari@gmail.com</span>
                 </a>
-                <a href="tel:+923334541572" className="hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1">
-                  <Phone className="h-3 w-3" /> +92 333 4541572
+                <a href="tel:+923334541572" className="hover:text-blue-600 dark:hover:text-blue-400 transition inline-flex items-center gap-2 min-h-[44px] py-2">
+                  <Phone className="h-4 w-4 shrink-0" /> <span>+92 333 4541572</span>
                 </a>
               </li>
             </ul>
@@ -127,23 +127,23 @@ export default function Footer({ onNavigate }: FooterProps) {
         </div>
  
         {/* Footer Bottom Metadata & Accolades */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400 font-mono">
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-700 dark:text-slate-300 font-sans">
           <div className="flex flex-col gap-1 text-center md:text-left">
             <p>&copy; {currentYear} {logoText || "EBM Digital Learning"}. All Rights Reserved.</p>
-            <p className="text-[10px] text-slate-400 dark:text-slate-550">
+            <p className="text-xs text-slate-700 dark:text-slate-300">
               Website created and SEO by{" "}
               <a 
                 href="https://wa.me/923176369458" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-blue-700 dark:text-blue-400 underline underline-offset-2 hover:text-blue-900 dark:hover:text-blue-300 font-semibold cursor-pointer inline-flex items-center min-h-[44px] py-1"
               >
                 Tayyab Ashfaq
               </a>
             </p>
           </div>
-          <div className="flex items-center gap-1.5 text-[10px]">
-            <Shield className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300">
+            <Shield className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" />
             <span>Cambridge Associate Syndicate candidates track</span>
           </div>
         </div>
