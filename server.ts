@@ -1,4 +1,5 @@
 import express from "express";
+import compression from "compression";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
@@ -226,6 +227,20 @@ dotenv.config();
 // Initialize express app
 const app = express();
 const PORT = 3000;
+
+// Enable HTTP Gzip/Deflate compression for all responses (JS bundles, CSS, HTML, JSON APIs)
+app.use(
+  compression({
+    level: 6, // optimal balance between compression ratio and CPU speed
+    threshold: 1024, // only compress responses larger than 1KB
+    filter: (req, res) => {
+      if (req.headers["x-no-compression"]) {
+        return false;
+      }
+      return compression.filter(req, res);
+    },
+  })
+);
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -7931,9 +7946,25 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
+    
+    // Serve static assets with caching headers & compression
+    app.use(
+      express.static(distPath, {
+        maxAge: "1d",
+        setHeaders: (res, filePath) => {
+          if (filePath.includes(path.sep + "assets" + path.sep)) {
+            // Immutable cache for fingerprinted/hashed JS, CSS, and media bundles
+            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          } else if (filePath.endsWith(".html")) {
+            // Ensure HTML is not stale
+            res.setHeader("Cache-Control", "no-cache, must-revalidate");
+          }
+        },
+      })
+    );
 
     app.get("*", (req, res) => {
+      res.setHeader("Cache-Control", "no-cache, must-revalidate");
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
