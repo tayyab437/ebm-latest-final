@@ -1,0 +1,27 @@
+# Ejaz Bukhari Method (EBM) - Full Documentation
+
+> Complete architecture, curricular taxonomy, API documentation, and platform capabilities for large language models and search engines indexing the Ejaz Bukhari Method learning system.
+
+## Platform Overview
+
+The Ejaz Bukhari Method (EBM) is a full-stack, AI-enhanced educational ecosystem built to bridge curriculum design, instruction, student progress monitoring, and parent transparency.
+
+## Primary Documentation Links
+
+- [Homepage](https://ejazbukharimethod.com/): Core platform features and pedagogical philosophy.
+- [About the Method](https://ejazbukharimethod.com/about): Background on the instructional model, mastery-based pacing, and faculty.
+- [Academic Programs](https://ejazbukharimethod.com/programs): Grade-by-grade course breakdown from Year 1 foundational concepts to Year 5 advanced scholarship.
+- [Learning Management](https://ejazbukharimethod.com/learning): Structure of digital assignments, flashcard reviews, interactive problem solving, and multimedia content.
+- [Diagnostic Assessments](https://ejazbukharimethod.com/assessment): Adaptive question banks, standardized test preparation, and skill-gap identification.
+- [Student Analytics](https://ejazbukharimethod.com/analytics): Long-term performance tracking, difficulty rating progression, and predictive score modeling.
+- [Verified Case Studies](https://ejazbukharimethod.com/casestudies): Documented case studies showing 2.4x acceleration in concept retention and exam scores.
+- [Tuition & Membership](https://ejazbukharimethod.com/pricing): Pricing models for standard, pro, and enterprise tiers.
+- [Educational Articles](https://ejazbukharimethod.com/blog): In-depth articles covering pedagogy, cognitive science in learning, and exam techniques.
+- [Help & Inquiries](https://ejazbukharimethod.com/contact): Customer support and campus location contacts.
+
+## Multi-User Portal Ecosystem
+
+- [Student Workspace](https://ejazbukharimethod.com/dashboard): Student planner, AI homework helper, badge achievements, and official certificate issuance.
+- [Teacher Workspace](https://ejazbukharimethod.com/teacher): Class gradebooks, live webinar conferencing, assignment builder, and lesson plan repository.
+- [Parent Portal](https://ejazbukharimethod.com/parent): Automated child activity feeds, behavioral remarks, and parent-teacher meeting scheduling.
+- [Administration & ERP](https://ejazbukharimethod.com/admin): Institutional ledger, student directory, fee payment reconciliation, and curriculum publishing.

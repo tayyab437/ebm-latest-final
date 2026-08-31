@@ -50,20 +50,17 @@ import {
   Footer as HomeFooter 
 } from "./components/home";
 import { TeacherTestimonials } from "./components/home/success/TeacherTestimonials";
-import {
-  AuthLayout,
-  AuthCard,
-  LoginForm,
-  RegisterForm,
-  ForgotPasswordForm,
-  ResetPasswordForm,
-  VerifyEmail,
-  AccessDenied,
-} from "./components/auth";
-
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
-// Lazy-load non-homepage components to keep initial bundle lightweight and render instantaneously
+// Lazy-load non-homepage components and authentication views to keep initial bundle ultra-lightweight
+const AuthLayout = React.lazy(() => import("./components/auth").then(m => ({ default: m.AuthLayout })));
+const AuthCard = React.lazy(() => import("./components/auth").then(m => ({ default: m.AuthCard })));
+const LoginForm = React.lazy(() => import("./components/auth").then(m => ({ default: m.LoginForm })));
+const RegisterForm = React.lazy(() => import("./components/auth").then(m => ({ default: m.RegisterForm })));
+const ForgotPasswordForm = React.lazy(() => import("./components/auth").then(m => ({ default: m.ForgotPasswordForm })));
+const ResetPasswordForm = React.lazy(() => import("./components/auth").then(m => ({ default: m.ResetPasswordForm })));
+const VerifyEmail = React.lazy(() => import("./components/auth").then(m => ({ default: m.VerifyEmail })));
+
 const StudentDashboardView = React.lazy(() => import("./components/student/dashboard/StudentDashboardView"));
 const AdminErpLayout = React.lazy(() => import("./components/admin/erp").then(m => ({ default: m.AdminLayout })));
 const CurriculumLayout = React.lazy(() => import("./components/admin/curriculum").then(m => ({ default: m.CurriculumLayout })));

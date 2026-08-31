@@ -1,0 +1,30 @@
+# Ejaz Bukhari Method (EBM)
+
+> The Ejaz Bukhari Method (EBM) is an intelligent, multi-portal digital learning platform designed to deliver personalized mastery-based education, adaptive testing, curriculum management, and academic growth analytics for students, teachers, parents, and school administrators.
+
+## Core Website & Academic Pathways
+
+- [Home](https://ejazbukharimethod.com/): Primary portal overview, pedagogical pillars, methodology, and platform features.
+- [About Us](https://ejazbukharimethod.com/about): Mission, historical milestones, educational leadership, and teaching philosophy.
+- [Programs](https://ejazbukharimethod.com/programs): Comprehensive Year 1 to Year 5 curriculum pathways and academic tracks.
+- [Learning Hub](https://ejazbukharimethod.com/learning): Self-paced learning modules, interactive video lessons, and mastery practice.
+- [Assessment Center](https://ejazbukharimethod.com/assessment): Automated evaluations, timed quizzes, and instant question-level diagnostic analytics.
+- [Analytics & Growth](https://ejazbukharimethod.com/analytics): Cohort performance metrics, subject proficiencies, and learning velocity benchmarks.
+- [Case Studies](https://ejazbukharimethod.com/casestudies): Empirical evidence of student outcomes, grade improvements, and institutional success stories.
+- [Pricing & Subscriptions](https://ejazbukharimethod.com/pricing): Flexible plans for individual students, family bundles, and institutional licensing.
+- [Blog & Insights](https://ejazbukharimethod.com/blog): Educational research, exam preparation strategies, and parent guidance articles.
+- [Contact Support](https://ejazbukharimethod.com/contact): Direct assistance for admissions inquiries, customer service, and technical help.
+
+## Portal Applications
+
+- [Student Dashboard](https://ejazbukharimethod.com/dashboard): Personalized study schedule, assignment tracker, AI tutor, and certificate manager.
+- [Teacher Portal](https://ejazbukharimethod.com/teacher): Class rosters, lesson scheduling, live classroom controls, and rubric-based grading.
+- [Parent Feed](https://ejazbukharimethod.com/parent): Daily attendance logs, academic progress reports, and direct teacher communications.
+- [Administrator ERP](https://ejazbukharimethod.com/admin): School governance, fee operations, user roles, and system-wide curriculum management.
+- [Sign In](https://ejazbukharimethod.com/login): Unified role-based authentication portal.
+- [Student Registration](https://ejazbukharimethod.com/register): Online student enrollment and onboarding.
+
+## Legal & Compliance
+
+- [Privacy Policy](https://ejazbukharimethod.com/privacy): Student data protection, security protocols, and compliance standards.
+- [Terms of Service](https://ejazbukharimethod.com/terms): Platform usage terms, licensing rights, and student code of conduct.

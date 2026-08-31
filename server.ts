@@ -660,6 +660,54 @@ app.get(["/rss.xml", "/blog/rss.xml"], async (req, res) => {
   }
 });
 
+// Official llms.txt standard endpoints for Large Language Models & AI crawlers
+app.get("/llms.txt", (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "llms.txt");
+  res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=86400");
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  return res.send(`# Ejaz Bukhari Method (EBM)
+
+> The Ejaz Bukhari Method (EBM) is an intelligent, multi-portal digital learning platform delivering personalized mastery-based education, adaptive testing, curriculum management, and academic growth analytics.
+
+## Core Website & Academic Pathways
+
+- [Home](https://ejazbukharimethod.com/): Primary portal overview, pedagogical pillars, and platform features.
+- [About Us](https://ejazbukharimethod.com/about): Mission, leadership, and teaching philosophy.
+- [Programs](https://ejazbukharimethod.com/programs): Comprehensive Year 1 to Year 5 curriculum pathways.
+- [Learning Hub](https://ejazbukharimethod.com/learning): Self-paced learning modules and interactive video lessons.
+- [Assessment Center](https://ejazbukharimethod.com/assessment): Diagnostic evaluations and adaptive quizzes.
+- [Analytics & Growth](https://ejazbukharimethod.com/analytics): Cohort performance metrics and proficiency benchmarks.
+- [Case Studies](https://ejazbukharimethod.com/casestudies): Empirical evidence of student outcomes and grade improvements.
+- [Pricing & Subscriptions](https://ejazbukharimethod.com/pricing): Membership plans and licensing.
+- [Blog & Insights](https://ejazbukharimethod.com/blog): Educational research and study strategies.
+- [Contact Support](https://ejazbukharimethod.com/contact): Admissions inquiries and technical help.
+`);
+});
+
+app.get("/llms-full.txt", (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "llms-full.txt");
+  res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=86400");
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  return res.sendFile(path.join(process.cwd(), "public", "llms.txt"));
+});
+
+// Search Engine Robots.txt
+app.get("/robots.txt", (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "robots.txt");
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=86400");
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  return res.send("User-agent: *\nAllow: /\nDisallow: /dashboard/\nDisallow: /admin/\nDisallow: /teacher/\nDisallow: /parent/\n\nSitemap: https://ejazbukharimethod.com/sitemap.xml\n");
+});
+
 // Blog REST API router
 app.use("/api/blog", blogRouter);
 
@@ -8069,18 +8117,26 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
+    const assetsPath = path.join(distPath, "assets");
     const indexPath = path.join(distPath, "index.html");
     
-    // Serve static assets with caching headers & compression
+    // Explicit static asset handler to ensure assets are never served with HTML fallbacks or stalled
+    app.use(
+      "/assets",
+      express.static(assetsPath, {
+        immutable: true,
+        maxAge: "1y",
+        fallthrough: false, // Return 404 immediately if asset not found rather than falling through to HTML SPA router
+      })
+    );
+
+    // Serve public & root static files (favicons, sitemaps, etc.)
     app.use(
       express.static(distPath, {
+        index: false,
         maxAge: "1d",
         setHeaders: (res, filePath) => {
-          if (filePath.includes(path.sep + "assets" + path.sep)) {
-            // Immutable cache for fingerprinted/hashed JS, CSS, and media bundles
-            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-          } else if (filePath.endsWith(".html")) {
-            // Ensure HTML is not stale
+          if (filePath.endsWith(".html")) {
             res.setHeader("Cache-Control", "no-cache, must-revalidate");
           }
         },
