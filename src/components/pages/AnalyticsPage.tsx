@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { SEOHead } from "../SEOHead";
+import analyticsHeroBg from "../../assets/images/analytics_hero_bg_1786525179105.jpg";
 import { EbmAtmosphericCanvas, EbmEvidenceParticles } from "../analytics/design-system";
 import { EbmAnalyticsEngine } from "../analytics/EbmAnalyticsEngine";
 import { EbmMasteryExperience } from "../analytics/EbmMasteryExperience";
@@ -229,7 +230,7 @@ export function AnalyticsPage() {
       <section className="relative overflow-hidden pt-12 pb-16 sm:pt-18 sm:pb-24 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 border-b border-sky-100/80 shadow-xs">
         {/* Background Image with Controlled Diffusion */}
         <img
-          src="/src/assets/images/analytics_hero_bg_1786525179105.jpg"
+          src={analyticsHeroBg}
           alt="Analytics & Performance Dashboard Background"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 opacity-35"

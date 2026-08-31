@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Mail, Phone, Globe, Send, HelpCircle, ChevronDown, MessageSquare, Sparkles } from "lucide-react";
 import { SEOHead } from "../SEOHead";
 import { useInquiryStore } from "../../services/inquiries.store";
+import contactHeroBg from "../../assets/images/contact_hero_bg_1786524748544.jpg";
 
 export const ContactUs: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -67,7 +68,7 @@ export const ContactUs: React.FC = () => {
       <header className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm">
         {/* Background Image */}
         <img
-          src="/src/assets/images/contact_hero_bg_1786524748544.jpg"
+          src={contactHeroBg}
           alt="Contact & Admissions Background"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"

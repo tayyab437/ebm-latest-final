@@ -853,6 +853,8 @@ export default function App() {
                 <img 
                   src={logoImageUrl} 
                   alt={logoText || "EBM Logo"} 
+                  width="220"
+                  height="40"
                   className="h-9 md:h-10 max-h-12 max-w-[220px] object-contain bg-transparent border-none outline-none shadow-none" 
                   style={{ backgroundColor: 'transparent' }}
                   referrerPolicy="no-referrer" 

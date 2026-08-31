@@ -4,7 +4,7 @@ import { TEACHER_TESTIMONIALS_DATA } from "./success.data";
 import { TeacherTestimonial } from "./success.types";
 import { motion, AnimatePresence } from "motion/react";
 
-const satinBg = "/src/assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
+import satinBg from "../../../assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
 
 export const TeacherTestimonials: React.FC = () => {
   const [current, setCurrent] = useState(0);

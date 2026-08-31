@@ -21,7 +21,7 @@ import { STUDENT_STORIES_DATA } from "./success.data";
 import { StudentStoryCard } from "./StudentStoryCard";
 import { AnimatePresence, motion } from "motion/react";
 
-const satinBg = "/src/assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
+import satinBg from "../../../assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
 
 export const StudentStoryCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);

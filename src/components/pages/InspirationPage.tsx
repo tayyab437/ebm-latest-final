@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { SEOHead } from "../SEOHead";
+import inspirationHeroBg from "../../assets/images/inspiration_hero_bg_1786525193837.jpg";
 import { 
   BookOpen, 
   Calendar, 
@@ -154,7 +155,7 @@ export function InspirationPage() {
       <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm text-center">
         {/* Background Image */}
         <img
-          src="/src/assets/images/inspiration_hero_bg_1786525193837.jpg"
+          src={inspirationHeroBg}
           alt="EBM Inspiration & Resources Background"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"

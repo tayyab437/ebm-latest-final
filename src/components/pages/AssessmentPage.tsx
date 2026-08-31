@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { SEOHead } from "../SEOHead";
+import assessmentHeroBg from "../../assets/images/assessment_hero_bg_1786524997986.jpg";
 import { AssessmentFAQ } from "./AssessmentFAQ";
 import { 
   ArrowRight, 
@@ -689,7 +690,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
       <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm">
         {/* Background Image */}
         <img
-          src="/src/assets/images/assessment_hero_bg_1786524997986.jpg"
+          src={assessmentHeroBg}
           alt="Assessment Diagnostic Background"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import academicPortalMockup from "../../../assets/images/academic_portal_mockup_1784360050225.jpg";
 import { 
   Settings, 
   Globe, 
@@ -533,7 +534,7 @@ export function PlatformSettings() {
         subtitle: "Continuous diagnostics, custom study plans, and live chat co-pilots helping students build elite STEM confidence.",
         ctaText: "Explore Education",
         ctaUrl: "roadmap",
-        imageUrl: "/src/assets/images/academic_portal_mockup_1784360050225.jpg"
+        imageUrl: academicPortalMockup
       },
       {
         id: "slide-3",

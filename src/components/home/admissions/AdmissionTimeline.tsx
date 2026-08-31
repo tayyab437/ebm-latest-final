@@ -4,7 +4,7 @@ import * as Icons from "lucide-react";
 import { ADMISSION_STEPS_DATA } from "./admissions.data";
 import { STAGGER_CONTAINER_VARIANTS, FADE_IN_UP_VARIANTS } from "./animations";
 
-const satinBg = "/src/assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
+import satinBg from "../../../assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
 
 // Type-safe Lucide dynamic icon retriever
 const StepIcon = ({ name, className }: { name: string; className?: string }) => {

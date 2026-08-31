@@ -225,6 +225,9 @@ async function checkAndPromoteStudent(studentId: string) {
 
 dotenv.config();
 
+// Pre-warm database connection & create schema tables immediately on boot
+getDb().catch(err => console.error("DB pre-warming error:", err));
+
 // Initialize express app
 const app = express();
 const PORT = 3000;
@@ -233,7 +236,7 @@ const PORT = 3000;
 app.use(
   compression({
     level: 6, // optimal balance between compression ratio and CPU speed
-    threshold: 1024, // only compress responses larger than 1KB
+    threshold: 0, // compress all text and JSON responses
     filter: (req, res) => {
       if (req.headers["x-no-compression"]) {
         return false;

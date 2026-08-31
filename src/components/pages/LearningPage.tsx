@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SEOHead } from "../SEOHead";
+import learningHeaderBg from "../../assets/images/learning_header_bg_1786521543116.jpg";
 import {
   Search,
   BookOpen,
@@ -238,7 +239,7 @@ export function LearningPage({ onSignIn, onNavigateToTab, userRole, token }: Lea
       <div className="relative overflow-hidden shadow-sm py-14 px-4 sm:px-6 lg:px-8 border-b border-sky-100">
         {/* Background Image */}
         <img
-          src="/src/assets/images/learning_header_bg_1786521543116.jpg"
+          src={learningHeaderBg}
           alt="Learning Classroom Background"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"

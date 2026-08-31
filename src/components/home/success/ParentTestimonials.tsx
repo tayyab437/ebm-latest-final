@@ -13,7 +13,7 @@ interface Testimonial {
   childrenEnrolled: number;
 }
 
-const satinBg = "/src/assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
+import satinBg from "../../../assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
 
 export const ParentTestimonials: React.FC = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);

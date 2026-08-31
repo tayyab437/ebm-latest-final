@@ -1361,8 +1361,8 @@ export default function EBMHomepage({
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1580894732444-8fecef2271ff?auto=format&fit=crop&q=80&w=250&h=180" 
-            alt="" 
+            src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&q=80&w=250&h=180" 
+            alt="Students in classroom" 
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />

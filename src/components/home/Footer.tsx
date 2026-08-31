@@ -48,6 +48,8 @@ export default function Footer({ onNavigate }: FooterProps) {
                   <img 
                     src={logoImageUrl} 
                     alt="Logo" 
+                    width="160"
+                    height="36"
                     className="h-9 max-h-10 max-w-[160px] object-contain bg-transparent" 
                     referrerPolicy="no-referrer" 
                   />
@@ -89,7 +91,7 @@ export default function Footer({ onNavigate }: FooterProps) {
 
           {/* Column: Learning */}
           <div className="text-left space-y-3">
-            <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Learning</h5>
+            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Learning</h3>
             <ul className="space-y-1 text-xs">
               <li><Link to="/assessment" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Assessment Arena</Link></li>
               <li><Link to="/analytics" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Learning Analytics</Link></li>
@@ -100,7 +102,7 @@ export default function Footer({ onNavigate }: FooterProps) {
 
           {/* Column: Resources */}
           <div className="text-left space-y-3">
-            <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Resources</h5>
+            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Resources</h3>
             <ul className="space-y-1 text-xs">
               <li><Link to="/blog" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer font-medium text-blue-600 dark:text-blue-400 inline-flex items-center min-h-[44px] py-2">EBM Blog & Publications</Link></li>
               <li><a href="#faq" onClick={(e) => handleAnchorClick(e, "faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">FAQs</a></li>
@@ -110,7 +112,7 @@ export default function Footer({ onNavigate }: FooterProps) {
 
           {/* Column: Legal & Contact */}
           <div className="text-left space-y-3">
-            <h5 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Legal</h5>
+            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Legal</h3>
             <ul className="space-y-1 text-xs">
               <li><Link to="/privacy" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Privacy Policy</Link></li>
               <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Terms of Service</Link></li>

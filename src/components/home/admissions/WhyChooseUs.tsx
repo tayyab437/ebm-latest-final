@@ -11,8 +11,8 @@ import {
   CheckCircle2
 } from "lucide-react";
 
-const techDiagram = "/src/assets/images/tech_isometric_diagram_1785743151280.jpg";
-const officeBg = "/src/assets/images/blurred_office_background_1785743168497.jpg";
+import techDiagram from "../../../assets/images/tech_isometric_diagram_1785743151280.jpg";
+import officeBg from "../../../assets/images/blurred_office_background_1785743168497.jpg";
 
 interface TabItem {
   id: string;

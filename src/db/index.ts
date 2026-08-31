@@ -1053,7 +1053,7 @@ async function initializeDb() {
               subtitle: "Continuous diagnostics, custom study plans, and live chat co-pilots helping students build elite STEM confidence.",
               ctaText: "Explore Education",
               ctaUrl: "roadmap",
-              imageUrl: "/src/assets/images/academic_portal_mockup_1784360050225.jpg"
+              imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop"
             },
             {
               id: "slide-3",

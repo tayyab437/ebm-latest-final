@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { GraduationCap, ShieldCheck, Sparkles, BookOpen, Crown, Star, Heart } from "lucide-react";
+import academicPortalMockup from "../assets/images/academic_portal_mockup_1784360050225.jpg";
 
 export const BRANDING_ICONS: Record<string, React.ComponentType<any>> = {
   GraduationCap,
@@ -64,7 +65,7 @@ const DEFAULT_HERO_SLIDES: HeroSlide[] = [
     subtitle: "Continuous diagnostics, custom study plans, and live chat co-pilots helping students build elite STEM confidence.",
     ctaText: "Explore Education",
     ctaUrl: "roadmap",
-    imageUrl: "/src/assets/images/academic_portal_mockup_1784360050225.jpg"
+    imageUrl: academicPortalMockup
   },
   {
     id: "slide-3",

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import academicPortalMockup from "../../../assets/images/academic_portal_mockup_1784360050225.jpg";
 import { 
   BrainCircuit, 
   Award, 
@@ -342,7 +343,7 @@ export const HeroDashboard: React.FC = () => {
                 className="relative rounded-2xl overflow-hidden border border-slate-200/50 dark:border-slate-800/50 shadow-inner group aspect-video w-full flex-1"
               >
                 <img
-                  src="/src/assets/images/academic_portal_mockup_1784360050225.jpg"
+                  src={academicPortalMockup}
                   alt="Futuristic Socratic AI Portal Preview"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

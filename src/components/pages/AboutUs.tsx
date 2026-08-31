@@ -27,7 +27,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { SEOHead } from "../SEOHead";
 
-const satinBg = "/src/assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
+import satinBg from "../../assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
 
 interface Milestone {
   year: string;
