@@ -8049,6 +8049,12 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
     html = html.replace("</head>", `${extraJsonLd}\n  </head>`);
   }
 
+  // Eliminate Render-Blocking CSS by converting standard stylesheet links to high-priority preloaded + non-blocking deferred stylesheets
+  html = html.replace(/<link\b[^>]*?rel=["']stylesheet["'][^>]*?href=["']([^"']+\.css)["'][^>]*?>|<link\b[^>]*?href=["']([^"']+\.css)["'][^>]*?rel=["']stylesheet["'][^>]*?>/gi, (match, p1, p2) => {
+    const href = p1 || p2;
+    return `<link rel="preload" as="style" href="${href}" crossorigin /><link rel="stylesheet" href="${href}" media="print" onload="this.media='all'" crossorigin /><noscript><link rel="stylesheet" href="${href}" crossorigin /></noscript>`;
+  });
+
   return html;
 }
 

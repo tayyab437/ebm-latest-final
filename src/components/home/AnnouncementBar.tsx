@@ -101,11 +101,13 @@ export default function AnnouncementBar() {
   };
 
   useEffect(() => {
-    // Initial fetch
-    fetchAnnouncement();
+    // Non-blocking deferred initial fetch
+    const timer = setTimeout(() => {
+      fetchAnnouncement(1, 1000);
+    }, 1500);
 
     const handleUpdate = () => {
-      fetchAnnouncement();
+      fetchAnnouncement(1, 1000);
     };
 
     // Set up listeners for announcement updates & login/role change events
@@ -113,9 +115,10 @@ export default function AnnouncementBar() {
     window.addEventListener("storage", handleUpdate);
 
     // Check periodically for scheduling activation/expiration
-    const interval = setInterval(handleUpdate, 15000);
+    const interval = setInterval(handleUpdate, 30000);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("ebm_announcement_updated", handleUpdate);
       window.removeEventListener("storage", handleUpdate);
       clearInterval(interval);

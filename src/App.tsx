@@ -63,117 +63,40 @@ import {
 
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
+// Lazy-load non-homepage components to keep initial bundle lightweight and render instantaneously
+const StudentDashboardView = React.lazy(() => import("./components/student/dashboard/StudentDashboardView"));
+const AdminErpLayout = React.lazy(() => import("./components/admin/erp").then(m => ({ default: m.AdminLayout })));
+const CurriculumLayout = React.lazy(() => import("./components/admin/curriculum").then(m => ({ default: m.CurriculumLayout })));
+const TeacherLayout = React.lazy(() => import("./components/teacher").then(m => ({ default: m.TeacherLayout })));
+const ParentDashboard = React.lazy(() => import("./components/parent/ParentDashboard").then(m => ({ default: m.ParentDashboard })));
 
-import {
-  DashboardLayout,
-  Overview,
-  useDashboardStore,
-  AssignmentWidget,
-  AchievementsWidget,
-  UserProfile,
-  UserSettings,
-  CertificatesView,
-  PromotionCelebration,
-  CoursePerformanceHub
-} from "./components/student/dashboard";
-import { ExamDashboard, CertificateCenter } from "./components/student/exams";
+const LearningLayout = React.lazy(() => import("./components/student/learning").then(m => ({ default: m.LearningLayout })));
+const AILayout = React.lazy(() => import("./components/student/ai").then(m => ({ default: m.AILayout })));
+const AdaptiveLayout = React.lazy(() => import("./components/student/adaptive").then(m => ({ default: m.AdaptiveLayout })));
+const LiveLayout = React.lazy(() => import("./components/student/live").then(m => ({ default: m.LiveLayout })));
+const GrowthLayout = React.lazy(() => import("./components/student/growth").then(m => ({ default: m.GrowthLayout })));
+const AssessmentLayout = React.lazy(() => import("./components/student/exams").then(m => ({ default: m.AssessmentLayout })));
+const ContentLayout = React.lazy(() => import("./components/content").then(m => ({ default: m.ContentLayout })));
+const SuccessLayout = React.lazy(() => import("./components/student-success").then(m => ({ default: m.SuccessLayout })));
 
-import { LearningLayout } from "./components/student/learning";
-import { AILayout } from "./components/student/ai";
-import { AdaptiveLayout } from "./components/student/adaptive";
-import { LiveLayout } from "./components/student/live";
-import { GrowthLayout } from "./components/student/growth";
-import { AssessmentLayout } from "./components/student/exams";
-import { CurriculumLayout } from "./components/admin/curriculum";
-import { AdminLayout as AdminErpLayout } from "./components/admin/erp";
-import { TeacherLayout } from "./components/teacher";
-import { ParentDashboard } from "./components/parent/ParentDashboard";
+const BlogList = React.lazy(() => import("./components/blog").then(m => ({ default: m.BlogList })));
+const BlogPostView = React.lazy(() => import("./components/blog").then(m => ({ default: m.BlogPostView })));
+const BlogCategoryView = React.lazy(() => import("./components/blog").then(m => ({ default: m.BlogCategoryView })));
 
-import { Inbox, AnnouncementCenter } from "./components/communication";
-import { ContentLayout } from "./components/content";
-import { SuccessLayout } from "./components/student-success";
-import { MyClassesView } from "./components/student/dashboard/MyClassesView";
+const ContactUs = React.lazy(() => import("./components/pages").then(m => ({ default: m.ContactUs })));
+const PrivacyPolicy = React.lazy(() => import("./components/pages").then(m => ({ default: m.PrivacyPolicy })));
+const TermsConditions = React.lazy(() => import("./components/pages").then(m => ({ default: m.TermsConditions })));
+const AssessmentPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.AssessmentPage })));
+const AnalyticsPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.AnalyticsPage })));
+const InspirationPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.InspirationPage })));
+const CaseStudiesPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.CaseStudiesPage })));
+const AboutUs = React.lazy(() => import("./components/pages").then(m => ({ default: m.AboutUs })));
+const PricingPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.PricingPage })));
+const ProgramsPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.ProgramsPage })));
+const LearningPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.LearningPage })));
+const NotFoundPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.NotFoundPage })));
 
-import { ProfileSettings } from "./components/ProfileSettings";
-import { ContactUs, PrivacyPolicy, TermsConditions, AssessmentPage, AnalyticsPage, InspirationPage, CaseStudiesPage, AboutUs, PricingPage, ProgramsPage, LearningPage, NotFoundPage } from "./components/pages";
-import { BlogList, BlogPostView, BlogCategoryView } from "./components/blog";
 
-function StudentDashboardView() {
-  const { currentView, showCelebration, setShowCelebration, newGrade, setView } = useDashboardStore();
-
-  return (
-    <DashboardLayout>
-      {showCelebration && (
-        <PromotionCelebration 
-          newGrade={newGrade} 
-          onClose={() => { setShowCelebration(false); setView('my_classes' as any); }} 
-        />
-      )}
-      {currentView === "overview" && <Overview />}
-      {currentView === "my_classes" && <MyClassesView />}
-      {currentView === "achievements" && (
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200/50 p-6 shadow-sm mb-6">
-            <h2 className="text-xl font-bold text-slate-800">Your Achievements</h2>
-            <p className="text-slate-500 text-sm mt-1">Track your progress and earned badges</p>
-          </div>
-          <AchievementsWidget />
-        </div>
-      )}
-      {currentView === "assignments" && (
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200/50 p-6 shadow-sm mb-6">
-            <h2 className="text-xl font-bold text-slate-800">Assignments & Tasks</h2>
-            <p className="text-slate-500 text-sm mt-1">Manage your pending work and track completion status</p>
-          </div>
-          <AssignmentWidget />
-        </div>
-      )}
-      {currentView === "assessments" && (
-        <div className="space-y-6">
-           <ExamDashboard />
-        </div>
-      )}
-      {currentView === "certificates" && (
-        <div className="space-y-6">
-           <CertificatesView />
-        </div>
-      )}
-      {currentView === "ai_tutor" && (
-        <div className="h-[calc(100vh-6rem)] bg-white rounded-2xl border border-slate-200/50 overflow-hidden shadow-sm">
-           <AILayout />
-        </div>
-      )}
-      {currentView === "profile" && (
-        <ProfileSettings role="STUDENT" onBack={() => setView('overview' as any)} />
-      )}
-      {currentView === "settings" && (
-        <ProfileSettings role="STUDENT" onBack={() => setView('overview' as any)} />
-      )}
-      {currentView === "messages" && (
-        <div className="h-[calc(100vh-6rem)] bg-white rounded-2xl border border-slate-200/50 overflow-hidden shadow-sm">
-          <Inbox />
-        </div>
-      )}
-      {currentView === "announcements" && (
-        <div className="h-[calc(100vh-14rem)] sm:h-[calc(100vh-12rem)]">
-          <div className="h-full bg-white rounded-[2rem] border border-slate-200/50 shadow-sm overflow-y-auto custom-scrollbar">
-            <div className="p-6 md:p-10">
-              <AnnouncementCenter />
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Placeholder for other views */}
-      {currentView !== "overview" && currentView !== "messages" && currentView !== "announcements" && currentView !== "my_classes" && currentView !== "achievements" && currentView !== "assignments" && currentView !== "assessments" && currentView !== "certificates" && currentView !== "ai_tutor" && currentView !== "profile" && currentView !== "settings" && (
-        <div className="flex items-center justify-center h-64 bg-white rounded-2xl border border-slate-200/50">
-          <p className="text-slate-500 font-medium">Coming soon...</p>
-        </div>
-      )}
-    </DashboardLayout>
-  );
-}
 
 
 const getInitialUser = () => {
@@ -211,16 +134,24 @@ export default function App() {
   const { logoText, logoType, logoIcon, logoImageUrl, showThemeToggle, updateBranding } = useBrandingStore();
   const initialUser = getInitialUser();
 
-  // Sync latest branding config from backend database on mount
+  // Sync latest branding config from backend database in the background (non-blocking)
   useEffect(() => {
-    fetch("/api/branding")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && data.branding) {
-          updateBranding(data.branding);
-        }
-      })
-      .catch((err) => console.log("Branding initial sync skipped:", err));
+    const fetchBranding = () => {
+      fetch("/api/branding")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && data.branding && Object.keys(data.branding).length > 0) {
+            updateBranding(data.branding);
+          }
+        })
+        .catch(() => {});
+    };
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      (window as any).requestIdleCallback(fetchBranding);
+    } else {
+      setTimeout(fetchBranding, 1200);
+    }
   }, [updateBranding]);
 
   const [isDarkMode] = useState<boolean>(false);
@@ -390,37 +321,26 @@ export default function App() {
   }, [currentRole, navigate]);
 
 
-  // Load global branding from backend on mount
+  // Load Initial API Data strictly on demand when user is authenticated
   useEffect(() => {
-    const fetchBranding = async () => {
-      try {
-        const response = await fetch(`/api/branding?t=${Date.now()}`, {
-          headers: {
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.branding && Object.keys(data.branding).length > 0) {
-            useBrandingStore.getState().updateBranding(data.branding);
-          }
-        }
-      } catch (err) {
-        console.error("Error loading branding from backend:", err);
-      }
-    };
-    fetchBranding();
-  }, []);
+    if (!token) {
+      setIsInitialLoading(false);
+      return;
+    }
 
-  // Load Initial API Data
-  useEffect(() => {
-    fetchPlannerTasks();
-    fetchNotifications();
-    fetchTeacherClasses();
-    fetchR2Files();
     verifySession();
-  }, [token]);
+
+    // Fetch tab-specific data only when authenticated user enters that view
+    if (activeTab === "planner" || activeTab === "dashboard") {
+      fetchPlannerTasks();
+    } else if (activeTab === "parent-feed") {
+      fetchNotifications();
+    } else if (activeTab === "teacher-panel") {
+      fetchTeacherClasses();
+    } else if (activeTab === "r2-storage") {
+      fetchR2Files();
+    }
+  }, [token, activeTab]);
 
   // Sync role & view tabs appropriately
   useEffect(() => {
@@ -1078,201 +998,207 @@ export default function App() {
 
       {/* ================== MAIN CONTENT ROUTER ================== */}
       <main className={`flex-grow flex flex-col ${isPortalPage ? "h-screen w-full overflow-hidden" : ""}`}>
-        <Routes>
-          {/* Public Website Routes */}
-          <Route path="/" element={
-            <div id="ebm-homepage" className="flex-grow animate-fade-in">
-              <EBMHomepage 
-                onSignIn={() => handleNavigatePath("/login")}
-                onJoinNow={() => handleNavigatePath("/register")}
-                onNavigateToTab={(tabId) => handleNavigatePath(tabId === "home" ? "/" : `/${tabId}`)}
-                onSelectSkill={() => handleNavigatePath("/login")}
-              />
-            </div>
-          } />
+        <React.Suspense fallback={
+          <div className="flex-grow min-h-[50vh] flex items-center justify-center">
+            <div className="w-8 h-8 border-3 border-[#00a3e0] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }>
+          <Routes>
+            {/* Public Website Routes */}
+            <Route path="/" element={
+              <div id="ebm-homepage" className="flex-grow animate-fade-in">
+                <EBMHomepage 
+                  onSignIn={() => handleNavigatePath("/login")}
+                  onJoinNow={() => handleNavigatePath("/register")}
+                  onNavigateToTab={(tabId) => handleNavigatePath(tabId === "home" ? "/" : `/${tabId}`)}
+                  onSelectSkill={() => handleNavigatePath("/login")}
+                />
+              </div>
+            } />
 
-          <Route path="/about" element={
-            <div id="ebm-about-page" className="flex-grow animate-fade-in">
-              <AboutUs />
-            </div>
-          } />
+            <Route path="/about" element={
+              <div id="ebm-about-page" className="flex-grow animate-fade-in">
+                <AboutUs />
+              </div>
+            } />
 
-          {/* Authentication Pages */}
-          <Route path="/login" element={
-            <div id="ebm-auth-page" className="flex-grow animate-fade-in">
-              <AuthLayout 
-                onNavigateRegister={() => handleNavigatePath("/register")}
-                onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
-              >
-                <AuthCard title="Sign in">
-                  <LoginForm
-                    onSuccess={() => {
-                      const updatedToken = localStorage.getItem("ebm_token");
-                      const updatedUser = JSON.parse(localStorage.getItem("ebm_user") || "null");
-                      setToken(updatedToken);
-                      setUser(updatedUser);
-                      if (updatedUser) {
-                        setCurrentRole(updatedUser.role);
-                        if (updatedUser.role === UserRole.STUDENT) handleNavigatePath("/dashboard");
-                        else if (updatedUser.role === UserRole.PARENT) handleNavigatePath("/parent");
-                        else if (updatedUser.role === UserRole.ADMIN) handleNavigatePath("/admin");
-                        else handleNavigatePath("/teacher");
-                      } else {
+            {/* Authentication Pages */}
+            <Route path="/login" element={
+              <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <AuthLayout 
+                  onNavigateRegister={() => handleNavigatePath("/register")}
+                  onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
+                >
+                  <AuthCard title="Sign in">
+                    <LoginForm
+                      onSuccess={() => {
+                        const updatedToken = localStorage.getItem("ebm_token");
+                        const updatedUser = JSON.parse(localStorage.getItem("ebm_user") || "null");
+                        setToken(updatedToken);
+                        setUser(updatedUser);
+                        if (updatedUser) {
+                          setCurrentRole(updatedUser.role);
+                          if (updatedUser.role === UserRole.STUDENT) handleNavigatePath("/dashboard");
+                          else if (updatedUser.role === UserRole.PARENT) handleNavigatePath("/parent");
+                          else if (updatedUser.role === UserRole.ADMIN) handleNavigatePath("/admin");
+                          else handleNavigatePath("/teacher");
+                        } else {
+                          handleNavigatePath("/dashboard");
+                        }
+                      }}
+                      onNavigateRegister={() => handleNavigatePath("/register")}
+                      onNavigateForgotPassword={() => handleNavigatePath("/forgot-password")}
+                    />
+                  </AuthCard>
+                </AuthLayout>
+              </div>
+            } />
+
+            <Route path="/register" element={
+              <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <AuthLayout 
+                  onNavigateRegister={() => handleNavigatePath("/register")}
+                  onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
+                >
+                  <AuthCard title="Sign up">
+                    <RegisterForm
+                      onSuccess={(registeredUser) => {
+                        const updatedToken = localStorage.getItem("ebm_token") || "demo-token-123";
+                        setToken(updatedToken);
+                        setUser(registeredUser);
+                        setCurrentRole(registeredUser.role);
                         handleNavigatePath("/dashboard");
-                      }
-                    }}
-                    onNavigateRegister={() => handleNavigatePath("/register")}
-                    onNavigateForgotPassword={() => handleNavigatePath("/forgot-password")}
-                  />
-                </AuthCard>
-              </AuthLayout>
-            </div>
-          } />
+                      }}
+                      onNavigateLogin={() => handleNavigatePath("/login")}
+                    />
+                  </AuthCard>
+                </AuthLayout>
+              </div>
+            } />
 
-          <Route path="/register" element={
-            <div id="ebm-auth-page" className="flex-grow animate-fade-in">
-              <AuthLayout 
-                onNavigateRegister={() => handleNavigatePath("/register")}
-                onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
-              >
-                <AuthCard title="Sign up">
-                  <RegisterForm
-                    onSuccess={(registeredUser) => {
-                      const updatedToken = localStorage.getItem("ebm_token") || "demo-token-123";
-                      setToken(updatedToken);
-                      setUser(registeredUser);
-                      setCurrentRole(registeredUser.role);
-                      handleNavigatePath("/dashboard");
-                    }}
-                    onNavigateLogin={() => handleNavigatePath("/login")}
-                  />
-                </AuthCard>
-              </AuthLayout>
-            </div>
-          } />
-
-          <Route path="/forgot-password" element={
-            <div id="ebm-auth-page" className="flex-grow animate-fade-in">
-              <AuthLayout 
-                onNavigateRegister={() => handleNavigatePath("/register")}
-                onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
-              >
-                <AuthCard 
-                  title="Recover Password" 
-                  subtitle="We will help you regain secure access to your portal"
+            <Route path="/forgot-password" element={
+              <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <AuthLayout 
+                  onNavigateRegister={() => handleNavigatePath("/register")}
+                  onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
                 >
-                  <ForgotPasswordForm
-                    onSuccess={(email) => {
-                      setAuthEmailState(email);
-                      handleNavigatePath("/reset-password");
-                    }}
-                    onNavigateLogin={() => handleNavigatePath("/login")}
-                  />
-                </AuthCard>
-              </AuthLayout>
-            </div>
-          } />
+                  <AuthCard 
+                    title="Recover Password" 
+                    subtitle="We will help you regain secure access to your portal"
+                  >
+                    <ForgotPasswordForm
+                      onSuccess={(email) => {
+                        setAuthEmailState(email);
+                        handleNavigatePath("/reset-password");
+                      }}
+                      onNavigateLogin={() => handleNavigatePath("/login")}
+                    />
+                  </AuthCard>
+                </AuthLayout>
+              </div>
+            } />
 
-          <Route path="/reset-password" element={
-            <div id="ebm-auth-page" className="flex-grow animate-fade-in">
-              <AuthLayout 
-                onNavigateRegister={() => handleNavigatePath("/register")}
-                onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
-              >
-                <AuthCard 
-                  title="Set New Password" 
-                  subtitle="Choose a highly robust credential to safeguard your metrics"
+            <Route path="/reset-password" element={
+              <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <AuthLayout 
+                  onNavigateRegister={() => handleNavigatePath("/register")}
+                  onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
                 >
-                  <ResetPasswordForm
-                    email={authEmailState}
-                    onSuccess={() => handleNavigatePath("/login")}
-                    onNavigateLogin={() => handleNavigatePath("/login")}
-                  />
-                </AuthCard>
-              </AuthLayout>
-            </div>
-          } />
+                  <AuthCard 
+                    title="Set New Password" 
+                    subtitle="Choose a highly robust credential to safeguard your metrics"
+                  >
+                    <ResetPasswordForm
+                      email={authEmailState}
+                      onSuccess={() => handleNavigatePath("/login")}
+                      onNavigateLogin={() => handleNavigatePath("/login")}
+                    />
+                  </AuthCard>
+                </AuthLayout>
+              </div>
+            } />
 
-          <Route path="/verify-email" element={
-            <div id="ebm-auth-page" className="flex-grow animate-fade-in">
-              <AuthLayout 
-                onNavigateRegister={() => handleNavigatePath("/register")}
-                onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
-              >
-                <AuthCard 
-                  title="Email Verification" 
-                  subtitle="Let's authenticate your contact channel"
+            <Route path="/verify-email" element={
+              <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <AuthLayout 
+                  onNavigateRegister={() => handleNavigatePath("/register")}
+                  onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
                 >
-                  <VerifyEmail
-                    email={authEmailState}
-                    onNavigateLogin={() => handleNavigatePath("/login")}
-                  />
-                </AuthCard>
-              </AuthLayout>
-            </div>
-          } />
+                  <AuthCard 
+                    title="Email Verification" 
+                    subtitle="Let's authenticate your contact channel"
+                  >
+                    <VerifyEmail
+                      email={authEmailState}
+                      onNavigateLogin={() => handleNavigatePath("/login")}
+                    />
+                  </AuthCard>
+                </AuthLayout>
+              </div>
+            } />
 
-          {/* Marketing & Content Pages */}
-          <Route path="/assessment" element={<div className="flex-grow animate-fade-in"><AssessmentPage /></div>} />
-          <Route path="/analytics" element={<div className="flex-grow animate-fade-in"><AnalyticsPage /></div>} />
-          <Route path="/inspiration" element={<div className="flex-grow animate-fade-in"><InspirationPage /></div>} />
-          <Route path="/blog" element={<div className="flex-grow animate-fade-in"><BlogList /></div>} />
-          <Route path="/blog/category/:slug" element={<div className="flex-grow animate-fade-in"><BlogCategoryView /></div>} />
-          <Route path="/blog/:slug" element={<div className="flex-grow animate-fade-in"><BlogPostView /></div>} />
-          <Route path="/casestudies" element={<div className="flex-grow animate-fade-in"><CaseStudiesPage /></div>} />
-          <Route path="/case-studies" element={<div className="flex-grow animate-fade-in"><CaseStudiesPage /></div>} />
-          <Route path="/contact" element={<div className="flex-grow"><ContactUs /></div>} />
-          <Route path="/privacy" element={<div className="flex-grow"><PrivacyPolicy /></div>} />
-          <Route path="/terms" element={<div className="flex-grow"><TermsConditions /></div>} />
-          <Route path="/about" element={<div className="flex-grow animate-fade-in"><AboutUs /></div>} />
-          <Route path="/programs" element={
-            <div className="flex-grow animate-fade-in">
-              <ProgramsPage 
-                selectedYear={selectedYear}
-                setSelectedYear={setSelectedYear}
-                onEnterWorkspace={() => handleNavigatePath("/dashboard")}
-              />
-            </div>
-          } />
-          <Route path="/pricing" element={
-            <div className="flex-grow animate-fade-in">
-              <PricingPage 
-                onNavigateToTab={(tabId) => handleNavigatePath(tabId === "home" ? "/" : `/${tabId}`)}
-              />
-            </div>
-          } />
+            {/* Marketing & Content Pages */}
+            <Route path="/assessment" element={<div className="flex-grow animate-fade-in"><AssessmentPage /></div>} />
+            <Route path="/analytics" element={<div className="flex-grow animate-fade-in"><AnalyticsPage /></div>} />
+            <Route path="/inspiration" element={<div className="flex-grow animate-fade-in"><InspirationPage /></div>} />
+            <Route path="/blog" element={<div className="flex-grow animate-fade-in"><BlogList /></div>} />
+            <Route path="/blog/category/:slug" element={<div className="flex-grow animate-fade-in"><BlogCategoryView /></div>} />
+            <Route path="/blog/:slug" element={<div className="flex-grow animate-fade-in"><BlogPostView /></div>} />
+            <Route path="/casestudies" element={<div className="flex-grow animate-fade-in"><CaseStudiesPage /></div>} />
+            <Route path="/case-studies" element={<div className="flex-grow animate-fade-in"><CaseStudiesPage /></div>} />
+            <Route path="/contact" element={<div className="flex-grow"><ContactUs /></div>} />
+            <Route path="/privacy" element={<div className="flex-grow"><PrivacyPolicy /></div>} />
+            <Route path="/terms" element={<div className="flex-grow"><TermsConditions /></div>} />
+            <Route path="/about" element={<div className="flex-grow animate-fade-in"><AboutUs /></div>} />
+            <Route path="/programs" element={
+              <div className="flex-grow animate-fade-in">
+                <ProgramsPage 
+                  selectedYear={selectedYear}
+                  setSelectedYear={setSelectedYear}
+                  onEnterWorkspace={() => handleNavigatePath("/dashboard")}
+                />
+              </div>
+            } />
+            <Route path="/pricing" element={
+              <div className="flex-grow animate-fade-in">
+                <PricingPage 
+                  onNavigateToTab={(tabId) => handleNavigatePath(tabId === "home" ? "/" : `/${tabId}`)}
+                />
+              </div>
+            } />
 
-          {/* Portal Layouts */}
-          <Route path="/dashboard" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><StudentDashboardView /></div>} />
-          <Route path="/learning" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><LearningLayout /></div>} />
-          <Route path="/content" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><ContentLayout /></div>} />
-          <Route path="/student-success" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><SuccessLayout /></div>} />
-          <Route path="/ai-tutor" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AILayout /></div>} />
-          <Route path="/adaptive" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AdaptiveLayout /></div>} />
-          <Route path="/live" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><LiveLayout /></div>} />
-          <Route path="/growth" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><GrowthLayout /></div>} />
-          <Route path="/exams" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AssessmentLayout /></div>} />
-          <Route path="/parent" element={
-            <div className="w-full h-screen overflow-hidden animate-fade-in">
-              <ParentDashboard 
-                notifications={notifications} 
-                onReadNotification={handleReadNotification} 
-                onLogout={handleLogout}
-              />
-            </div>
-          } />
-          <Route path="/admin" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AdminErpLayout onLogout={handleLogout} /></div>} />
-          <Route path="/curriculum" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><CurriculumLayout /></div>} />
-          <Route path="/teacher" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><TeacherLayout onLogout={handleLogout} /></div>} />
+            {/* Portal Layouts */}
+            <Route path="/dashboard" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><StudentDashboardView /></div>} />
+            <Route path="/learning" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><LearningLayout /></div>} />
+            <Route path="/content" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><ContentLayout /></div>} />
+            <Route path="/student-success" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><SuccessLayout /></div>} />
+            <Route path="/ai-tutor" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AILayout /></div>} />
+            <Route path="/adaptive" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AdaptiveLayout /></div>} />
+            <Route path="/live" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><LiveLayout /></div>} />
+            <Route path="/growth" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><GrowthLayout /></div>} />
+            <Route path="/exams" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AssessmentLayout /></div>} />
+            <Route path="/parent" element={
+              <div className="w-full h-screen overflow-hidden animate-fade-in">
+                <ParentDashboard 
+                  notifications={notifications} 
+                  onReadNotification={handleReadNotification} 
+                  onLogout={handleLogout}
+                />
+              </div>
+            } />
+            <Route path="/admin" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AdminErpLayout onLogout={handleLogout} /></div>} />
+            <Route path="/curriculum" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><CurriculumLayout /></div>} />
+            <Route path="/teacher" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><TeacherLayout onLogout={handleLogout} /></div>} />
 
-          {/* Legacy Redirects */}
-          <Route path="/admin-erp" element={<Navigate to="/admin" replace />} />
-          <Route path="/teacher-panel" element={<Navigate to="/teacher" replace />} />
-          <Route path="/parent-feed" element={<Navigate to="/parent" replace />} />
+            {/* Legacy Redirects */}
+            <Route path="/admin-erp" element={<Navigate to="/admin" replace />} />
+            <Route path="/teacher-panel" element={<Navigate to="/teacher" replace />} />
+            <Route path="/parent-feed" element={<Navigate to="/parent" replace />} />
 
-          {/* 404 Catch-All Page */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+            {/* 404 Catch-All Page */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </React.Suspense>
       </main>
 
 

@@ -101,7 +101,12 @@ export default function EBMHomepage({
         console.error("Error fetching welcome modal settings:", err);
       }
     };
-    checkWelcomeModal();
+
+    const timer = setTimeout(() => {
+      checkWelcomeModal();
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleCloseWelcome = () => {
