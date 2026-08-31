@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ebmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="50%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background Rounded Shield / Tile -->
+  <rect width="512" height="512" rx="112" fill="url(#ebmGrad)" />
+  
+  <!-- Subtle inner geometric accent -->
+  <path d="M 80 120 Q 256 40 432 120 L 432 300 Q 256 460 80 300 Z" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="8" />
+
+  <!-- Gold Apex Star -->
+  <polygon points="256,128 266,156 296,156 272,174 281,202 256,184 231,202 240,174 216,156 246,156" fill="url(#goldGrad)" />
+
+  <!-- EBM Monogram & Academic Book Symbol -->
+  <!-- Open Book Base -->
+  <path d="M 148 350 Q 256 310 256 260 Q 256 310 364 350 L 364 260 Q 256 220 256 180 Q 256 220 148 260 Z" fill="white" fill-opacity="0.95" filter="url(#shadow)" />
+  
+  <!-- Central spine line -->
+  <line x1="256" y1="180" x2="256" y2="350" stroke="#1E3A8A" stroke-width="5" stroke-linecap="round" />
+
+  <!-- Bold EBM Monogram Letters -->
+  <text x="256" y="420" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="64" letter-spacing="6" fill="#FFFFFF">EBM</text>
+</svg>

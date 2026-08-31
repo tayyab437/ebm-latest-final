@@ -10,6 +10,7 @@ import { getDb } from "./src/db/index.js";
 import * as schema from "./src/db/schema.js";
 import { eq, and, desc, ne } from "drizzle-orm";
 import { blogRouter, generateSitemapXml, generateRssXml } from "./src/server/blog-routes.js";
+import { getPostBySlug } from "./src/db/blog-store.js";
 
 export function extractUserIdFromToken(token: string | undefined): string | null {
   if (!token) return null;
@@ -7935,7 +7936,123 @@ Also provide a score from 0 to 100, and a friendly, supportive, and constructive
   }
 });
 
-/* ================== VITE MIDDLEWARE SETUP ================== */
+/* ================== DYNAMIC SEO & SOCIAL TAGS INJECTOR ================== */
+
+async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<string> {
+  const BASE_URL = "https://ejazbukharimethod.com";
+  let title = "EBM | Personalized Learning Platform for Grade 1 to O/A Levels";
+  let description = "EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools.";
+  let ogImage = `${BASE_URL}/og-image.svg`;
+  let ogType = "website";
+  let canonicalUrl = `${BASE_URL}${reqPath}`;
+  let extraJsonLd = "";
+
+  const cleanPath = reqPath.split("?")[0].replace(/\/+$/, "") || "/";
+
+  if (cleanPath.startsWith("/blog/")) {
+    const slug = cleanPath.replace("/blog/", "").replace(/\/+$/, "");
+    if (slug && !slug.startsWith("category/") && !slug.startsWith("tag/")) {
+      try {
+        const result = await getPostBySlug(slug);
+        if (result?.post) {
+          const post = result.post;
+          title = `${post.seoTitle || post.title} | EBM Blog`;
+          description = post.seoDescription || post.excerpt;
+          if (post.featuredImage) {
+            ogImage = post.featuredImage;
+          }
+          ogType = "article";
+          canonicalUrl = `${BASE_URL}/blog/${post.slug}`;
+          
+          const cleanExcerpt = (post.excerpt || "").replace(/"/g, '\\"').replace(/\n/g, " ");
+          const cleanTitle = (post.title || "").replace(/"/g, '\\"');
+          extraJsonLd = `
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "${cleanTitle}",
+      "description": "${cleanExcerpt}",
+      "image": "${ogImage}",
+      "url": "${canonicalUrl}",
+      "datePublished": "${post.publishedAt || post.createdAt}",
+      "dateModified": "${post.updatedAt || post.publishedAt || post.createdAt}",
+      "author": {
+        "@type": "Person",
+        "name": "${post.authorName || 'Syed Ejaz Bukhari'}"
+      },
+      "publisher": {
+        "@type": "EducationalOrganization",
+        "name": "Ejaz Bukhari Method (EBM)",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "${BASE_URL}/favicon.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "${canonicalUrl}"
+      }
+    }
+    </script>`;
+        }
+      } catch (err) {
+        console.error("SEO Metadata lookup error for blog post:", err);
+      }
+    }
+  } else if (cleanPath === "/blog") {
+    title = "Educational Perspectives & Math Insights | EBM Blog";
+    description = "Read latest articles on personalized learning, mathematical problem-solving, cognitive acceleration, and Cambridge O/A Levels pedagogy from Syed Ejaz Bukhari.";
+  } else if (cleanPath === "/assessment") {
+    title = "Diagnostic Learning Assessment | EBM Diagnostic Baseline";
+    description = "Evaluate academic strengths, identify specific learning gaps, and receive a customized cognitive acceleration roadmap from Grade 1 to O/A Levels.";
+  } else if (cleanPath === "/programs") {
+    title = "Personalized Academic Programs | Grade 1 to Cambridge O/A Levels | EBM";
+    description = "Explore foundational, intermediate, and Cambridge O/A Level personalized learning pathways at EBM.";
+  } else if (cleanPath === "/analytics") {
+    title = "Cognitive Analytics & Learning Insights | EBM Intelligence";
+    description = "Real-time mastery tracking, cognitive velocity measurement, and pedagogical data visualization.";
+  } else if (cleanPath === "/pricing") {
+    title = "Membership & Tuition Plans | EBM Personalized Learning";
+    description = "Transparent tuition plans for individualized academic coaching, diagnostic assessments, and Cambridge syllabus preparation.";
+  } else if (cleanPath === "/about") {
+    title = "About EBM & Syed Ejaz Bukhari | Evidence-Based Pedagogy";
+    description = "Learn about the Ejaz Bukhari Method, our pedagogical philosophy, and our mission to personalize academic mastery for every learner.";
+  } else if (cleanPath === "/inspiration") {
+    title = "Mathematical Discoveries & STEM Inspiration | EBM";
+    description = "Inspiring educational stories, conceptual breakthroughs, and student achievements in mathematics and science.";
+  } else if (cleanPath === "/case-studies") {
+    title = "Student Success Journeys & Case Studies | EBM";
+    description = "Real stories of academic turnaround, olympiad achievements, and Cambridge O/A Level distinctions through EBM.";
+  } else if (cleanPath === "/contact") {
+    title = "Contact Admissions & Support | EBM Learning Platform";
+    description = "Get in touch with the EBM educational counseling team for diagnostic bookings, admissions, and platform support.";
+  }
+
+  const escapeAttr = (str: string) =>
+    str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  let html = rawHtml;
+  html = html.replace(/<title>.*?<\/title>/i, `<title>${escapeAttr(title)}</title>`);
+  html = html.replace(/<meta name="description" content=".*?" \/>/i, `<meta name="description" content="${escapeAttr(description)}" />`);
+  html = html.replace(/<link rel="canonical" href=".*?" \/>/i, `<link rel="canonical" href="${escapeAttr(canonicalUrl)}" />`);
+  html = html.replace(/<meta property="og:title" content=".*?" \/>/i, `<meta property="og:title" content="${escapeAttr(title)}" />`);
+  html = html.replace(/<meta property="og:description" content=".*?" \/>/i, `<meta property="og:description" content="${escapeAttr(description)}" />`);
+  html = html.replace(/<meta property="og:url" content=".*?" \/>/i, `<meta property="og:url" content="${escapeAttr(canonicalUrl)}" />`);
+  html = html.replace(/<meta property="og:type" content=".*?" \/>/i, `<meta property="og:type" content="${escapeAttr(ogType)}" />`);
+  html = html.replace(/<meta property="og:image" content=".*?" \/>/i, `<meta property="og:image" content="${escapeAttr(ogImage)}" />`);
+  html = html.replace(/<meta name="twitter:title" content=".*?" \/>/i, `<meta name="twitter:title" content="${escapeAttr(title)}" />`);
+  html = html.replace(/<meta name="twitter:description" content=".*?" \/>/i, `<meta name="twitter:description" content="${escapeAttr(description)}" />`);
+  html = html.replace(/<meta name="twitter:image" content=".*?" \/>/i, `<meta name="twitter:image" content="${escapeAttr(ogImage)}" />`);
+
+  if (extraJsonLd) {
+    html = html.replace("</head>", `${extraJsonLd}\n  </head>`);
+  }
+
+  return html;
+}
+
+/* ================== VITE MIDDLEWARE & SERVER BOOT ================== */
 
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
@@ -7946,6 +8063,7 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
+    const indexPath = path.join(distPath, "index.html");
     
     // Serve static assets with caching headers & compression
     app.use(
@@ -7963,9 +8081,20 @@ async function startServer() {
       })
     );
 
-    app.get("*", (req, res) => {
+    app.get("*", async (req, res) => {
       res.setHeader("Cache-Control", "no-cache, must-revalidate");
-      res.sendFile(path.join(distPath, "index.html"));
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      try {
+        if (fs.existsSync(indexPath)) {
+          const rawHtml = fs.readFileSync(indexPath, "utf-8");
+          const enrichedHtml = await injectSeoMetadata(rawHtml, req.path);
+          return res.send(enrichedHtml);
+        }
+        res.sendFile(indexPath);
+      } catch (err) {
+        console.error("Error serving index.html with SEO:", err);
+        res.sendFile(indexPath);
+      }
     });
   }
 

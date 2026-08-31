@@ -405,24 +405,25 @@ blogRouter.delete("/admin/redirects/:id", requireAdminAuth, async (req: Request,
 
 export async function generateSitemapXml(): Promise<string> {
   const BASE_URL = "https://ejazbukharimethod.com";
+  const today = new Date().toISOString().split("T")[0];
   const { posts } = await getAllPosts({ status: "published" });
   const categories = await getAllCategories();
   const activeCategories = categories.filter(c => (c.postCount || 0) > 0);
 
   const staticUrls = [
-    { loc: `${BASE_URL}/`, lastmod: "2026-08-28", changefreq: "daily", priority: "1.0" },
-    { loc: `${BASE_URL}/about`, lastmod: "2026-08-28", changefreq: "weekly", priority: "0.9" },
-    { loc: `${BASE_URL}/assessment`, lastmod: "2026-08-28", changefreq: "daily", priority: "0.9" },
-    { loc: `${BASE_URL}/analytics`, lastmod: "2026-08-28", changefreq: "weekly", priority: "0.8" },
-    { loc: `${BASE_URL}/blog`, lastmod: "2026-08-28", changefreq: "daily", priority: "0.9" },
-    { loc: `${BASE_URL}/pricing`, lastmod: "2026-08-28", changefreq: "weekly", priority: "0.8" },
-    { loc: `${BASE_URL}/programs`, lastmod: "2026-08-28", changefreq: "weekly", priority: "0.8" },
-    { loc: `${BASE_URL}/learning`, lastmod: "2026-08-28", changefreq: "weekly", priority: "0.8" },
-    { loc: `${BASE_URL}/inspiration`, lastmod: "2026-08-28", changefreq: "weekly", priority: "0.7" },
-    { loc: `${BASE_URL}/case-studies`, lastmod: "2026-08-28", changefreq: "weekly", priority: "0.7" },
-    { loc: `${BASE_URL}/contact`, lastmod: "2026-08-28", changefreq: "monthly", priority: "0.6" },
-    { loc: `${BASE_URL}/privacy`, lastmod: "2026-08-28", changefreq: "yearly", priority: "0.4" },
-    { loc: `${BASE_URL}/terms`, lastmod: "2026-08-28", changefreq: "yearly", priority: "0.4" },
+    { loc: `${BASE_URL}/`, lastmod: today, changefreq: "daily", priority: "1.0" },
+    { loc: `${BASE_URL}/about`, lastmod: today, changefreq: "weekly", priority: "0.9" },
+    { loc: `${BASE_URL}/assessment`, lastmod: today, changefreq: "daily", priority: "0.9" },
+    { loc: `${BASE_URL}/analytics`, lastmod: today, changefreq: "weekly", priority: "0.8" },
+    { loc: `${BASE_URL}/blog`, lastmod: today, changefreq: "daily", priority: "0.9" },
+    { loc: `${BASE_URL}/pricing`, lastmod: today, changefreq: "weekly", priority: "0.8" },
+    { loc: `${BASE_URL}/programs`, lastmod: today, changefreq: "weekly", priority: "0.8" },
+    { loc: `${BASE_URL}/learning`, lastmod: today, changefreq: "weekly", priority: "0.8" },
+    { loc: `${BASE_URL}/inspiration`, lastmod: today, changefreq: "weekly", priority: "0.7" },
+    { loc: `${BASE_URL}/case-studies`, lastmod: today, changefreq: "weekly", priority: "0.7" },
+    { loc: `${BASE_URL}/contact`, lastmod: today, changefreq: "monthly", priority: "0.6" },
+    { loc: `${BASE_URL}/privacy`, lastmod: today, changefreq: "yearly", priority: "0.4" },
+    { loc: `${BASE_URL}/terms`, lastmod: today, changefreq: "yearly", priority: "0.4" },
   ];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
@@ -433,7 +434,7 @@ export async function generateSitemapXml(): Promise<string> {
 
   // Active Category Pages with Published Posts
   for (const cat of activeCategories) {
-    xml += `  <url>\n    <loc>${BASE_URL}/blog/category/${cat.slug}</loc>\n    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    xml += `  <url>\n    <loc>${BASE_URL}/blog/category/${cat.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
   }
 
   // Published Blog Posts (excluding draft, archived, noindex)
