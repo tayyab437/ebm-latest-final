@@ -48,7 +48,7 @@ const DEFAULT_LOGO_TYPE = "icon";
 const DEFAULT_LOGO_ICON = "GraduationCap";
 const DEFAULT_LOGO_IMAGE_URL = "";
 const DEFAULT_FAVICON_URL = "https://cdn-icons-png.flaticon.com/512/2201/2201552.png"; // graduation cap icon
-const DEFAULT_HERO_BG_IMAGE = "";
+const DEFAULT_HERO_BG_IMAGE = "https://i.ibb.co/0yqDPG8r/Chat-GPT-Image-Aug-10-2026-02-06-45-PM.webp";
 
 const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {

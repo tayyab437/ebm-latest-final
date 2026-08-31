@@ -3753,11 +3753,17 @@ app.put("/api/admin/settings", (req, res) => {
   res.json({ success: true, settings: req.body });
 });
 
+// In-memory response caches for instant response times (<1ms)
+let cachedBrandingResponse: any = null;
+let cachedWelcomeModalResponse: any = null;
+let cachedAnnouncementBarResponse: any = null;
+
 // GET branding configuration
 app.get("/api/branding", async (req, res) => {
-  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
+  res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300, stale-while-revalidate=600");
+  if (cachedBrandingResponse) {
+    return res.json(cachedBrandingResponse);
+  }
   try {
     const db = await getDb();
     const rows = await db.select().from(schema.branding_settings).where(eq(schema.branding_settings.id, "current"));
@@ -3786,18 +3792,20 @@ app.get("/api/branding", async (req, res) => {
         logoIcon: dbRow.logoIcon,
         logoImageUrl: dbRow.logoImageUrl,
         faviconUrl: dbRow.faviconUrl,
-        heroBackgroundImage: (dbRow as any).heroBackgroundImage || "",
+        heroBackgroundImage: (dbRow as any).heroBackgroundImage || "https://i.ibb.co/0yqDPG8r/Chat-GPT-Image-Aug-10-2026-02-06-45-PM.webp",
         heroSlides: heroSlidesParsed,
         showThemeToggle: dbRow.showThemeToggle !== 0
       };
       
-      return res.json({ success: true, branding });
+      cachedBrandingResponse = { success: true, branding };
+      return res.json(cachedBrandingResponse);
     }
     
     // Fallback to local json file
     const filePath = path.join(process.cwd(), "src/db/branding-settings.json");
     if (!fs.existsSync(filePath)) {
-      return res.json({ success: true, branding: {} });
+      cachedBrandingResponse = { success: true, branding: {} };
+      return res.json(cachedBrandingResponse);
     }
     const data = fs.readFileSync(filePath, "utf-8");
     let fallbackBranding = JSON.parse(data);
@@ -3817,7 +3825,12 @@ app.get("/api/branding", async (req, res) => {
       }
       fallbackBranding.heroSlides = heroSlidesParsed;
     }
-    return res.json({ success: true, branding: { heroBackgroundImage: "", ...fallbackBranding } });
+    const finalBranding = {
+      heroBackgroundImage: "https://i.ibb.co/0yqDPG8r/Chat-GPT-Image-Aug-10-2026-02-06-45-PM.webp",
+      ...fallbackBranding
+    };
+    cachedBrandingResponse = { success: true, branding: finalBranding };
+    return res.json(cachedBrandingResponse);
   } catch (e: any) {
     console.error("Error fetching branding settings:", e);
     return res.status(500).json({ success: false, error: e.message });
@@ -3826,6 +3839,7 @@ app.get("/api/branding", async (req, res) => {
 
 // UPDATE branding configuration (Admin)
 app.put("/api/admin/branding", async (req, res) => {
+  cachedBrandingResponse = null; // Invalidate cache
   try {
     const db = await getDb();
     const { logoText, logoType, logoIcon, logoImageUrl, faviconUrl, heroBackgroundImage, heroSlides, showThemeToggle } = req.body;
@@ -3896,10 +3910,14 @@ app.put("/api/admin/branding", async (req, res) => {
 
 // GET welcome modal settings
 app.get("/api/welcome-modal-settings", (req, res) => {
+  res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300, stale-while-revalidate=600");
+  if (cachedWelcomeModalResponse) {
+    return res.json(cachedWelcomeModalResponse);
+  }
   try {
     const filePath = path.join(process.cwd(), "src/db/welcome-modal-settings.json");
     if (!fs.existsSync(filePath)) {
-      return res.json({
+      const defaultWelcome = {
         showWelcomeModal: true,
         title: "First time here?",
         highlightText: "1 in 4 students",
@@ -3911,10 +3929,13 @@ app.get("/api/welcome-modal-settings", (req, res) => {
         exploreText: "Keep exploring",
         headerBgGradientStart: "#05c4a6",
         headerBgGradientEnd: "#00a3e0"
-      });
+      };
+      cachedWelcomeModalResponse = defaultWelcome;
+      return res.json(defaultWelcome);
     }
     const data = fs.readFileSync(filePath, "utf-8");
-    return res.json(JSON.parse(data));
+    cachedWelcomeModalResponse = JSON.parse(data);
+    return res.json(cachedWelcomeModalResponse);
   } catch (e: any) {
     console.error("Error fetching welcome modal settings:", e);
     return res.status(500).json({ success: false, error: e.message });
@@ -3926,6 +3947,7 @@ app.put("/api/admin/welcome-modal-settings", (req, res) => {
   try {
     const filePath = path.join(process.cwd(), "src/db/welcome-modal-settings.json");
     fs.writeFileSync(filePath, JSON.stringify(req.body, null, 2), "utf-8");
+    cachedWelcomeModalResponse = req.body;
     return res.json({ success: true, settings: req.body });
   } catch (e: any) {
     console.error("Error saving welcome modal settings:", e);
@@ -3962,14 +3984,20 @@ app.put("/api/admin/math-test-settings", (req, res) => {
 
 // GET global announcement bar configuration
 app.get("/api/announcement-bar", async (req, res) => {
+  res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300, stale-while-revalidate=600");
+  if (cachedAnnouncementBarResponse) {
+    return res.json(cachedAnnouncementBarResponse);
+  }
   try {
     const db = await getDb();
     const rows = await db.select().from(schema.global_announcement_bar).where(eq(schema.global_announcement_bar.id, "global_bar"));
     if (rows.length === 0) {
-      return res.json({ success: true, announcement: null });
+      cachedAnnouncementBarResponse = { success: true, announcement: null };
+      return res.json(cachedAnnouncementBarResponse);
     }
     const announcement = rows[0];
-    return res.json({ success: true, announcement });
+    cachedAnnouncementBarResponse = { success: true, announcement };
+    return res.json(cachedAnnouncementBarResponse);
   } catch (e: any) {
     console.error("Error fetching announcement-bar:", e);
     return res.status(500).json({ success: false, error: e.message });
@@ -3978,6 +4006,7 @@ app.get("/api/announcement-bar", async (req, res) => {
 
 // UPDATE global announcement bar configuration
 app.put("/api/admin/announcement-bar", async (req, res) => {
+  cachedAnnouncementBarResponse = null; // Invalidate cache
   try {
     const db = await getDb();
     const { text, ctaText, ctaUrl, isActive, targetRole, scheduledStart, scheduledUntil } = req.body;

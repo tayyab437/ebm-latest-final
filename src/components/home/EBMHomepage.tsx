@@ -121,7 +121,11 @@ export default function EBMHomepage({
       }
     };
 
-    checkWelcomeModal();
+    const timer = setTimeout(() => {
+      checkWelcomeModal();
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleCloseWelcome = () => {
