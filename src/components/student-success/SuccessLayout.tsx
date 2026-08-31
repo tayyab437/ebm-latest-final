@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useStudentSuccessStore } from "./student-success.store";
 import { SuccessDashboard } from "./SuccessDashboard";
 import { RiskDashboard } from "./RiskDashboard";
@@ -62,9 +63,14 @@ export function SuccessLayout() {
           >
             <ArrowLeft className="h-4 w-4" /> Back to Portal
           </button>
-          <h2 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+          <Link 
+            to="/" 
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            title="Return to Home Page"
+            className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2 cursor-pointer hover:text-rose-400 transition-colors"
+          >
             <ShieldAlert className="h-5 w-5 text-rose-500" /> Success Hub
-          </h2>
+          </Link>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar">
           {navItems.map((item) => {

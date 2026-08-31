@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useLearningStore } from "./learning.store";
 import { LearningView } from "./learning.types";
 import { 
@@ -50,14 +51,19 @@ export function LearningSidebar() {
         {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
 
-      <div className={clsx("p-6 flex items-center gap-3 shrink-0 cursor-pointer hover:opacity-80 transition-opacity")} onClick={() => window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' }))}>
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/20">
+      <Link 
+        to="/"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        title="Return to Home Page"
+        className={clsx("p-6 flex items-center gap-3 shrink-0 cursor-pointer group hover:opacity-80 transition-opacity")}
+      >
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
           <BookOpen className="h-4 w-4 text-white" />
         </div>
         {!isCollapsed && (
-          <span className="font-bold text-lg tracking-tight text-white line-clamp-1">Learning</span>
+          <span className="font-bold text-lg tracking-tight text-white line-clamp-1 group-hover:text-indigo-300 transition-colors">Learning</span>
         )}
-      </div>
+      </Link>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-1">
         {NAV_ITEMS.map(item => {

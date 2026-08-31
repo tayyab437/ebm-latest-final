@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Inbox as CommunicationInbox, AnnouncementCenter } from "../communication";
 import { ProfileSettings } from "../ProfileSettings";
 import { 
@@ -605,15 +606,20 @@ export function ParentDashboard({ notifications, onReadNotification, onLogout }:
       {/* Parent Sidebar Navigation */}
       <div className="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-slate-200 shrink-0 flex flex-col h-auto md:h-screen z-10 overflow-y-auto">
         {/* Branding Title */}
-        <div className="p-6 border-b border-slate-100 flex items-center gap-3">
-          <div className="bg-blue-600 text-white p-2.5 rounded-2xl shadow-md">
+        <Link 
+          to="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Return to Home Page"
+          className="p-6 border-b border-slate-100 flex items-center gap-3 cursor-pointer group hover:bg-slate-50 transition-colors"
+        >
+          <div className="bg-blue-600 text-white p-2.5 rounded-2xl shadow-md group-hover:scale-105 transition-transform">
             <Users className="h-5 w-5 text-white font-black" />
           </div>
           <div>
             <span className="text-[10px] font-black uppercase text-blue-600 tracking-widest block leading-none mb-1">EBM Portal</span>
-            <h2 className="text-sm font-black text-slate-900 leading-tight">Parent Command Hub</h2>
+            <h2 className="text-sm font-black text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">Parent Command Hub</h2>
           </div>
-        </div>
+        </Link>
 
 
 

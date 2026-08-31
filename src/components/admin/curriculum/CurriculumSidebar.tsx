@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { CurriculumView } from "./curriculum.types";
 import { 
   LayoutDashboard, 
@@ -73,15 +74,20 @@ export function CurriculumSidebar({ currentView, setCurrentView }: CurriculumSid
   return (
     <div className="flex flex-col h-full bg-white">
       <div className="p-5 shrink-0 border-b border-slate-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md shadow-emerald-200">
+        <Link 
+          to="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Return to Home Page"
+          className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md shadow-emerald-200 group-hover:scale-105 transition-transform">
             <Database className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900 leading-tight">Curriculum CMS</h2>
+            <h2 className="text-sm font-bold text-slate-900 leading-tight group-hover:text-emerald-600 transition-colors">Curriculum CMS</h2>
             <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Content Engine</p>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-6">

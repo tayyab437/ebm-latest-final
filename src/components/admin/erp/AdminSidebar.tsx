@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { AdminView } from "./admin.types";
 import { useInquiryStore } from "../../../services/inquiries.store";
 import { 
@@ -123,16 +124,21 @@ export function AdminSidebar({ currentView, setCurrentView, onLogout }: AdminSid
   return (
     <div className="flex flex-col h-full bg-[#0F172A] text-slate-300">
       <div className="p-6 border-b border-slate-800 shrink-0">
-        <div className="flex items-center gap-3">
+        <Link 
+          to="/" 
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="flex items-center gap-3 group cursor-pointer hover:opacity-90 transition-opacity"
+          title="Return to Home Page"
+        >
           {logoType === "icon" ? (
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0 group-hover:scale-105 transition-transform">
               {(() => {
                 const IconComponent = BRANDING_ICONS[logoIcon] || ShieldCheck;
                 return <IconComponent className="h-6 w-6 text-white" />;
               })()}
             </div>
           ) : logoImageUrl ? (
-            <div className="h-10 flex items-center justify-center bg-transparent shrink-0">
+            <div className="h-10 flex items-center justify-center bg-transparent shrink-0 group-hover:scale-105 transition-transform">
               <img 
                 src={logoImageUrl} 
                 alt="Logo" 
@@ -141,15 +147,15 @@ export function AdminSidebar({ currentView, setCurrentView, onLogout }: AdminSid
               />
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-blue-600 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <ShieldCheck className="h-6 w-6 text-white" />
             </div>
           )}
           <div className="min-w-0">
-            <h2 className="text-xs font-bold text-white leading-tight uppercase tracking-wider truncate" title={logoText}>{logoText}</h2>
+            <h2 className="text-xs font-bold text-white leading-tight uppercase tracking-wider truncate group-hover:text-blue-400 transition-colors" title={logoText}>{logoText}</h2>
             <p className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Enterprise ERP</p>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">

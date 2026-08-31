@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { TeacherView } from "./teacher.types";
 import { useTeacherStore } from "./teacher.store";
 import { useCommunicationStore } from "../communication/communication.store";
@@ -155,26 +156,31 @@ export function TeacherSidebar({
   return (
     <div className="flex flex-col h-full bg-white relative">
       <div className={clsx("p-4 shrink-0 border-b border-slate-100 flex items-center", isSidebarCollapsed ? "justify-center" : "justify-between")}>
-        <div className={clsx("flex items-center gap-3 min-w-0", isSidebarCollapsed && "justify-center")}>
+        <Link 
+          to="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Return to Home Page"
+          className={clsx("flex items-center gap-3 min-w-0 cursor-pointer group hover:opacity-90 transition-opacity", isSidebarCollapsed && "justify-center")}
+        >
           {logoType === "icon" ? (
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-200 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-200 shrink-0 group-hover:scale-105 transition-transform">
               {(() => {
                 const IconComponent = BRANDING_ICONS[logoIcon] || BookOpen;
                 return <IconComponent className="h-5 w-5 text-white" />;
               })()}
             </div>
           ) : logoImageUrl ? (
-            <div className="w-10 h-10 flex items-center justify-center bg-transparent shrink-0">
+            <div className="w-10 h-10 flex items-center justify-center bg-transparent shrink-0 group-hover:scale-105 transition-transform">
               <img src={logoImageUrl} alt="Logo" className="w-full h-full object-contain bg-transparent" style={{ backgroundColor: 'transparent' }} referrerPolicy="no-referrer" />
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 shrink-0">
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 shrink-0 group-hover:scale-105 transition-transform">
               <BookOpen className="h-5 w-5 text-slate-500" />
             </div>
           )}
           {!isSidebarCollapsed && (
             <div className="min-w-0">
-              <h2 className="text-sm font-bold text-slate-900 leading-tight truncate" title={logoText}>
+              <h2 className="text-sm font-bold text-slate-900 leading-tight truncate group-hover:text-blue-600 transition-colors" title={logoText}>
                 {logoText}
               </h2>
               <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
@@ -182,7 +188,7 @@ export function TeacherSidebar({
               </p>
             </div>
           )}
-        </div>
+        </Link>
 
         {/* Toggle Collapse Button */}
         <button

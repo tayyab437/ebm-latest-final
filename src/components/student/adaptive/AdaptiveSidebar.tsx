@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { AdaptiveView } from "./adaptive.types";
 import { 
   Brain, 
@@ -42,15 +43,20 @@ export function AdaptiveSidebar({ currentView, setCurrentView }: AdaptiveSidebar
   return (
     <div className="flex flex-col h-full bg-[#050B18] text-slate-400">
       <div className="p-6 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <Link 
+          to="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Return to Home Page"
+          className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
             <Zap className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-sm font-black text-white uppercase tracking-widest">Adaptive AI</h2>
+            <h2 className="text-sm font-black text-white uppercase tracking-widest group-hover:text-indigo-400 transition-colors">Adaptive AI</h2>
             <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Learning Intelligence</p>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-hide">

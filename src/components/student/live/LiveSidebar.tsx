@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { LiveView } from "./live.types";
 import { useLiveStore } from "./live.store";
 import { useBrandingStore } from "../../../lib/branding.store";
@@ -65,15 +66,20 @@ export function LiveSidebar({ currentView, setCurrentView }: LiveSidebarProps) {
   return (
     <div className="flex flex-col h-full bg-[#0F172A] text-slate-400">
       <div className="p-6 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-rose-500 flex items-center justify-center shadow-lg shadow-rose-500/20">
+        <Link 
+          to="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Return to Home Page"
+          className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity"
+        >
+          <div className="w-10 h-10 rounded-xl bg-rose-500 flex items-center justify-center shadow-lg shadow-rose-500/20 group-hover:scale-105 transition-transform">
             <Video className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-sm font-black text-white uppercase tracking-widest">{logoText} Live</h2>
+            <h2 className="text-sm font-black text-white uppercase tracking-widest group-hover:text-rose-400 transition-colors">{logoText} Live</h2>
             <p className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Meet Integration</p>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-1">

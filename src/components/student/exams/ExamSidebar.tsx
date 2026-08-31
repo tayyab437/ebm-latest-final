@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useExamStore } from "./exam.store";
 import { ExamView } from "./exam.types";
 import { useBrandingStore } from "../../../lib/branding.store";
@@ -44,13 +45,18 @@ export function ExamSidebar({ currentView, setCurrentView }: ExamSidebarProps) {
   return (
     <div className="w-80 h-full bg-[#0A1120] border-r border-white/5 flex flex-col hidden lg:flex">
       <div className="p-8 pb-4">
-        <div className="bg-gradient-to-br from-rose-500/10 to-transparent rounded-[2rem] p-6 border border-white/5 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
+        <Link 
+          to="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Return to Home Page"
+          className="block bg-gradient-to-br from-rose-500/10 to-transparent rounded-[2rem] p-6 border border-white/5 relative overflow-hidden group cursor-pointer hover:border-rose-500/30 transition-all"
+        >
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all">
              <ShieldAlert className="w-20 h-20 text-rose-500" />
           </div>
           <div className="relative z-10">
             <p className="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] mb-1">{logoText} Assessment</p>
-            <h2 className="text-lg font-black text-white tracking-tight">Assessment Portal</h2>
+            <h2 className="text-lg font-black text-white tracking-tight group-hover:text-rose-400 transition-colors">Assessment Portal</h2>
             <div className="mt-4 flex items-center gap-3">
                <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-lg border border-white/5">
                   <Clock className="h-3 w-3 text-rose-400" />
@@ -58,7 +64,7 @@ export function ExamSidebar({ currentView, setCurrentView }: ExamSidebarProps) {
                </div>
             </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">

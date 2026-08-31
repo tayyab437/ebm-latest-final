@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { AIView } from "./ai.types";
 import { ArrowLeft, Sparkles, LayoutDashboard, MessageSquare, Lightbulb, FileText, BrainCircuit, Calendar, PenTool, BookOpen, Mic, LineChart, History, Settings } from "lucide-react";
 import clsx from "clsx";
@@ -81,15 +82,20 @@ export function AISidebar({ currentView, setCurrentView }: AISidebarProps) {
         >
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </button>
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-200">
+        <Link 
+          to="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Return to Home Page"
+          className="flex items-center gap-3 px-2 cursor-pointer group hover:opacity-90 transition-opacity"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-200 group-hover:scale-105 transition-transform">
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900 leading-tight">AI Engine</h2>
+            <h2 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-indigo-600 transition-colors">AI Engine</h2>
             <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">{logoText} Assistant</p>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">

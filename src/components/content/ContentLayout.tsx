@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useContentStore } from "./content.store";
 import { ContentDashboard } from "./ContentDashboard";
 import { CurriculumTree } from "./CurriculumTree";
@@ -54,9 +55,14 @@ export function ContentLayout() {
           >
             <ArrowLeft className="h-4 w-4" /> Back to Portal
           </button>
-          <h2 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+          <Link 
+            to="/" 
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            title="Return to Home Page"
+            className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2 cursor-pointer hover:text-purple-400 transition-colors"
+          >
             <BookOpen className="h-5 w-5 text-purple-500" /> Content Studio
-          </h2>
+          </Link>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar">
           {navItems.map((item) => {
