@@ -438,11 +438,21 @@ export default function EBMHomepage({
       />
       {/* ================= HERO BANNER ================= */}
       <section 
-        className="relative overflow-hidden flex flex-col items-center justify-between pt-8 pb-10 px-4 min-h-[520px] bg-cover bg-center bg-no-repeat transition-all duration-500"
+        className="relative z-0 overflow-hidden flex flex-col items-center justify-between pt-8 pb-10 px-4 min-h-[520px] bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${effectiveHeroBackground})` }}
       >
+        {/* LCP Critical Hero Background Image with High Priority */}
+        <img 
+          src={effectiveHeroBackground} 
+          alt="EBM Personalized Learning Platform Banner"
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0"
+        />
+
         {/* Semi-transparent soft tint overlay for text legibility */}
-        <div className="absolute inset-0 bg-emerald-950/10 backdrop-blur-[1px] pointer-events-none" />
+        <div className="absolute inset-0 bg-emerald-950/10 backdrop-blur-[1px] pointer-events-none z-1" />
 
         {/* Content Container */}
         <div className="max-w-6xl mx-auto w-full relative z-10 flex flex-col items-center">

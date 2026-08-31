@@ -1108,6 +1108,80 @@ async function initializeDb() {
       console.error("Error seeding branding_settings:", e);
     }
     
+    // Create blog tables
+    try {
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS \`blog_categories\` (
+          \`id\` varchar(100) PRIMARY KEY,
+          \`name\` varchar(255) NOT NULL,
+          \`slug\` varchar(255) NOT NULL,
+          \`description\` text,
+          \`seoTitle\` varchar(255),
+          \`seoDescription\` text,
+          \`color\` varchar(50),
+          \`icon\` varchar(100),
+          \`createdAt\` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS \`blog_authors\` (
+          \`id\` varchar(100) PRIMARY KEY,
+          \`name\` varchar(255) NOT NULL,
+          \`slug\` varchar(255) NOT NULL,
+          \`bio\` text,
+          \`role\` varchar(255),
+          \`avatarUrl\` text,
+          \`email\` varchar(255),
+          \`socialLinks\` json,
+          \`createdAt\` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS \`blog_posts\` (
+          \`id\` varchar(100) PRIMARY KEY,
+          \`title\` varchar(500) NOT NULL,
+          \`slug\` varchar(500) NOT NULL,
+          \`excerpt\` text,
+          \`content\` text NOT NULL,
+          \`categoryId\` varchar(100) NOT NULL,
+          \`secondaryCategoryIds\` json,
+          \`featuredImage\` text,
+          \`featuredImageAlt\` text,
+          \`featuredImageCaption\` text,
+          \`authorId\` varchar(100),
+          \`status\` varchar(50) NOT NULL DEFAULT 'draft',
+          \`isFeatured\` int NOT NULL DEFAULT 0,
+          \`publishedAt\` timestamp NULL,
+          \`updatedAt\` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          \`createdAt\` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+          \`seoTitle\` varchar(500),
+          \`seoDescription\` text,
+          \`ogImage\` text,
+          \`canonicalUrl\` text,
+          \`readingTime\` int DEFAULT 5,
+          \`tags\` json,
+          \`relatedPostIds\` json,
+          \`noindex\` int DEFAULT 0,
+          \`views\` int DEFAULT 0,
+          \`ctaType\` varchar(50),
+          \`ctaLink\` text,
+          \`ctaText\` varchar(255)
+        );
+      `);
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS \`blog_redirects\` (
+          \`id\` varchar(100) PRIMARY KEY,
+          \`sourceSlug\` varchar(500) NOT NULL,
+          \`targetSlug\` varchar(500) NOT NULL,
+          \`statusCode\` int NOT NULL DEFAULT 301,
+          \`createdAt\` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      console.log("Blog schema tables ready or created");
+    } catch (e) {
+      console.error("Error creating blog schema tables:", e);
+    }
+    
     connection.release();
     
     db = drizzle(pool, { schema, mode: 'default' });
