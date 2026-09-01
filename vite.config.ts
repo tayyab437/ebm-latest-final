@@ -27,28 +27,10 @@ export default defineConfig(() => {
     },
     build: {
       chunkSizeWarningLimit: 1000,
-      modulePreload: false,
+      modulePreload: true,
       cssCodeSplit: true,
       sourcemap: false,
       minify: 'esbuild' as const,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('react-dom') || id.includes('react-router') || id.includes('react/')) {
-                return 'vendor-react';
-              }
-              if (id.includes('lucide-react')) {
-                return 'vendor-icons';
-              }
-              if (id.includes('motion') || id.includes('framer-motion')) {
-                return 'vendor-motion';
-              }
-              return 'vendor-deps';
-            }
-          },
-        },
-      },
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
