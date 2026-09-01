@@ -1,55 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Routes, Route, Navigate, Link } from "react-router-dom";
 import { SEOHead } from "./components/SEOHead";
-import { 
-  BookOpen, 
-  Calendar, 
-  Sparkles, 
-  TrendingUp, 
-  Users, 
-  FileUp, 
-  CheckCircle, 
-  Clock, 
-  Compass, 
-  AlertCircle, 
-  Send, 
-  Award, 
-  Bell, 
-  BookMarked, 
-  GraduationCap, 
-  Activity,
-  ArrowRight,
-  UploadCloud,
-  Layers,
-  CheckCircle2,
-  Lock,
-  MessageSquare,
-  HelpCircle,
-  FileText,
-  Briefcase,
-  ShieldCheck,
-  Video,
-  Brain,
-  Trophy,
-  Flame,
-  User
-} from "lucide-react";
+import { User } from "lucide-react";
 import { motion } from "motion/react";
 import { UserRole, EbmYear, CourseModule, DailyPlannerTask, StudentProgress, ParentNotification, TeacherClass, ChatMessage, CloudflareR2Upload } from "./types";
 import { EBM_ROADMAP_DETAILS, INITIAL_COURSES, MOCK_DAILY_TASKS, MOCK_STUDENTS_PROGRESS } from "./constants";
 import { 
   AnnouncementBar, 
   EBMHomepage,
-  Hero, 
-  HeroSlider,
-  Journey, 
-  WhyChooseEBM, 
-  StudentSuccess, 
-  AdmissionsSection, 
-  CTA, 
   Footer as HomeFooter 
 } from "./components/home";
-import { TeacherTestimonials } from "./components/home/success/TeacherTestimonials";
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
 // Lazy-load non-homepage components and authentication views to keep initial bundle ultra-lightweight
@@ -131,9 +91,9 @@ export default function App() {
   const { logoText, logoType, logoIcon, logoImageUrl, showThemeToggle, updateBranding } = useBrandingStore();
   const initialUser = getInitialUser();
 
-  // Sync latest branding config from backend database in the background (non-blocking)
+  // Sync latest branding config when branding is updated via admin event
   useEffect(() => {
-    const fetchBranding = () => {
+    const handleBrandingUpdate = () => {
       fetch("/api/branding")
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
@@ -144,11 +104,8 @@ export default function App() {
         .catch(() => {});
     };
 
-    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-      (window as any).requestIdleCallback(fetchBranding);
-    } else {
-      setTimeout(fetchBranding, 1200);
-    }
+    window.addEventListener("ebm_branding_updated", handleBrandingUpdate);
+    return () => window.removeEventListener("ebm_branding_updated", handleBrandingUpdate);
   }, [updateBranding]);
 
   const [isDarkMode] = useState<boolean>(false);
@@ -853,9 +810,10 @@ export default function App() {
                 <img 
                   src={logoImageUrl} 
                   alt={logoText || "EBM Logo"} 
-                  width="220"
-                  height="40"
-                  className="h-9 md:h-10 max-h-12 max-w-[220px] object-contain bg-transparent border-none outline-none shadow-none" 
+                  width="180"
+                  height="38"
+                  decoding="async"
+                  className="h-9 md:h-10 max-h-12 max-w-[180px] object-contain bg-transparent border-none outline-none shadow-none" 
                   style={{ backgroundColor: 'transparent' }}
                   referrerPolicy="no-referrer" 
                 />

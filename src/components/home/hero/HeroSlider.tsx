@@ -20,7 +20,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ onStartLearning, onNavig
       subtitle: "We offer exciting school admission deals, certified teachers, and tailored learning plans to help you succeed!",
       ctaText: "Enroll Now",
       ctaUrl: "auth-login",
-      imageUrl: "https://images.unsplash.com/photo-1525921429624-479b6c294548?q=80&w=800"
+      imageUrl: "https://images.unsplash.com/photo-1525921429624-479b6c294548?auto=format&fit=crop&q=50&fm=webp&w=600"
     },
     {
       id: "slide-2",
@@ -28,7 +28,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ onStartLearning, onNavig
       subtitle: "Accelerated 3-year structured paths guided by our learning methodology.",
       ctaText: "Discover More",
       ctaUrl: "roadmap",
-      imageUrl: "https://images.unsplash.com/photo-1607013407627-6ee814329547?q=80&w=800"
+      imageUrl: "https://images.unsplash.com/photo-1607013407627-6ee814329547?auto=format&fit=crop&q=50&fm=webp&w=600"
     }
   ];
 

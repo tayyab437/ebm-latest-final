@@ -15,79 +15,74 @@ interface Testimonial {
 
 import satinBg from "../../../assets/images/dark_blue_satin_gold_lines_1785743496085.jpg";
 
+const INITIAL_TESTIMONIALS: Testimonial[] = [
+  {
+    id: "parent-1",
+    name: "Dr. Robert Chen",
+    occupation: "Senior Consultant Cardiologist",
+    childGrade: "Grade 11 (O Level Mathematics & Biology)",
+    rating: 5,
+    review: "As a physician, I value evidence-based methods. EBM's diagnostic analytics are incredibly rigorous. It doesn't just say 'study more'; it shows exactly which sub-concepts my son is struggling with. His scores moved from B to a strong A* in under a semester.",
+    location: "Singapore",
+    childrenEnrolled: 2
+  },
+  {
+    id: "parent-2",
+    name: "Sarah Jenkins",
+    occupation: "Software Engineering Director",
+    childGrade: "Grade 10 (O Level Science & English)",
+    rating: 5,
+    review: "The integration of Socratic AI is flawless. Unlike other platforms that just give answers, EBM guides my daughter to find the answer herself. She is developing real critical thinking skills instead of just rote memorization. Highly recommended for parents who care about long-term growth.",
+    location: "London, UK",
+    childrenEnrolled: 1
+  },
+  {
+    id: "parent-3",
+    name: "Fatimah Al-Mutawa",
+    occupation: "Educational Psychologist",
+    childGrade: "Grade 11 (O Level Chemistry & Physics)",
+    rating: 5,
+    review: "I was skeptical about another digital platform, but EBM's instructional design is flawless. The cognitive load is perfectly balanced, the feedback is immediate, and the gamified progression is genuinely motivating. It builds deep focus without the dopamine fatigue of cheap study games.",
+    location: "Dubai, UAE",
+    childrenEnrolled: 2
+  },
+  {
+    id: "parent-4",
+    name: "Marcus Thorne",
+    occupation: "Managing Director, Thorne Investments",
+    childGrade: "Grade 9 (Pre-O Level Science Foundations)",
+    rating: 5,
+    review: "The EBM parent portal is magnificent. I get actionable weekly reports detailing study habits, mastery percentages, and immediate action items. No more guessing how my kids are doing or waiting for parent-teacher conferences. I can support them dynamically.",
+    location: "Cape Town, South Africa",
+    childrenEnrolled: 3
+  }
+];
+
 export const ParentTestimonials: React.FC = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(INITIAL_TESTIMONIALS);
   const [current, setCurrent] = useState(0);
   const [autoplayKey, setAutoplayKey] = useState(0);
   const [selectedReview, setSelectedReview] = useState<Testimonial | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  // Fetch parent testimonials from backend
+  // Fetch parent testimonials from backend (deferred)
   const loadTestimonials = async () => {
     try {
       const res = await fetch("/api/parent-testimonials");
       const data = await res.json();
       if (data.success && data.testimonials && data.testimonials.length > 0) {
         setTestimonials(data.testimonials);
-      } else {
-        // Use default fallback if database is empty or error
-        useFallback();
       }
     } catch (err) {
       console.error("Error loading parent testimonials:", err);
-      useFallback();
-    } finally {
-      setLoading(false);
     }
   };
 
-  const useFallback = () => {
-    setTestimonials([
-      {
-        id: "parent-1",
-        name: "Dr. Robert Chen",
-        occupation: "Senior Consultant Cardiologist",
-        childGrade: "Grade 11 (O Level Mathematics & Biology)",
-        rating: 5,
-        review: "As a physician, I value evidence-based methods. EBM's diagnostic analytics are incredibly rigorous. It doesn't just say 'study more'; it shows exactly which sub-concepts my son is struggling with. His scores moved from B to a strong A* in under a semester.",
-        location: "Singapore",
-        childrenEnrolled: 2
-      },
-      {
-        id: "parent-2",
-        name: "Sarah Jenkins",
-        occupation: "Software Engineering Director",
-        childGrade: "Grade 10 (O Level Science & English)",
-        rating: 5,
-        review: "The integration of Socratic AI is flawless. Unlike other platforms that just give answers, EBM guides my daughter to find the answer herself. She is developing real critical thinking skills instead of just rote memorization. Highly recommended for parents who care about long-term growth.",
-        location: "London, UK",
-        childrenEnrolled: 1
-      },
-      {
-        id: "parent-3",
-        name: "Fatimah Al-Mutawa",
-        occupation: "Educational Psychologist",
-        childGrade: "Grade 11 (O Level Chemistry & Physics)",
-        rating: 5,
-        review: "I was skeptical about another digital platform, but EBM's instructional design is flawless. The cognitive load is perfectly balanced, the feedback is immediate, and the gamified progression is genuinely motivating. It builds deep focus without the dopamine fatigue of cheap study games.",
-        location: "Dubai, UAE",
-        childrenEnrolled: 2
-      },
-      {
-        id: "parent-4",
-        name: "Marcus Thorne",
-        occupation: "Managing Director, Thorne Investments",
-        childGrade: "Grade 9 (Pre-O Level Science Foundations)",
-        rating: 5,
-        review: "The EBM parent portal is magnificent. I get actionable weekly reports detailing study habits, mastery percentages, and immediate action items. No more guessing how my kids are doing or waiting for parent-teacher conferences. I can support them dynamically.",
-        location: "Cape Town, South Africa",
-        childrenEnrolled: 3
-      }
-    ]);
-  };
-
   useEffect(() => {
-    loadTestimonials();
+    const timer = setTimeout(() => {
+      loadTestimonials();
+    }, 4500);
+    return () => clearTimeout(timer);
   }, []);
 
   // 7 Seconds Autoplay loop

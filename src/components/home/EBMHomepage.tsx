@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { Search, User, ChevronRight, Star, Lock, Award, BookOpen, BarChart3, Target, CheckCircle2, ChevronLeft, ArrowRight, Play, Sparkles, ChevronDown, Calculator, Brain, Users, Heart, Coins, Cpu, MessageSquare, Compass, ShieldCheck, Briefcase } from "lucide-react";
 import heroBgImage from "../../assets/images/exact_hero_background_1786353484606.jpg";
 import { useBrandingStore } from "../../lib/branding.store";
-import GradeOneMathModal from "./GradeOneMathModal";
-import GradeOneEnglishModal from "./GradeOneEnglishModal";
-import GradeTwoMathModal from "./GradeTwoMathModal";
-import GradeTwoEnglishModal from "./GradeTwoEnglishModal";
-import GradeThreeMathModal from "./GradeThreeMathModal";
-import GradeThreeEnglishModal from "./GradeThreeEnglishModal";
-import GradeFourMathModal from "./GradeFourMathModal";
-import GradeFourEnglishModal from "./GradeFourEnglishModal";
+
+const GradeOneMathModal = React.lazy(() => import("./GradeOneMathModal"));
+const GradeOneEnglishModal = React.lazy(() => import("./GradeOneEnglishModal"));
+const GradeTwoMathModal = React.lazy(() => import("./GradeTwoMathModal"));
+const GradeTwoEnglishModal = React.lazy(() => import("./GradeTwoEnglishModal"));
+const GradeThreeMathModal = React.lazy(() => import("./GradeThreeMathModal"));
+const GradeThreeEnglishModal = React.lazy(() => import("./GradeThreeEnglishModal"));
+const GradeFourMathModal = React.lazy(() => import("./GradeFourMathModal"));
+const GradeFourEnglishModal = React.lazy(() => import("./GradeFourEnglishModal"));
+
 import { SEOHead } from "../SEOHead";
 
 interface EBMHomepageProps {
@@ -96,13 +98,12 @@ export default function EBMHomepage({
   }, []);
 
   React.useEffect(() => {
-    // Only fetch welcome modal configuration if user hasn't visited yet
-    if (typeof window !== "undefined") {
-      const hasVisitedBefore = localStorage.getItem("ebm_welcome_visited_v1");
-      if (hasVisitedBefore) return;
-    }
-
     const checkWelcomeModal = async () => {
+      if (typeof window !== "undefined") {
+        const hasVisitedBefore = localStorage.getItem("ebm_welcome_visited_v1");
+        if (hasVisitedBefore) return;
+      }
+
       try {
         const res = await fetch("/api/welcome-modal-settings");
         if (res.ok) {
@@ -121,11 +122,8 @@ export default function EBMHomepage({
       }
     };
 
-    const timer = setTimeout(() => {
-      checkWelcomeModal();
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    window.addEventListener("ebm_check_welcome", checkWelcomeModal);
+    return () => window.removeEventListener("ebm_check_welcome", checkWelcomeModal);
   }, []);
 
   const handleCloseWelcome = () => {
@@ -442,13 +440,14 @@ export default function EBMHomepage({
       />
       {/* ================= HERO BANNER ================= */}
       <section 
-        className="relative z-0 overflow-hidden flex flex-col items-center justify-between pt-8 pb-10 px-4 min-h-[520px] bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${effectiveHeroBackground})` }}
+        className="relative z-0 overflow-hidden flex flex-col items-center justify-between pt-8 pb-10 px-4 min-h-[560px] sm:min-h-[540px] md:min-h-[520px]"
       >
         {/* LCP Critical Hero Background Image with High Priority */}
         <img 
           src={effectiveHeroBackground} 
           alt="EBM Personalized Learning Platform Banner"
+          width="1200"
+          height="600"
           fetchPriority="high"
           loading="eager"
           decoding="async"
@@ -1259,8 +1258,10 @@ export default function EBMHomepage({
             <div className="flex flex-col items-center">
               <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[4px] border-[#33c3f0] mb-5 bg-white/10 flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-300">
                 <img 
-                  src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=250&h=250" 
+                  src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=50&fm=webp&w=150&h=150" 
                   alt="Proven effective students" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -1282,8 +1283,10 @@ export default function EBMHomepage({
               <div className="relative mb-5">
                 <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[4px] border-[#33c3f0] bg-white/10 flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-300">
                   <img 
-                    src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=250&h=250" 
+                    src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=50&fm=webp&w=150&h=150" 
                     alt="Flexible for any classroom teacher" 
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
@@ -1309,26 +1312,34 @@ export default function EBMHomepage({
               {/* 2x2 collage of diverse teachers */}
               <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[4px] border-[#33c3f0] mb-5 bg-white/10 grid grid-cols-2 gap-0 shadow-lg transform hover:scale-105 transition-all duration-300">
                 <img 
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120&h=120" 
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=50&fm=webp&w=80&h=80" 
                   alt="Teacher profile 1" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover border-b border-r border-[#33c3f0]/30"
                   referrerPolicy="no-referrer"
                 />
                 <img 
-                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=120&h=120" 
+                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=50&fm=webp&w=80&h=80" 
                   alt="Teacher profile 2" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover border-b border-[#33c3f0]/30"
                   referrerPolicy="no-referrer"
                 />
                 <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120&h=120" 
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=50&fm=webp&w=80&h=80" 
                   alt="Teacher profile 3" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover border-r border-[#33c3f0]/30"
                   referrerPolicy="no-referrer"
                 />
                 <img 
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120&h=120" 
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=50&fm=webp&w=80&h=80" 
                   alt="Teacher profile 4" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -1353,110 +1364,146 @@ export default function EBMHomepage({
         {/* Deep Background Grid Collage - 9 columns wide */}
         <div className="absolute inset-0 grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-9 gap-1.5 opacity-60 pointer-events-none z-0">
           <img 
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="Students in classroom" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=250&h=180" 
+            src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
@@ -1650,102 +1697,112 @@ export default function EBMHomepage({
           </div>
         </div>
       )}
-      {/* Grade 1 Math Interactive Framework Modal */}
-      <GradeOneMathModal
-        isOpen={showGradeOneMathModal}
-        onClose={() => setShowGradeOneMathModal(false)}
-        onEnrollOrStart={() => {
-          if (onSelectSkill) {
-            onSelectSkill("Math", "Class 1 (Grade 1)");
-          } else if (onSignIn) {
-            onSignIn();
-          }
-        }}
-      />
-      {/* Grade 1 English Interactive Framework Modal */}
-      <GradeOneEnglishModal
-        isOpen={showGradeOneEnglishModal}
-        onClose={() => setShowGradeOneEnglishModal(false)}
-        onEnrollOrStart={() => {
-          if (onSelectSkill) {
-            onSelectSkill("English", "Class 1 (Grade 1)");
-          } else if (onSignIn) {
-            onSignIn();
-          }
-        }}
-      />
-      {/* Grade 2 Math Interactive Framework Modal */}
-      <GradeTwoMathModal
-        isOpen={showGradeTwoMathModal}
-        onClose={() => setShowGradeTwoMathModal(false)}
-        onEnrollOrStart={() => {
-          if (onSelectSkill) {
-            onSelectSkill("Math", "Class 2 (Grade 2)");
-          } else if (onSignIn) {
-            onSignIn();
-          }
-        }}
-      />
-      {/* Grade 2 English Interactive Framework Modal */}
-      <GradeTwoEnglishModal
-        isOpen={showGradeTwoEnglishModal}
-        onClose={() => setShowGradeTwoEnglishModal(false)}
-        onEnrollOrStart={() => {
-          if (onSelectSkill) {
-            onSelectSkill("English", "Class 2 (Grade 2)");
-          } else if (onSignIn) {
-            onSignIn();
-          }
-        }}
-      />
-      {/* Grade 3 Math Interactive Framework Modal */}
-      <GradeThreeMathModal
-        isOpen={showGradeThreeMathModal}
-        onClose={() => setShowGradeThreeMathModal(false)}
-        onEnrollOrStart={() => {
-          if (onSelectSkill) {
-            onSelectSkill("Math", "Class 3 (Grade 3)");
-          } else if (onSignIn) {
-            onSignIn();
-          }
-        }}
-      />
-      {/* Grade 3 English Interactive Framework Modal */}
-      <GradeThreeEnglishModal
-        isOpen={showGradeThreeEnglishModal}
-        onClose={() => setShowGradeThreeEnglishModal(false)}
-        onEnrollOrStart={() => {
-          if (onSelectSkill) {
-            onSelectSkill("English", "Class 3 (Grade 3)");
-          } else if (onSignIn) {
-            onSignIn();
-          }
-        }}
-      />
-      {/* Grade 4 Math Interactive Framework Modal */}
-      <GradeFourMathModal
-        isOpen={showGradeFourMathModal}
-        onClose={() => setShowGradeFourMathModal(false)}
-        onEnrollOrStart={() => {
-          if (onSelectSkill) {
-            onSelectSkill("Math", "Class 4 (Grade 4)");
-          } else if (onSignIn) {
-            onSignIn();
-          }
-        }}
-      />
-      {/* Grade 4 English Interactive Framework Modal */}
-      <GradeFourEnglishModal
-        isOpen={showGradeFourEnglishModal}
-        onClose={() => setShowGradeFourEnglishModal(false)}
-        onEnrollOrStart={() => {
-          if (onSelectSkill) {
-            onSelectSkill("English", "Class 4 (Grade 4)");
-          } else if (onSignIn) {
-            onSignIn();
-          }
-        }}
-      />
+      <Suspense fallback={null}>
+        {showGradeOneMathModal && (
+          <GradeOneMathModal
+            isOpen={showGradeOneMathModal}
+            onClose={() => setShowGradeOneMathModal(false)}
+            onEnrollOrStart={() => {
+              if (onSelectSkill) {
+                onSelectSkill("Math", "Class 1 (Grade 1)");
+              } else if (onSignIn) {
+                onSignIn();
+              }
+            }}
+          />
+        )}
+        {showGradeOneEnglishModal && (
+          <GradeOneEnglishModal
+            isOpen={showGradeOneEnglishModal}
+            onClose={() => setShowGradeOneEnglishModal(false)}
+            onEnrollOrStart={() => {
+              if (onSelectSkill) {
+                onSelectSkill("English", "Class 1 (Grade 1)");
+              } else if (onSignIn) {
+                onSignIn();
+              }
+            }}
+          />
+        )}
+        {showGradeTwoMathModal && (
+          <GradeTwoMathModal
+            isOpen={showGradeTwoMathModal}
+            onClose={() => setShowGradeTwoMathModal(false)}
+            onEnrollOrStart={() => {
+              if (onSelectSkill) {
+                onSelectSkill("Math", "Class 2 (Grade 2)");
+              } else if (onSignIn) {
+                onSignIn();
+              }
+            }}
+          />
+        )}
+        {showGradeTwoEnglishModal && (
+          <GradeTwoEnglishModal
+            isOpen={showGradeTwoEnglishModal}
+            onClose={() => setShowGradeTwoEnglishModal(false)}
+            onEnrollOrStart={() => {
+              if (onSelectSkill) {
+                onSelectSkill("English", "Class 2 (Grade 2)");
+              } else if (onSignIn) {
+                onSignIn();
+              }
+            }}
+          />
+        )}
+        {showGradeThreeMathModal && (
+          <GradeThreeMathModal
+            isOpen={showGradeThreeMathModal}
+            onClose={() => setShowGradeThreeMathModal(false)}
+            onEnrollOrStart={() => {
+              if (onSelectSkill) {
+                onSelectSkill("Math", "Class 3 (Grade 3)");
+              } else if (onSignIn) {
+                onSignIn();
+              }
+            }}
+          />
+        )}
+        {showGradeThreeEnglishModal && (
+          <GradeThreeEnglishModal
+            isOpen={showGradeThreeEnglishModal}
+            onClose={() => setShowGradeThreeEnglishModal(false)}
+            onEnrollOrStart={() => {
+              if (onSelectSkill) {
+                onSelectSkill("English", "Class 3 (Grade 3)");
+              } else if (onSignIn) {
+                onSignIn();
+              }
+            }}
+          />
+        )}
+        {showGradeFourMathModal && (
+          <GradeFourMathModal
+            isOpen={showGradeFourMathModal}
+            onClose={() => setShowGradeFourMathModal(false)}
+            onEnrollOrStart={() => {
+              if (onSelectSkill) {
+                onSelectSkill("Math", "Class 4 (Grade 4)");
+              } else if (onSignIn) {
+                onSignIn();
+              }
+            }}
+          />
+        )}
+        {showGradeFourEnglishModal && (
+          <GradeFourEnglishModal
+            isOpen={showGradeFourEnglishModal}
+            onClose={() => setShowGradeFourEnglishModal(false)}
+            onEnrollOrStart={() => {
+              if (onSelectSkill) {
+                onSelectSkill("English", "Class 4 (Grade 4)");
+              } else if (onSignIn) {
+                onSignIn();
+              }
+            }}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

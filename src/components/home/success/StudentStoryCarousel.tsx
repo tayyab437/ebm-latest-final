@@ -31,8 +31,8 @@ export const StudentStoryCarousel: React.FC = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   
   // Database synchronization states
-  const [journeys, setJourneys] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [journeys, setJourneys] = useState<any[]>(STUDENT_STORIES_DATA);
+  const [loading, setLoading] = useState(false);
   const [dbSynced, setDbSynced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -58,7 +58,6 @@ export const StudentStoryCarousel: React.FC = () => {
 
   const fetchJourneys = async () => {
     try {
-      setLoading(true);
       const res = await fetch("/api/featured-journeys");
       const data = await res.json();
       if (data.success && data.journeys && data.journeys.length > 0) {
@@ -70,21 +69,17 @@ export const StudentStoryCarousel: React.FC = () => {
         }));
         setJourneys(parsed);
         setDbSynced(true);
-      } else {
-        setJourneys(STUDENT_STORIES_DATA);
-        setDbSynced(false);
       }
     } catch (e) {
       console.error("Error loading backend student stories:", e);
-      setJourneys(STUDENT_STORIES_DATA);
-      setDbSynced(false);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchJourneys();
+    const timer = setTimeout(() => {
+      fetchJourneys();
+    }, 4500);
+    return () => clearTimeout(timer);
   }, []);
 
   // Slider controls

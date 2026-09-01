@@ -1,33 +1,14 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig, Plugin } from 'vite';
+import { defineConfig } from 'vite';
 import viteCompression from 'vite-plugin-compression';
-
-function nonBlockingCssPlugin(): Plugin {
-  return {
-    name: 'non-blocking-css-plugin',
-    transformIndexHtml: {
-      order: 'post',
-      handler(html: string) {
-        return html.replace(
-          /<link\b([^>]*?)rel=["']stylesheet["']([^>]*?)href=["']([^"']+\.css)["']([^>]*?)>/gi,
-          '<link rel="preload" as="style" href="$3" crossorigin /><link rel="stylesheet" href="$3" media="print" onload="this.media=\'all\'" crossorigin /><noscript><link rel="stylesheet" href="$3" crossorigin /></noscript>'
-        ).replace(
-          /<link\b([^>]*?)href=["']([^"']+\.css)["']([^>]*?)rel=["']stylesheet["']([^>]*?)>/gi,
-          '<link rel="preload" as="style" href="$2" crossorigin /><link rel="stylesheet" href="$2" media="print" onload="this.media=\'all\'" crossorigin /><noscript><link rel="stylesheet" href="$2" crossorigin /></noscript>'
-        );
-      },
-    },
-  };
-}
 
 export default defineConfig(() => {
   return {
     plugins: [
       react(),
       tailwindcss(),
-      nonBlockingCssPlugin(),
       viteCompression({
         algorithm: 'gzip',
         ext: '.gz',
@@ -48,8 +29,26 @@ export default defineConfig(() => {
       chunkSizeWarningLimit: 1000,
       modulePreload: false,
       cssCodeSplit: true,
-      sourcemap: true,
+      sourcemap: false,
       minify: 'esbuild' as const,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react-dom') || id.includes('react-router') || id.includes('react/')) {
+                return 'vendor-react';
+              }
+              if (id.includes('lucide-react')) {
+                return 'vendor-icons';
+              }
+              if (id.includes('motion') || id.includes('framer-motion')) {
+                return 'vendor-motion';
+              }
+              return 'vendor-deps';
+            }
+          },
+        },
+      },
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
