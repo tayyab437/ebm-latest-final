@@ -72,16 +72,19 @@ export function AssessmentFAQ() {
       aria-label="Frequently Asked Questions About EBM Diagnostic Assessment"
       className="relative py-16 sm:py-24 bg-[#eaf6f9] overflow-hidden border-t border-b border-[#ccebf2]"
     >
-      {/* Atmospheric faint repeating watermark pattern */}
+      {/* Atmospheric faint background SVG pattern (text-free to ensure 100% WCAG color contrast compliance) */}
       <div 
         aria-hidden="true" 
-        className="absolute inset-0 pointer-events-none select-none opacity-[0.045] overflow-hidden flex flex-wrap gap-8 text-[#007ba8] font-black text-3xl sm:text-4xl tracking-widest leading-loose uppercase rotate-[-8deg] scale-110 -translate-y-12"
+        className="absolute inset-0 pointer-events-none select-none opacity-40 overflow-hidden"
       >
-        {Array.from({ length: 48 }).map((_, i) => (
-          <span key={i} className="whitespace-nowrap">
-            FAQ Free Assessment EBM Diagnostic FAQ
-          </span>
-        ))}
+        <svg className="w-full h-full text-[#007ba8]/15" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="faq-grid-pattern" width="32" height="32" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.5" fill="currentColor" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#faq-grid-pattern)" />
+        </svg>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
