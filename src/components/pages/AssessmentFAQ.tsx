@@ -116,7 +116,7 @@ export function AssessmentFAQ() {
             </h2>
 
             {/* Introduction */}
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 max-w-lg">
+            <p className="text-slate-700 text-sm sm:text-base leading-relaxed mb-6 max-w-lg font-medium">
               Find answers to common questions about the EBM Diagnostic Assessment, including how it works, what subjects and levels it covers, and how assessment insights support personalized learning.
             </p>
 
@@ -163,7 +163,7 @@ export function AssessmentFAQ() {
                       aria-expanded={isOpen}
                       aria-controls={answerId}
                       onClick={() => toggleFaq(faq.id)}
-                      className={`w-full flex items-center justify-between text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00a3e0] cursor-pointer transition-colors ${
+                      className={`w-full flex items-center justify-between text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00709d] cursor-pointer transition-colors min-h-[44px] ${
                         isOpen 
                           ? "px-5 sm:px-7 pt-4 sm:pt-5 pb-2" 
                           : "px-5 sm:px-7 py-3.5 sm:py-4"
@@ -177,8 +177,8 @@ export function AssessmentFAQ() {
                         aria-hidden="true" 
                         className={`shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all ${
                           isOpen
-                            ? "bg-[#00a3e0] text-white shadow-xs rotate-180"
-                            : "bg-slate-100 text-slate-500 hover:bg-sky-50 hover:text-[#00a3e0]"
+                            ? "bg-[#00709d] text-white shadow-xs rotate-180"
+                            : "bg-slate-100 text-slate-700 hover:bg-sky-50 hover:text-[#00709d]"
                         }`}
                       >
                         {isOpen ? (
@@ -203,7 +203,7 @@ export function AssessmentFAQ() {
                         transition={{ duration: 0.22, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 sm:px-7 pb-4 sm:pb-5 pt-1 text-slate-600 text-xs sm:text-sm leading-relaxed border-t border-slate-100/80 mt-1">
+                        <div className="px-5 sm:px-7 pb-4 sm:pb-5 pt-1 text-slate-700 text-xs sm:text-sm leading-relaxed border-t border-slate-100/80 mt-1 font-medium">
                           <p>{faq.answer}</p>
                         </div>
                       </motion.div>

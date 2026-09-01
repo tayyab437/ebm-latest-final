@@ -11,45 +11,45 @@ import HomeFooter from "./components/home/Footer";
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
 // Lazy-load non-homepage components and authentication views to keep initial bundle ultra-lightweight
-const AuthLayout = React.lazy(() => import("./components/auth").then(m => ({ default: m.AuthLayout })));
-const AuthCard = React.lazy(() => import("./components/auth").then(m => ({ default: m.AuthCard })));
-const LoginForm = React.lazy(() => import("./components/auth").then(m => ({ default: m.LoginForm })));
-const RegisterForm = React.lazy(() => import("./components/auth").then(m => ({ default: m.RegisterForm })));
-const ForgotPasswordForm = React.lazy(() => import("./components/auth").then(m => ({ default: m.ForgotPasswordForm })));
-const ResetPasswordForm = React.lazy(() => import("./components/auth").then(m => ({ default: m.ResetPasswordForm })));
-const VerifyEmail = React.lazy(() => import("./components/auth").then(m => ({ default: m.VerifyEmail })));
+const AuthLayout = React.lazy(() => import("./components/auth/AuthLayout").then(m => ({ default: m.AuthLayout })));
+const AuthCard = React.lazy(() => import("./components/auth/AuthCard").then(m => ({ default: m.AuthCard })));
+const LoginForm = React.lazy(() => import("./components/auth/LoginForm").then(m => ({ default: m.LoginForm })));
+const RegisterForm = React.lazy(() => import("./components/auth/RegisterForm").then(m => ({ default: m.RegisterForm })));
+const ForgotPasswordForm = React.lazy(() => import("./components/auth/ForgotPasswordForm").then(m => ({ default: m.ForgotPasswordForm })));
+const ResetPasswordForm = React.lazy(() => import("./components/auth/ResetPasswordForm").then(m => ({ default: m.ResetPasswordForm })));
+const VerifyEmail = React.lazy(() => import("./components/auth/VerifyEmail").then(m => ({ default: m.VerifyEmail })));
 
 const StudentDashboardView = React.lazy(() => import("./components/student/dashboard/StudentDashboardView"));
-const AdminErpLayout = React.lazy(() => import("./components/admin/erp").then(m => ({ default: m.AdminLayout })));
-const CurriculumLayout = React.lazy(() => import("./components/admin/curriculum").then(m => ({ default: m.CurriculumLayout })));
-const TeacherLayout = React.lazy(() => import("./components/teacher").then(m => ({ default: m.TeacherLayout })));
+const AdminErpLayout = React.lazy(() => import("./components/admin/erp/AdminLayout").then(m => ({ default: m.AdminLayout })));
+const CurriculumLayout = React.lazy(() => import("./components/admin/curriculum/CurriculumLayout").then(m => ({ default: m.CurriculumLayout })));
+const TeacherLayout = React.lazy(() => import("./components/teacher/TeacherLayout").then(m => ({ default: m.TeacherLayout })));
 const ParentDashboard = React.lazy(() => import("./components/parent/ParentDashboard").then(m => ({ default: m.ParentDashboard })));
 
-const LearningLayout = React.lazy(() => import("./components/student/learning").then(m => ({ default: m.LearningLayout })));
-const AILayout = React.lazy(() => import("./components/student/ai").then(m => ({ default: m.AILayout })));
-const AdaptiveLayout = React.lazy(() => import("./components/student/adaptive").then(m => ({ default: m.AdaptiveLayout })));
-const LiveLayout = React.lazy(() => import("./components/student/live").then(m => ({ default: m.LiveLayout })));
-const GrowthLayout = React.lazy(() => import("./components/student/growth").then(m => ({ default: m.GrowthLayout })));
-const AssessmentLayout = React.lazy(() => import("./components/student/exams").then(m => ({ default: m.AssessmentLayout })));
-const ContentLayout = React.lazy(() => import("./components/content").then(m => ({ default: m.ContentLayout })));
-const SuccessLayout = React.lazy(() => import("./components/student-success").then(m => ({ default: m.SuccessLayout })));
+const LearningLayout = React.lazy(() => import("./components/student/learning/LearningLayout").then(m => ({ default: m.LearningLayout })));
+const AILayout = React.lazy(() => import("./components/student/ai/AILayout").then(m => ({ default: m.AILayout })));
+const AdaptiveLayout = React.lazy(() => import("./components/student/adaptive/AdaptiveLayout").then(m => ({ default: m.AdaptiveLayout })));
+const LiveLayout = React.lazy(() => import("./components/student/live/LiveLayout").then(m => ({ default: m.LiveLayout })));
+const GrowthLayout = React.lazy(() => import("./components/student/growth/GrowthLayout").then(m => ({ default: m.GrowthLayout })));
+const AssessmentLayout = React.lazy(() => import("./components/student/exams/AssessmentLayout").then(m => ({ default: m.AssessmentLayout })));
+const ContentLayout = React.lazy(() => import("./components/content/ContentLayout").then(m => ({ default: m.ContentLayout })));
+const SuccessLayout = React.lazy(() => import("./components/student-success/SuccessLayout").then(m => ({ default: m.SuccessLayout })));
 
-const BlogList = React.lazy(() => import("./components/blog").then(m => ({ default: m.BlogList })));
-const BlogPostView = React.lazy(() => import("./components/blog").then(m => ({ default: m.BlogPostView })));
-const BlogCategoryView = React.lazy(() => import("./components/blog").then(m => ({ default: m.BlogCategoryView })));
+const BlogList = React.lazy(() => import("./components/blog/BlogList").then(m => ({ default: m.BlogList })));
+const BlogPostView = React.lazy(() => import("./components/blog/BlogPostView").then(m => ({ default: m.BlogPostView })));
+const BlogCategoryView = React.lazy(() => import("./components/blog/BlogCategoryView").then(m => ({ default: m.BlogCategoryView })));
 
-const ContactUs = React.lazy(() => import("./components/pages").then(m => ({ default: m.ContactUs })));
-const PrivacyPolicy = React.lazy(() => import("./components/pages").then(m => ({ default: m.PrivacyPolicy })));
-const TermsConditions = React.lazy(() => import("./components/pages").then(m => ({ default: m.TermsConditions })));
-const AssessmentPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.AssessmentPage })));
-const AnalyticsPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.AnalyticsPage })));
-const InspirationPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.InspirationPage })));
-const CaseStudiesPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.CaseStudiesPage })));
-const AboutUs = React.lazy(() => import("./components/pages").then(m => ({ default: m.AboutUs })));
-const PricingPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.PricingPage })));
-const ProgramsPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.ProgramsPage })));
-const LearningPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.LearningPage })));
-const NotFoundPage = React.lazy(() => import("./components/pages").then(m => ({ default: m.NotFoundPage })));
+const ContactUs = React.lazy(() => import("./components/pages/ContactUs").then(m => ({ default: m.ContactUs })));
+const PrivacyPolicy = React.lazy(() => import("./components/pages/PrivacyPolicy").then(m => ({ default: m.PrivacyPolicy })));
+const TermsConditions = React.lazy(() => import("./components/pages/TermsConditions").then(m => ({ default: m.TermsConditions })));
+const AssessmentPage = React.lazy(() => import("./components/pages/AssessmentPage").then(m => ({ default: m.AssessmentPage })));
+const AnalyticsPage = React.lazy(() => import("./components/pages/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
+const InspirationPage = React.lazy(() => import("./components/pages/InspirationPage").then(m => ({ default: m.InspirationPage })));
+const CaseStudiesPage = React.lazy(() => import("./components/pages/CaseStudiesPage").then(m => ({ default: m.CaseStudiesPage })));
+const AboutUs = React.lazy(() => import("./components/pages/AboutUs").then(m => ({ default: m.AboutUs })));
+const PricingPage = React.lazy(() => import("./components/pages/PricingPage").then(m => ({ default: m.PricingPage })));
+const ProgramsPage = React.lazy(() => import("./components/pages/ProgramsPage").then(m => ({ default: m.ProgramsPage })));
+const LearningPage = React.lazy(() => import("./components/pages/LearningPage").then(m => ({ default: m.LearningPage })));
+const NotFoundPage = React.lazy(() => import("./components/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 
 
 
@@ -919,7 +919,7 @@ export default function App() {
       </header>
 
       {/* Mobile Nav Header */}
-      <nav aria-label="Mobile navigation" className="bg-white/85 backdrop-blur-md text-slate-700 md:hidden flex justify-around py-2 border-t border-slate-200/60 text-xs font-semibold shadow-xs overflow-x-auto whitespace-nowrap px-2 gap-1.5">
+      <nav aria-label="Mobile navigation" className="bg-white/95 backdrop-blur-md text-slate-800 md:hidden flex justify-around py-1.5 border-t border-slate-200/80 text-xs font-semibold shadow-xs overflow-x-auto whitespace-nowrap px-2 gap-1.5">
         {headerNavTabs.map((tab) => {
           const isActive = location.pathname === tab.path || (tab.path !== "/" && location.pathname.startsWith(tab.path));
           return (
@@ -928,13 +928,13 @@ export default function App() {
               to={tab.path}
               id={`mob-nav-${tab.id}`}
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className={`relative px-3 py-1 rounded-full text-xs font-bold transition-colors inline-block ${
-                isActive ? "text-[#00a3e0]" : "text-slate-600 hover:text-[#00a3e0]"
+              className={`relative px-3.5 py-2 min-h-[44px] flex items-center justify-center rounded-full text-xs font-bold transition-colors ${
+                isActive ? "text-[#005f90]" : "text-slate-700 hover:text-[#005f90]"
               }`}
             >
               {isActive && (
                 <div
-                  className="absolute inset-0 bg-[#00a3e0]/15 rounded-full border border-[#00a3e0]/30 transition-all duration-200"
+                  className="absolute inset-0 bg-[#00709d]/15 rounded-full border border-[#00709d]/30 transition-all duration-200"
                 />
               )}
               <span className="relative z-10">{tab.label}</span>
@@ -948,9 +948,9 @@ export default function App() {
 
 
       {/* ================== MAIN CONTENT ROUTER ================== */}
-      <main className={`flex-grow flex flex-col ${isPortalPage ? "h-screen w-full overflow-hidden" : ""}`}>
+      <main className={`flex-grow flex flex-col ${isPortalPage ? "h-screen w-full overflow-hidden" : "min-h-screen"}`}>
         <React.Suspense fallback={
-          <div className="flex-grow min-h-[50vh] flex items-center justify-center">
+          <div className="flex-grow min-h-screen flex items-center justify-center bg-[#F8FAFC]">
             <div className="w-8 h-8 border-3 border-[#00a3e0] border-t-transparent rounded-full animate-spin"></div>
           </div>
         }>

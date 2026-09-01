@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SEOHead } from "../SEOHead";
-import learningHeaderBg from "../../assets/images/learning_header_bg_1786521543116.jpg";
+const learningHeaderBg = "/learning-hero-bg-opt.webp";
 import {
   Search,
   BookOpen,
@@ -241,6 +241,11 @@ export function LearningPage({ onSignIn, onNavigateToTab, userRole, token }: Lea
         <img
           src={learningHeaderBg}
           alt="Learning Classroom Background"
+          width="1200"
+          height="600"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"
         />

@@ -8,8 +8,9 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="canonical" href="https://ejazbukharimethod.com/" />
     
-    <!-- Preload LCP Image -->
-    <link rel="preload" as="image" href="/ebm-hero-bg-opt.webp" fetchpriority="high" />
+    <!-- Preload LCP Images -->
+    <link rel="preload" as="image" href="/ebm-hero-bg-opt.webp" fetchpriority="high" type="image/webp" />
+    <link rel="preload" as="image" href="/assessment-hero-bg-opt.webp" fetchpriority="high" type="image/webp" />
     
     <!-- DNS Prefetch & Preconnect Hints -->
     <link rel="dns-prefetch" href="https://i.ibb.co" />
@@ -100,7 +101,7 @@
   </head>
   <body>
     <div id="root">
-      <!-- Instant-Render Critical Hero Shell (Hydrated seamlessly by React to eliminate LCP Element Render Delay) -->
+      <!-- Universal Application Shell (Hydrated seamlessly by React to prevent CLS layout shifts) -->
       <div class="min-h-screen flex flex-col bg-[#F8FAFC]">
         <!-- Top Navbar Shell -->
         <header class="bg-white/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200/80 shadow-xs">
@@ -112,14 +113,14 @@
               </div>
             </div>
             <nav class="hidden md:flex items-center space-x-6 text-sm font-bold text-slate-600">
-              <span class="text-[#00a3e0]">Home</span>
-              <span>About Us</span>
-              <span>Programs</span>
-              <span>Learning</span>
-              <span>Assessment</span>
-              <span>Analytics</span>
-              <span>Blog</span>
-              <span>Pricing</span>
+              <a href="/" class="text-[#00a3e0]">Home</a>
+              <a href="/about" class="hover:text-[#00a3e0] transition-colors">About Us</a>
+              <a href="/programs" class="hover:text-[#00a3e0] transition-colors">Programs</a>
+              <a href="/learning" class="hover:text-[#00a3e0] transition-colors">Learning</a>
+              <a href="/assessment" class="hover:text-[#00a3e0] transition-colors">Assessment</a>
+              <a href="/analytics" class="hover:text-[#00a3e0] transition-colors">Analytics</a>
+              <a href="/blog" class="hover:text-[#00a3e0] transition-colors">Blog</a>
+              <a href="/pricing" class="hover:text-[#00a3e0] transition-colors">Pricing</a>
             </nav>
             <div class="flex items-center space-x-3">
               <a href="/login" class="px-4 py-1.5 bg-[#00a3e0] text-white text-xs sm:text-sm font-bold rounded-md shadow-sm">Sign in</a>
@@ -128,42 +129,8 @@
           </div>
         </header>
 
-        <!-- Critical Hero Banner with LCP Element -->
-        <main class="flex-grow flex flex-col">
-          <section class="relative overflow-hidden flex flex-col items-center justify-between pt-8 pb-10 px-4 min-h-[520px] bg-gradient-to-b from-sky-50/60 via-white to-slate-50">
-            <div class="max-w-6xl mx-auto w-full relative z-10 flex flex-col items-center">
-              <h1 
-                id="ebm-hero-title"
-                class="text-3xl md:text-[48px] font-serif text-[#00a3e0] font-semibold tracking-wide text-center mb-3 drop-shadow-[0_4px_12px_rgba(255,255,255,1)]"
-                style="text-shadow: 0 0 20px #ffffff, 0 0 35px #ffffff, 0 0 10px #ffffff, 0 0 4px #ffffff, 0 2px 10px rgba(0, 32, 64, 0.6)"
-              >
-                EBM: A Personalized Learning Platform for Every Student
-              </h1>
-
-              <p
-                id="ebm-hero-subtitle"
-                class="text-base sm:text-lg md:text-[19px] text-slate-800 font-medium text-center max-w-3xl mx-auto mb-8 px-4 leading-relaxed"
-                style="text-shadow: 0 0 18px #ffffff, 0 0 28px #ffffff, 0 0 8px #ffffff, 0 1px 4px rgba(255, 255, 255, 0.95)"
-              >
-                EBM combines structured learning, personalized guidance, and AI-enhanced tools to help students build strong academic foundations and progress with confidence.
-              </p>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full items-stretch max-w-5xl">
-                <div class="bg-white/95 rounded-2xl border-2 border-[#00a3e0]/40 p-6 flex flex-col items-center text-center shadow-md">
-                  <h2 class="text-[19px] font-serif text-[#00a3e0] font-normal leading-tight mb-2">Learning Support from<br />Grade 1 to O/A Levels</h2>
-                  <p class="text-gray-600 text-xs font-medium">Mathematics • English</p>
-                </div>
-                <div class="bg-white/95 rounded-2xl border-2 border-[#8e24aa]/40 p-6 flex flex-col items-center text-center shadow-md">
-                  <h2 class="text-[19px] font-serif text-[#8e24aa] font-normal leading-tight mb-2">Build Skills for Academic<br />and Real-World Success</h2>
-                  <p class="text-gray-600 text-xs font-medium">Practical Methods • Educator Support</p>
-                </div>
-                <div class="bg-white/95 rounded-2xl border-2 border-[#00a3e0]/40 p-6 flex flex-col items-center text-center shadow-md">
-                  <h2 class="text-[19px] font-serif text-[#00a3e0] font-normal leading-tight mb-2">AI-Enhanced Personalized Learning</h2>
-                  <p class="text-gray-600 text-xs font-medium">Personalized Guidance • Smart Insights</p>
-                </div>
-              </div>
-            </div>
-          </section>
+        <!-- Main Shell Container -->
+        <main class="flex-grow flex flex-col min-h-screen bg-[#F8FAFC]">
         </main>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { SEOHead } from "../SEOHead";
-import inspirationHeroBg from "../../assets/images/inspiration_hero_bg_1786525193837.jpg";
+const inspirationHeroBg = "/inspiration-hero-bg-opt.webp";
 import { 
   BookOpen, 
   Calendar, 
@@ -157,6 +157,11 @@ export function InspirationPage() {
         <img
           src={inspirationHeroBg}
           alt="EBM Inspiration & Resources Background"
+          width="1200"
+          height="600"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"
         />

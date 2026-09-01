@@ -8141,6 +8141,14 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
 /* ================== VITE MIDDLEWARE & SERVER BOOT ================== */
 
 async function startServer() {
+  // Cache headers middleware for static media assets (.webp, .jpg, .png, .svg, .ico, .woff2)
+  app.use((req, res, next) => {
+    if (/\.(webp|jpg|jpeg|png|svg|ico|woff2?|ttf)$/i.test(req.path)) {
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    }
+    next();
+  });
+
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },

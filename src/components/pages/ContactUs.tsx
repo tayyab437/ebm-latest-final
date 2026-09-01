@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Mail, Phone, Globe, Send, HelpCircle, ChevronDown, MessageSquare, Sparkles } from "lucide-react";
 import { SEOHead } from "../SEOHead";
 import { useInquiryStore } from "../../services/inquiries.store";
-import contactHeroBg from "../../assets/images/contact_hero_bg_1786524748544.jpg";
+const contactHeroBg = "/contact-hero-bg-opt.webp";
 
 export const ContactUs: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -70,6 +70,11 @@ export const ContactUs: React.FC = () => {
         <img
           src={contactHeroBg}
           alt="Contact & Admissions Background"
+          width="1200"
+          height="600"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"
         />

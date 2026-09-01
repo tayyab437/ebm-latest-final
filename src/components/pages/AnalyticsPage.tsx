@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { SEOHead } from "../SEOHead";
-import analyticsHeroBg from "../../assets/images/analytics_hero_bg_1786525179105.jpg";
+const analyticsHeroBg = "/analytics-hero-bg-opt.webp";
 import { EbmAtmosphericCanvas, EbmEvidenceParticles } from "../analytics/design-system";
 import { EbmAnalyticsEngine } from "../analytics/EbmAnalyticsEngine";
 import { EbmMasteryExperience } from "../analytics/EbmMasteryExperience";
@@ -232,6 +232,11 @@ export function AnalyticsPage() {
         <img
           src={analyticsHeroBg}
           alt="Analytics & Performance Dashboard Background"
+          width="1200"
+          height="600"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 opacity-35"
         />

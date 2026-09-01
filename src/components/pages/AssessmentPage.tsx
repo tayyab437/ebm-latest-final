@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { SEOHead } from "../SEOHead";
-import assessmentHeroBg from "../../assets/images/assessment_hero_bg_1786524997986.jpg";
+const assessmentHeroBg = "/assessment-hero-bg-opt.webp";
 import { AssessmentFAQ } from "./AssessmentFAQ";
 import { 
   ArrowRight, 
@@ -687,11 +687,16 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
       />
       
       {/* ================= HERO HEADER BANNER ================= */}
-      <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm">
+      <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm min-h-[320px]">
         {/* Background Image */}
         <img
-          src={assessmentHeroBg}
+          src="/assessment-hero-bg-opt.webp"
           alt="Assessment Diagnostic Background"
+          width="1200"
+          height="600"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"
         />
@@ -738,7 +743,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
           {/* Centered title with horizontal side accent lines */}
           <div className="flex items-center justify-center space-x-4 mb-4">
             <div className="hidden sm:block h-px bg-slate-200 flex-grow max-w-[150px]" />
-            <h2 className="text-2xl sm:text-3.5xl font-black text-[#00a3e0] tracking-tight text-center">
+            <h2 className="text-2xl sm:text-3.5xl font-black text-[#005f90] tracking-tight text-center">
               Unlock every child's full potential
             </h2>
             <div className="hidden sm:block h-px bg-slate-200 flex-grow max-w-[150px]" />
@@ -753,10 +758,10 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
       <section className="py-16 sm:py-24 bg-white border-t border-slate-100 px-4">
         <div className="max-w-7xl mx-auto space-y-12">
           
-          {/* Section Section Eyebrow Header */}
+          {/* Section Eyebrow Header */}
           <div className="flex items-center space-x-3">
-            <div className="h-0.5 w-8 bg-[#00a3e0]" />
-            <span className="text-xs sm:text-sm font-extrabold text-[#00a3e0] uppercase tracking-widest">
+            <div className="h-0.5 w-8 bg-[#005f90]" />
+            <span className="text-xs sm:text-sm font-extrabold text-[#005f90] uppercase tracking-widest">
               Step Into the EBM Diagnostic
             </span>
           </div>
@@ -766,7 +771,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
             {/* Left Column: Key Details & Subject Breakdown */}
             <div className="lg:col-span-6 space-y-8">
               <div className="flex items-center space-x-4">
-                <div className="bg-emerald-500 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-500/20">
+                <div className="bg-emerald-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-500/20">
                   01
                 </div>
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -774,11 +779,11 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 </h3>
               </div>
 
-              <div className="space-y-4 text-slate-600 text-base sm:text-lg leading-relaxed">
+              <div className="space-y-4 text-slate-700 text-base sm:text-lg leading-relaxed">
                 <p>
                   The EBM Diagnostic evaluates a learner's current level in Mathematics and English Comprehension through an adaptive assessment experience designed to provide meaningful evidence without unnecessary testing pressure.
                 </p>
-                <p className="text-sm sm:text-base text-slate-500">
+                <p className="text-sm sm:text-base text-slate-600">
                   The diagnostic is designed for learners from Grade 1 through O/A Levels, helping EBM understand learning across different stages of academic development.
                 </p>
               </div>
@@ -788,9 +793,9 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 
                 {/* Mathematics Focus Card */}
                 <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3 hover:border-cyan-300 transition-colors">
-                  <div className="flex items-center space-x-2 text-[#00a3e0]">
+                  <div className="flex items-center space-x-2 text-[#005f90]">
                     <div className="p-1.5 bg-cyan-100/80 rounded-lg">
-                      <BarChart3 className="w-4 h-4 text-[#00a3e0]" />
+                      <BarChart3 className="w-4 h-4 text-[#005f90]" />
                     </div>
                     <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-900">
                       Mathematics
@@ -798,19 +803,19 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                   </div>
                   <ul className="space-y-2 text-xs font-semibold text-slate-700">
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a3e0] shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#005f90] shrink-0" />
                       <span>Grade 1–5 Fundamentals</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a3e0] shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#005f90] shrink-0" />
                       <span>Grade 6–8 Pre-Algebra &amp; Decimals</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a3e0] shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#005f90] shrink-0" />
                       <span>Pre-O Algebra &amp; Geometry</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a3e0] shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#005f90] shrink-0" />
                       <span>O/A Level Pure &amp; Applied Mathematics</span>
                     </li>
                   </ul>
@@ -818,9 +823,9 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
 
                 {/* English Comprehension Focus Card */}
                 <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3 hover:border-purple-300 transition-colors">
-                  <div className="flex items-center space-x-2 text-purple-600">
+                  <div className="flex items-center space-x-2 text-purple-700">
                     <div className="p-1.5 bg-purple-100/80 rounded-lg">
-                      <BookOpen className="w-4 h-4 text-purple-600" />
+                      <BookOpen className="w-4 h-4 text-purple-700" />
                     </div>
                     <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-900">
                       English Comprehension
@@ -828,23 +833,23 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                   </div>
                   <ul className="space-y-2 text-xs font-semibold text-slate-700">
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-700 shrink-0" />
                       <span>Reading Fluency</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-700 shrink-0" />
                       <span>Contextual Vocabulary</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-700 shrink-0" />
                       <span>Inferential Thinking</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-700 shrink-0" />
                       <span>Textual Evidence Analysis</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-700 shrink-0" />
                       <span>O/A Level English Literature &amp; Language</span>
                     </li>
                   </ul>
@@ -854,7 +859,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
 
               {/* Badge Footer */}
               <div className="pt-4 border-t border-slate-200/80 flex items-center space-x-3 text-slate-800 font-extrabold text-sm sm:text-base">
-                <div className="bg-[#00a3e0]/10 text-[#00a3e0] p-2 rounded-xl">
+                <div className="bg-[#00709d]/15 text-[#005f90] p-2 rounded-xl">
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <span>Covers Grade 1 to O/A Levels</span>
@@ -865,26 +870,28 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
             <div className="lg:col-span-6 bg-white rounded-3xl shadow-xl border border-slate-200/80 p-6 relative overflow-hidden space-y-6">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-slate-400">Interactive Preview</span>
+                  <span className="text-xs font-extrabold uppercase tracking-widest text-slate-600">Interactive Preview</span>
                   <h4 className="text-base sm:text-lg font-black text-slate-800">EBM Diagnostic Arena</h4>
                 </div>
                 <div className="flex bg-slate-100 p-1 rounded-full">
                   <button 
                     onClick={() => setSelectedSubject("math")}
-                    className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer ${selectedSubject === "math" ? "bg-[#00a3e0] text-white shadow" : "text-slate-500 hover:text-slate-800"}`}
+                    aria-label="Select Math Subject Preview"
+                    className={`px-3.5 py-2 min-h-[44px] flex items-center justify-center text-xs font-bold rounded-full transition-all cursor-pointer ${selectedSubject === "math" ? "bg-[#00709d] text-white shadow" : "text-slate-700 hover:text-slate-900"}`}
                   >
                     Math
                   </button>
                   <button 
                     onClick={() => setSelectedSubject("ela")}
-                    className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer ${selectedSubject === "ela" ? "bg-purple-600 text-white shadow" : "text-slate-500 hover:text-slate-800"}`}
+                    aria-label="Select English Subject Preview"
+                    className={`px-3.5 py-2 min-h-[44px] flex items-center justify-center text-xs font-bold rounded-full transition-all cursor-pointer ${selectedSubject === "ela" ? "bg-purple-700 text-white shadow" : "text-slate-700 hover:text-slate-900"}`}
                   >
                     English
                   </button>
                 </div>
               </div>
 
-              <p className="text-center text-xs font-bold text-slate-600 bg-emerald-50 text-emerald-800 py-2.5 px-4 rounded-xl border border-emerald-100/80">
+              <p className="text-center text-xs font-bold text-slate-700 bg-emerald-50 text-emerald-900 py-2.5 px-4 rounded-xl border border-emerald-200/80">
                 🎉 Real-time level evaluation active across Grade 1 to O/A Levels
               </p>
 
@@ -893,36 +900,36 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <div className="space-y-3">
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/25 transition group">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs font-bold text-slate-600">
+                      <span className="text-xs font-bold text-slate-700">
                         {selectedSubject === "math" ? "Fractions & Decimals" : "Inferential Thinking"}
                       </span>
-                      <span className="text-[10px] font-extrabold text-emerald-600 bg-emerald-100/80 px-2 py-0.5 rounded">Highest Level</span>
+                      <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">Highest Level</span>
                     </div>
-                    <div className="text-xl font-black text-[#00a3e0]">
+                    <div className="text-xl font-black text-[#005f90]">
                       {selectedSubject === "math" ? "800" : "810"}
                     </div>
                   </div>
 
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/25 transition">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs font-bold text-slate-600">
+                      <span className="text-xs font-bold text-slate-700">
                         {selectedSubject === "math" ? "Pre-Algebra" : "Contextual Vocabulary"}
                       </span>
-                      <span className="text-[10px] font-extrabold text-amber-600 bg-amber-100/80 px-2 py-0.5 rounded">1 rec focus</span>
+                      <span className="text-[10px] font-extrabold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">1 rec focus</span>
                     </div>
-                    <div className="text-xl font-black text-[#00a3e0]">
+                    <div className="text-xl font-black text-[#005f90]">
                       {selectedSubject === "math" ? "770" : "790"}
                     </div>
                   </div>
 
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/25 transition">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs font-bold text-slate-600">
+                      <span className="text-xs font-bold text-slate-700">
                         {selectedSubject === "math" ? "Pure Math Fundamentals" : "Textual Evidence"}
                       </span>
-                      <span className="text-[10px] font-extrabold text-amber-600 bg-amber-100/80 px-2 py-0.5 rounded">2 rec focus</span>
+                      <span className="text-[10px] font-extrabold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">2 rec focus</span>
                     </div>
-                    <div className="text-xl font-black text-[#00a3e0]">
+                    <div className="text-xl font-black text-[#005f90]">
                       {selectedSubject === "math" ? "750" : "780"}
                     </div>
                   </div>
@@ -932,32 +939,32 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <div className="flex flex-col items-center justify-center p-4 bg-slate-50/50 rounded-2xl border border-slate-100 min-h-[220px] relative">
                   
                   {/* SVG Visual Radar Indicator */}
-                  <svg className="w-36 h-36 animate-spin-slow text-slate-300" viewBox="0 0 100 100">
+                  <svg className="w-36 h-36 animate-spin-slow text-slate-400" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" />
                     <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2,2" />
-                    <line x1="50" y1="5" x2="50" y2="95" stroke="currentColor" strokeWidth="1" />
                     <line x1="5" y1="50" x2="95" y2="50" stroke="currentColor" strokeWidth="1" />
+                    <line x1="50" y1="5" x2="50" y2="95" stroke="currentColor" strokeWidth="1" />
                     <line x1="18" y1="18" x2="82" y2="82" stroke="currentColor" strokeWidth="0.75" />
                     <line x1="18" y1="82" x2="82" y2="18" stroke="currentColor" strokeWidth="0.75" />
-                    <polygon points="50,20 72,32 80,50 65,70 50,85 30,68 22,50 35,32" fill="url(#blueGrad)" fillOpacity="0.4" stroke={selectedSubject === "math" ? "#00a3e0" : "#9333ea"} strokeWidth="1.5" />
+                    <polygon points="50,20 72,32 80,50 65,70 50,85 30,68 22,50 35,32" fill="url(#blueGrad)" fillOpacity="0.4" stroke={selectedSubject === "math" ? "#00709d" : "#7e22ce"} strokeWidth="1.5" />
                     
                     <defs>
                       <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#34d399" />
-                        <stop offset="100%" stopColor={selectedSubject === "math" ? "#00a3e0" : "#9333ea"} />
+                        <stop offset="0%" stopColor="#10b981" />
+                        <stop offset="100%" stopColor={selectedSubject === "math" ? "#00709d" : "#7e22ce"} />
                       </linearGradient>
                     </defs>
                   </svg>
 
                   {/* Central overall score indicator */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+                    <span className="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest">
                       {selectedSubject === "math" ? "Math Level" : "English Level"}
                     </span>
-                    <span className="text-3xl font-black text-slate-800 tracking-tight">
+                    <span className="text-3xl font-black text-slate-900 tracking-tight">
                       {selectedSubject === "math" ? "780" : "810"}
                     </span>
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100/80 px-2 py-0.5 rounded mt-0.5">
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded mt-0.5">
                       {selectedSubject === "math" ? "Proficient" : "Advanced"}
                     </span>
                   </div>
@@ -977,8 +984,8 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
           
           {/* Eyebrow Header */}
           <div className="flex items-center space-x-3">
-            <div className="h-0.5 w-8 bg-[#00a3e0]" />
-            <span className="text-xs sm:text-sm font-extrabold text-[#00a3e0] uppercase tracking-widest">
+            <div className="h-0.5 w-8 bg-[#005f90]" />
+            <span className="text-xs sm:text-sm font-extrabold text-[#005f90] uppercase tracking-widest">
               Step Into the EBM Diagnostic
             </span>
           </div>
@@ -988,7 +995,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
             {/* Left Column: Key Details & Features List */}
             <div className="lg:col-span-5 space-y-8">
               <div className="flex items-center space-x-4">
-                <div className="bg-[#00a3e0] text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-cyan-500/20">
+                <div className="bg-[#00709d] text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-cyan-500/20">
                   02
                 </div>
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -1000,7 +1007,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <p className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
                   A diagnostic result should be more than a number.
                 </p>
-                <p className="text-base sm:text-lg text-slate-600">
+                <p className="text-base sm:text-lg text-slate-700">
                   EBM uses assessment evidence to identify areas that may need further attention and recommend appropriate learning support based on the learner's current performance.
                 </p>
               </div>
@@ -1015,7 +1022,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                   "Progress information that helps guide the next step"
                 ].map((feature, idx) => (
                   <div key={idx} className="flex items-start space-x-3 text-slate-800 text-sm font-bold">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                     <span>{feature}</span>
                   </div>
                 ))}
@@ -1030,18 +1037,18 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
               {/* Action Plan Top Bar */}
               <div className="flex flex-wrap items-center justify-between pb-4 border-b border-slate-100 gap-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-cyan-100 text-[#00a3e0] flex items-center justify-center font-black">
+                  <div className="w-10 h-10 rounded-full bg-cyan-100 text-[#005f90] flex items-center justify-center font-black">
                     MB
                   </div>
                   <div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#00a3e0]">Student Overview</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#005f90]">Student Overview</span>
                     <h4 className="text-base font-black text-slate-900">Student: Molly Brady</h4>
                   </div>
                 </div>
                 
                 <div className="bg-cyan-50 border border-cyan-200/80 px-3.5 py-1.5 rounded-xl text-right">
-                  <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">Latest Mathematics Level</span>
-                  <span className="text-lg font-black text-[#00a3e0]">770</span>
+                  <span className="text-[10px] font-extrabold text-slate-700 uppercase tracking-wider block">Latest Mathematics Level</span>
+                  <span className="text-lg font-black text-[#005f90]">770</span>
                 </div>
               </div>
 
@@ -1049,7 +1056,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
               <div className="bg-slate-900 text-white p-4 rounded-2xl flex items-center justify-between">
                 <div className="flex items-center space-x-2.5">
                   <Target className="w-5 h-5 text-cyan-400" />
-                  <h5 className="text-sm font-black tracking-wide">EBM Diagnostic Action Plan</h5>
+                  <h4 className="text-sm font-black tracking-wide">EBM Diagnostic Action Plan</h4>
                 </div>
                 <span className="text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">
                   Evidence-Based
@@ -1062,11 +1069,11 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 {/* Mathematics Section */}
                 <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:p-5 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-[#00a3e0] uppercase tracking-wider flex items-center space-x-1.5">
+                    <span className="text-xs font-black text-[#005f90] uppercase tracking-wider flex items-center space-x-1.5">
                       <BarChart3 className="w-4 h-4" />
                       <span>Mathematics</span>
                     </span>
-                    <span className="text-xs font-extrabold bg-cyan-100 text-cyan-800 px-2.5 py-0.5 rounded-md">
+                    <span className="text-xs font-extrabold bg-cyan-100 text-cyan-900 px-2.5 py-0.5 rounded-md">
                       Current Focus: Fractions &amp; Decimals
                     </span>
                   </div>
@@ -1074,7 +1081,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                     The latest diagnostic evidence suggests that Molly would benefit from strengthening her understanding of relationships between fractions and decimals.
                   </p>
                   <div className="bg-white p-3 rounded-xl border border-slate-200/60 text-xs text-slate-800 font-semibold flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span><strong>Recommended Support:</strong> Practice activities and lessons matched to her current level.</span>
                   </div>
                 </div>
@@ -1082,11 +1089,11 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 {/* English Comprehension Section */}
                 <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:p-5 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-purple-600 uppercase tracking-wider flex items-center space-x-1.5">
+                    <span className="text-xs font-black text-purple-700 uppercase tracking-wider flex items-center space-x-1.5">
                       <BookOpen className="w-4 h-4" />
                       <span>English Comprehension</span>
                     </span>
-                    <span className="text-xs font-extrabold bg-purple-100 text-purple-800 px-2.5 py-0.5 rounded-md">
+                    <span className="text-xs font-extrabold bg-purple-100 text-purple-900 px-2.5 py-0.5 rounded-md">
                       Current Focus: Inferential Thinking
                     </span>
                   </div>
@@ -1094,7 +1101,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                     Molly demonstrates confidence in identifying information directly stated in a text. Her next area for development is interpreting information that is implied rather than directly stated.
                   </p>
                   <div className="bg-white p-3 rounded-xl border border-slate-200/60 text-xs text-slate-800 font-semibold flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-purple-500 shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-purple-600 shrink-0" />
                     <span><strong>Recommended Support:</strong> Guided comprehension activities focused on inference and textual evidence.</span>
                   </div>
                 </div>
@@ -1113,7 +1120,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 </div>
                 <button 
                   onClick={onSignIn}
-                  className="bg-[#00a3e0] hover:bg-cyan-400 text-white text-xs font-extrabold py-2.5 px-5 rounded-xl transition-all cursor-pointer shadow-md"
+                  className="bg-[#00709d] hover:bg-[#00577b] text-white text-xs font-extrabold py-2.5 px-5 rounded-xl transition-all cursor-pointer shadow-md"
                 >
                   View Recommendation
                 </button>
@@ -1131,8 +1138,8 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
           
           {/* Eyebrow Header */}
           <div className="flex items-center space-x-3">
-            <div className="h-0.5 w-8 bg-purple-600" />
-            <span className="text-xs sm:text-sm font-extrabold text-purple-600 uppercase tracking-widest">
+            <div className="h-0.5 w-8 bg-purple-700" />
+            <span className="text-xs sm:text-sm font-extrabold text-purple-700 uppercase tracking-widest">
               Step Into the EBM Diagnostic
             </span>
           </div>
@@ -1142,7 +1149,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
             {/* Left Column: Headline, Narrative & Call to Action */}
             <div className="lg:col-span-6 space-y-8">
               <div className="flex items-center space-x-4">
-                <div className="bg-purple-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-purple-500/20">
+                <div className="bg-purple-700 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-purple-500/20">
                   03
                 </div>
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -1154,18 +1161,18 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <p className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
                   Learning changes over time—and diagnostic information should change with it.
                 </p>
-                <p className="text-base sm:text-lg text-slate-600">
+                <p className="text-base sm:text-lg text-slate-700">
                   EBM continuously updates its understanding of a learner's performance as they complete learning activities and demonstrate new evidence of understanding.
                 </p>
-                <p className="text-base sm:text-lg text-slate-600">
+                <p className="text-base sm:text-lg text-slate-700">
                   This means learners, parents, and educators can work with a more current picture of progress rather than relying only on an old assessment result.
                 </p>
               </div>
 
               {/* Takeaway Highlight Box */}
               <div className="bg-purple-50/80 border border-purple-200/80 p-5 rounded-2xl space-y-2">
-                <div className="flex items-center space-x-2 text-purple-700 font-extrabold text-xs uppercase tracking-wider">
-                  <Sparkles className="w-4 h-4 text-purple-600" />
+                <div className="flex items-center space-x-2 text-purple-800 font-extrabold text-xs uppercase tracking-wider">
+                  <Sparkles className="w-4 h-4 text-purple-700" />
                   <span>Real-Time Diagnostic Evidence</span>
                 </div>
                 <p className="text-sm font-bold text-purple-950 leading-relaxed">
@@ -1219,7 +1226,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <div className="flex items-center justify-between border-b border-slate-700 pb-3">
                   <div>
                     <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Student Live Record</span>
-                    <h5 className="text-sm font-black text-white">Mathematics &amp; English Progress</h5>
+                    <h4 className="text-sm font-black text-white">Mathematics &amp; English Progress</h4>
                   </div>
                   <span className="text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg">
                     Real-time synced
@@ -1263,8 +1270,8 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
           
           {/* Eyebrow Header */}
           <div className="flex items-center space-x-3">
-            <div className="h-0.5 w-8 bg-amber-500" />
-            <span className="text-xs sm:text-sm font-extrabold text-amber-600 uppercase tracking-widest">
+            <div className="h-0.5 w-8 bg-amber-600" />
+            <span className="text-xs sm:text-sm font-extrabold text-amber-800 uppercase tracking-widest">
               Step Into the EBM Diagnostic
             </span>
           </div>
@@ -1274,7 +1281,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
             {/* Left Column: Key Details */}
             <div className="lg:col-span-6 space-y-8">
               <div className="flex items-center space-x-4">
-                <div className="bg-amber-500 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-amber-500/20">
+                <div className="bg-amber-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-amber-500/20">
                   04
                 </div>
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -1286,15 +1293,15 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <p className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
                   Assessment should help learners understand progress—not create unnecessary pressure.
                 </p>
-                <p className="text-base sm:text-lg text-slate-600">
+                <p className="text-base sm:text-lg text-slate-700">
                   EBM presents progress in a way that encourages learners to recognise improvement, work toward meaningful academic goals, and stay engaged with their learning journey.
                 </p>
               </div>
 
               {/* Progress & Achievement Highlight Card */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                <div className="flex items-center space-x-2 text-amber-600">
-                  <Trophy className="w-5 h-5 text-amber-500" />
+                <div className="flex items-center space-x-2 text-amber-800">
+                  <Trophy className="w-5 h-5 text-amber-600" />
                   <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
                     Progress &amp; Achievement
                   </h4>
@@ -1305,21 +1312,21 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   <div className="bg-cyan-50/80 border border-cyan-200/80 p-3.5 rounded-xl flex items-center space-x-3">
-                    <div className="p-2 bg-[#00a3e0] text-white rounded-lg shrink-0">
+                    <div className="p-2 bg-[#00709d] text-white rounded-lg shrink-0">
                       <BarChart3 className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-extrabold text-slate-400 uppercase block">Subject Pillar</span>
+                      <span className="text-[10px] font-extrabold text-slate-600 uppercase block">Subject Pillar</span>
                       <span className="text-sm font-black text-slate-900">Mathematics</span>
                     </div>
                   </div>
 
                   <div className="bg-purple-50/80 border border-purple-200/80 p-3.5 rounded-xl flex items-center space-x-3">
-                    <div className="p-2 bg-purple-600 text-white rounded-lg shrink-0">
+                    <div className="p-2 bg-purple-700 text-white rounded-lg shrink-0">
                       <BookOpen className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-extrabold text-slate-400 uppercase block">Subject Pillar</span>
+                      <span className="text-[10px] font-extrabold text-slate-600 uppercase block">Subject Pillar</span>
                       <span className="text-sm font-black text-slate-900">English Comprehension</span>
                     </div>
                   </div>
@@ -1349,7 +1356,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
               >
                 {/* Trophy Badge Header */}
                 <div className="inline-flex items-center space-x-2 bg-amber-100/80 text-amber-900 border border-amber-200 py-1.5 px-4 rounded-full text-xs font-black">
-                  <Trophy className="w-4 h-4 text-amber-600 fill-amber-500" />
+                  <Trophy className="w-4 h-4 text-amber-700 fill-amber-500" />
                   <span>EBM Achievement</span>
                 </div>
 
@@ -1357,7 +1364,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                   <h4 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
                     You've made progress in Mathematics.
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
                     Your latest results show improvement in your understanding of <strong className="text-slate-900">Fractions &amp; Decimals</strong>.
                   </p>
                 </div>
@@ -1366,7 +1373,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <div className="flex justify-center space-x-1.5 pt-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <div key={star} className="p-1 bg-amber-50 rounded-lg border border-amber-100">
-                      <Sparkles className="w-4 h-4 text-amber-500 fill-amber-400" />
+                      <Sparkles className="w-4 h-4 text-amber-600 fill-amber-400" />
                     </div>
                   ))}
                 </div>
@@ -1374,7 +1381,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <div className="pt-2">
                   <button 
                     onClick={onSignIn}
-                    className="w-full bg-[#00a3e0] hover:bg-cyan-500 text-white font-extrabold text-xs uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center space-x-2"
+                    className="w-full bg-[#00709d] hover:bg-[#00577b] text-white font-extrabold text-xs uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center space-x-2"
                   >
                     <span>View My Progress</span>
                     <ChevronRight className="w-4 h-4" />
@@ -1397,7 +1404,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(0,163,224,0.08),transparent_40%)] pointer-events-none" />
         
         <div className="max-w-4xl mx-auto relative z-10 text-center space-y-4">
-          <div className="inline-flex items-center justify-center space-x-2 text-[#00a3e0] bg-cyan-50 border border-cyan-200/80 py-1.5 px-4 rounded-full font-black uppercase text-xs tracking-widest">
+          <div className="inline-flex items-center justify-center space-x-2 text-[#005f90] bg-cyan-50 border border-cyan-200/80 py-1.5 px-4 rounded-full font-black uppercase text-xs tracking-widest">
             <Users className="w-4 h-4" />
             <span>Success Stories</span>
           </div>
@@ -1431,11 +1438,11 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                       {testimonials[activeTestimonial].initial}
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-slate-900 text-sm sm:text-base">{testimonials[activeTestimonial].name}</h4>
-                      <p className="text-xs text-slate-500 font-semibold">{testimonials[activeTestimonial].role} • {testimonials[activeTestimonial].location}</p>
+                      <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">{testimonials[activeTestimonial].name}</h3>
+                      <p className="text-xs text-slate-600 font-semibold">{testimonials[activeTestimonial].role} • {testimonials[activeTestimonial].location}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-1 text-amber-400">
+                  <div className="flex items-center space-x-1 text-amber-500">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Sparkle key={star} className="w-4 h-4 fill-current" />
                     ))}
@@ -1447,32 +1454,40 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
             {/* Testimonials controls */}
             <div className="absolute top-1/2 -translate-y-1/2 -left-4 sm:-left-6">
               <button 
+                type="button"
+                aria-label="Previous testimonial"
                 onClick={() => setActiveTestimonial(prev => (prev === 0 ? testimonials.length - 1 : prev - 1))}
-                className="w-10 h-10 sm:w-12 sm:h-12 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer"
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer min-w-[44px] min-h-[44px]"
               >
-                <ChevronLeft className="w-5 h-5 text-slate-600" />
+                <ChevronLeft className="w-5 h-5 text-slate-700" />
               </button>
             </div>
 
             <div className="absolute top-1/2 -translate-y-1/2 -right-4 sm:-right-6">
               <button 
+                type="button"
+                aria-label="Next testimonial"
                 onClick={() => setActiveTestimonial(prev => (prev === testimonials.length - 1 ? 0 : prev + 1))}
-                className="w-10 h-10 sm:w-12 sm:h-12 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer"
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer min-w-[44px] min-h-[44px]"
               >
-                <ChevronRight className="w-5 h-5 text-slate-600" />
+                <ChevronRight className="w-5 h-5 text-slate-700" />
               </button>
             </div>
 
           </div>
 
-          {/* Dots Indicator */}
-          <div className="flex justify-center space-x-2 pt-4">
+          {/* Dots Indicator with accessible touch targets and labels */}
+          <div className="flex justify-center items-center space-x-2 pt-4">
             {testimonials.map((_, idx) => (
               <button
                 key={idx}
+                type="button"
+                aria-label={`Go to testimonial ${idx + 1}`}
                 onClick={() => setActiveTestimonial(idx)}
-                className={`h-2.5 rounded-full transition-all cursor-pointer ${idx === activeTestimonial ? "bg-[#00a3e0] w-6" : "bg-slate-300 hover:bg-slate-400 w-2.5"}`}
-              />
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 cursor-pointer focus:outline-none"
+              >
+                <span className={`h-2.5 rounded-full transition-all ${idx === activeTestimonial ? "bg-[#00709d] w-6" : "bg-slate-300 hover:bg-slate-400 w-2.5"}`} />
+              </button>
             ))}
           </div>
 
@@ -1492,7 +1507,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
             Every learner deserves a clear path forward.
           </h2>
 
-          <p className="text-slate-600 text-base sm:text-lg max-w-3xl mx-auto font-medium leading-relaxed">
+          <p className="text-slate-700 text-base sm:text-lg max-w-3xl mx-auto font-medium leading-relaxed">
             The EBM Diagnostic provides evidence-based insight into Mathematics and English Comprehension, helping learners understand their progress and helping parents and educators provide the right support at the right time.
           </p>
 
@@ -1500,11 +1515,12 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
 
 
             <button 
+              type="button"
               onClick={() => {
                 if (onSignIn) onSignIn();
                 navigate("/register");
               }}
-              className="w-full sm:w-auto bg-[#00a3e0] hover:bg-cyan-500 text-white font-extrabold text-xs uppercase tracking-wider py-4 px-8 rounded-2xl shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center space-x-2"
+              className="w-full sm:w-auto bg-[#00709d] hover:bg-[#00577b] text-white font-extrabold text-xs uppercase tracking-wider py-4 px-8 rounded-2xl shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center space-x-2 min-h-[44px]"
             >
               <span>Explore EBM</span>
               <ChevronRight className="w-4 h-4" />
@@ -1526,11 +1542,13 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
               <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <div className="flex items-center space-x-2">
                   <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
-                  <h4 className="text-sm font-extrabold text-slate-800">EBM Diagnostic Simulation</h4>
+                  <h3 className="text-sm font-extrabold text-slate-800">EBM Diagnostic Simulation</h3>
                 </div>
                 <button 
+                  type="button"
+                  aria-label="Close diagnostic simulation modal"
                   onClick={() => { setIsVideoModalOpen(false); setVideoStep(0); }}
-                  className="p-1.5 hover:bg-slate-200 rounded-full transition text-slate-500"
+                  className="p-1.5 hover:bg-slate-200 rounded-full transition text-slate-500 min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1551,47 +1569,54 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2.5">
                     {videoSlides[videoStep].icon}
-                    <h5 className="font-extrabold text-slate-950 text-lg">
+                    <h4 className="font-extrabold text-slate-950 text-lg">
                       {videoSlides[videoStep].title}
-                    </h5>
+                    </h4>
                   </div>
-                  <p className="text-slate-600 text-sm leading-relaxed">
+                  <p className="text-slate-700 text-sm leading-relaxed">
                     {videoSlides[videoStep].description}
                   </p>
                 </div>
 
                 {/* Simulated controls / steps */}
                 <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-                  <div className="flex space-x-1">
+                  <div className="flex items-center space-x-1">
                     {videoSlides.map((_, idx) => (
                       <button
                         key={idx}
+                        type="button"
+                        aria-label={`Go to simulation step ${idx + 1}`}
                         onClick={() => setVideoStep(idx)}
-                        className={`h-2.5 rounded-full transition-all ${idx === videoStep ? "bg-[#00a3e0] w-6" : "bg-slate-200 hover:bg-slate-300 w-2.5"}`}
-                      />
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 cursor-pointer focus:outline-none"
+                      >
+                        <span className={`h-2.5 rounded-full transition-all ${idx === videoStep ? "bg-[#00709d] w-6" : "bg-slate-200 hover:bg-slate-300 w-2.5"}`} />
+                      </button>
                     ))}
                   </div>
 
                   <div className="flex space-x-2">
                     {videoStep > 0 && (
                       <button 
+                        type="button"
                         onClick={() => setVideoStep(prev => prev - 1)}
-                        className="border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs py-2 px-4 rounded-xl cursor-pointer"
+                        className="border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs py-2.5 px-4 rounded-xl cursor-pointer min-h-[44px]"
                       >
                         Back
                       </button>
                     )}
                     {videoStep < videoSlides.length - 1 ? (
                       <button 
+                        type="button"
                         onClick={() => setVideoStep(prev => prev + 1)}
-                        className="bg-[#00a3e0] hover:bg-[#008bc0] text-white font-bold text-xs py-2 px-4 rounded-xl shadow-sm cursor-pointer"
+                        className="bg-[#00709d] hover:bg-[#00577b] text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm cursor-pointer min-h-[44px]"
                       >
                         Next Step
                       </button>
                     ) : (
                       <button 
+                        type="button"
                         onClick={() => { setIsVideoModalOpen(false); setVideoStep(0); }}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-sm cursor-pointer"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm cursor-pointer min-h-[44px]"
                       >
                         Finish Walkthrough
                       </button>
