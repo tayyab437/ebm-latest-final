@@ -38,10 +38,11 @@ const BlogList = React.lazy(() => import("./components/blog/BlogList").then(m =>
 const BlogPostView = React.lazy(() => import("./components/blog/BlogPostView").then(m => ({ default: m.BlogPostView })));
 const BlogCategoryView = React.lazy(() => import("./components/blog/BlogCategoryView").then(m => ({ default: m.BlogCategoryView })));
 
+import { AssessmentPage } from "./components/pages/AssessmentPage";
+
 const ContactUs = React.lazy(() => import("./components/pages/ContactUs").then(m => ({ default: m.ContactUs })));
 const PrivacyPolicy = React.lazy(() => import("./components/pages/PrivacyPolicy").then(m => ({ default: m.PrivacyPolicy })));
 const TermsConditions = React.lazy(() => import("./components/pages/TermsConditions").then(m => ({ default: m.TermsConditions })));
-const AssessmentPage = React.lazy(() => import("./components/pages/AssessmentPage").then(m => ({ default: m.AssessmentPage })));
 const AnalyticsPage = React.lazy(() => import("./components/pages/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
 const InspirationPage = React.lazy(() => import("./components/pages/InspirationPage").then(m => ({ default: m.InspirationPage })));
 const CaseStudiesPage = React.lazy(() => import("./components/pages/CaseStudiesPage").then(m => ({ default: m.CaseStudiesPage })));

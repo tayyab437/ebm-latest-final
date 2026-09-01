@@ -706,9 +706,9 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-4">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
             className="inline-flex items-center space-x-2 bg-[#00a3e0]/10 border border-[#00a3e0]/20 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-[#0076a5] mx-auto shadow-xs"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
@@ -716,24 +716,22 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
             className="text-3xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight leading-tight text-slate-900"
           >
             EBM Diagnostic Assessment
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="text-slate-600 font-medium text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-6"
           >
             Understand where every learner is in Mathematics and English Comprehension—and know what to focus on next.
           </motion.p>
-
-
         </div>
       </section>
 
