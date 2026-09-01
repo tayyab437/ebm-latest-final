@@ -5,11 +5,9 @@ import { User } from "lucide-react";
 import { motion } from "motion/react";
 import { UserRole, EbmYear, CourseModule, DailyPlannerTask, StudentProgress, ParentNotification, TeacherClass, ChatMessage, CloudflareR2Upload } from "./types";
 import { EBM_ROADMAP_DETAILS, INITIAL_COURSES, MOCK_DAILY_TASKS, MOCK_STUDENTS_PROGRESS } from "./constants";
-import { 
-  AnnouncementBar, 
-  EBMHomepage,
-  Footer as HomeFooter 
-} from "./components/home";
+import AnnouncementBar from "./components/home/AnnouncementBar";
+import EBMHomepage from "./components/home/EBMHomepage";
+import HomeFooter from "./components/home/Footer";
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
 // Lazy-load non-homepage components and authentication views to keep initial bundle ultra-lightweight

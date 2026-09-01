@@ -32,15 +32,16 @@ export const StudentStoryCard: React.FC<StudentStoryCardProps> = ({
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<"journey" | "feedback" | "stats">("journey");
   
-  // Interactive 3D tilt & holographic sheen coords
-  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const cardRef = React.useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    setCoords({ x, y });
+    cardRef.current.style.setProperty("--mouse-x", `${x}px`);
+    cardRef.current.style.setProperty("--mouse-y", `${y}px`);
   };
 
   // Generate dynamic initials for placeholder photo
@@ -51,11 +52,11 @@ export const StudentStoryCard: React.FC<StudentStoryCardProps> = ({
 
   return (
     <div 
+      ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
-        setCoords({ x: 0, y: 0 });
       }}
       className="relative w-full bg-[#03050a] border-2 border-[#dfb76c]/15 rounded-[32px] overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] flex flex-col lg:flex-row min-h-[520px] transition-all duration-500 ease-out hover:border-[#dfb76c]/45 select-none antialiased subpixel-antialiased group"
     >
@@ -74,7 +75,7 @@ export const StudentStoryCard: React.FC<StudentStoryCardProps> = ({
         <div 
           className="absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100 pointer-events-none"
           style={{
-            background: `radial-gradient(circle 350px at ${coords.x}px ${coords.y}px, rgba(223, 183, 108, 0.08), rgba(194, 147, 63, 0.04), transparent 75%)`
+            background: `radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(223, 183, 108, 0.08), rgba(194, 147, 63, 0.04), transparent 75%)`
           }}
         />
       </div>
