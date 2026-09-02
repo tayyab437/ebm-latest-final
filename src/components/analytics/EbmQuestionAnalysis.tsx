@@ -289,7 +289,7 @@ export const EbmQuestionAnalysis: React.FC = () => {
                     </span>
                     <span className="text-[10px] font-bold bg-sky-100 text-sky-800 px-2 py-0.5 rounded">Algebra Strand</span>
                   </div>
-                  <h4 className="text-lg font-black text-slate-900">Solving Two-Step Linear Equations with Integers</h4>
+                  <h3 className="text-lg font-black text-slate-900">Solving Two-Step Linear Equations with Integers</h3>
                   <p className="text-sm text-slate-700 leading-relaxed font-medium">
                     This task assesses whether the student can apply inverse operations symmetrically to isolate the unknown variable in equations of the form <code className="bg-white px-2 py-0.5 rounded border text-slate-900 font-mono">ax + b = c</code>.
                   </p>
@@ -308,7 +308,7 @@ export const EbmQuestionAnalysis: React.FC = () => {
                     </span>
                     <span className="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">Trace Log</span>
                   </div>
-                  <h4 className="text-lg font-black text-slate-900">Step-by-Step Computational Progression</h4>
+                  <h3 className="text-lg font-black text-slate-900">Step-by-Step Computational Progression</h3>
                   <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2 font-mono text-xs text-slate-800">
                     <div className="flex justify-between border-b pb-1">
                       <span>Step 1: 3x + 7 - 7 = 22 - 7</span>
@@ -333,7 +333,7 @@ export const EbmQuestionAnalysis: React.FC = () => {
                     </span>
                     <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded">Execution Error</span>
                   </div>
-                  <h4 className="text-lg font-black text-slate-900">Distinguishing "Execution Slip" vs "Misconception"</h4>
+                  <h3 className="text-lg font-black text-slate-900">Distinguishing "Execution Slip" vs "Misconception"</h3>
                   <p className="text-sm text-slate-700 leading-relaxed font-medium">
                     Because the student correctly subtracted 7 from both sides, the core concept of inverse operations was preserved. The error occurred on the final integer division (15 ÷ 3).
                   </p>
@@ -352,7 +352,7 @@ export const EbmQuestionAnalysis: React.FC = () => {
                     </span>
                     <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Guided Correction</span>
                   </div>
-                  <h4 className="text-lg font-black text-slate-900">Repairing the Computational Slip</h4>
+                  <h3 className="text-lg font-black text-slate-900">Repairing the Computational Slip</h3>
                   <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2 text-xs">
                     <div className="flex items-center justify-between text-slate-500">
                       <span>Diagnostic Prompt:</span>
@@ -376,7 +376,7 @@ export const EbmQuestionAnalysis: React.FC = () => {
                     </span>
                     <span className="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded">Self-Awareness</span>
                   </div>
-                  <h4 className="text-lg font-black text-slate-900">"What Did I Need to Do Differently?"</h4>
+                  <h3 className="text-lg font-black text-slate-900">"What Did I Need to Do Differently?"</h3>
                   <div className="p-4 rounded-xl bg-purple-50 border border-purple-200 space-y-1.5">
                     <span className="text-[10px] font-black uppercase tracking-wider text-purple-700">Recorded Student Reflection:</span>
                     <p className="text-sm italic text-slate-900 font-serif font-medium">
@@ -397,7 +397,7 @@ export const EbmQuestionAnalysis: React.FC = () => {
                     </span>
                     <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Independent Mastery</span>
                   </div>
-                  <h4 className="text-lg font-black text-slate-900">Parallel Verification Item #19</h4>
+                  <h3 className="text-lg font-black text-slate-900">Parallel Verification Item #19</h3>
                   <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2 text-xs">
                     <div className="flex justify-between font-mono font-bold text-slate-900">
                       <span>Problem: 4x + 6 = 26</span>
@@ -444,15 +444,17 @@ export const EbmQuestionAnalysis: React.FC = () => {
         </div>
 
         {/* 7-Stage Interactive Pipeline Stepper */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 relative">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 relative" role="tablist" aria-label="Question analysis stages">
           {CHAIN_STAGES.map((stage, idx) => {
             const isActive = activeChainStep === idx;
             return (
               <button
                 key={stage.num}
                 type="button"
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => setActiveChainStep(idx)}
-                className={`p-4 rounded-2xl border text-left transition-all duration-300 cursor-pointer flex flex-col justify-between h-44 sm:h-48 relative overflow-hidden ${
+                className={`p-4 rounded-2xl border text-left transition-all duration-300 cursor-pointer flex flex-col justify-between h-44 sm:h-48 relative overflow-hidden focus-visible:ring-2 focus-visible:ring-[#00a3e0] focus-visible:outline-none ${
                   isActive
                     ? "bg-slate-900 text-white border-slate-900 shadow-xl transform -translate-y-1 ring-2 ring-[#00a3e0]/40"
                     : idx === 3
@@ -599,9 +601,9 @@ export const EbmQuestionAnalysis: React.FC = () => {
 
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between">
-                      <h5 className="text-sm font-black text-slate-900 uppercase tracking-tight">
+                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">
                         {step.name} • {step.title}
-                      </h5>
+                      </h4>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${step.badgeColor}`}>
                         {step.stateLabel}
                       </span>

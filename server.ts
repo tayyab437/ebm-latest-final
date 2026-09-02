@@ -8125,6 +8125,20 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
   html = html.replace(/<meta name="twitter:description" content=".*?" \/>/i, `<meta name="twitter:description" content="${escapeAttr(description)}" />`);
   html = html.replace(/<meta name="twitter:image" content=".*?" \/>/i, `<meta name="twitter:image" content="${escapeAttr(ogImage)}" />`);
 
+  // Inject route-specific high-priority LCP image preloads
+  let lcpImage = "/ebm-hero-bg-opt.webp";
+  if (cleanPath === "/analytics") lcpImage = "/analytics-hero-bg-opt.webp";
+  else if (cleanPath === "/assessment") lcpImage = "/assessment-hero-bg-opt.webp";
+  else if (cleanPath === "/learning") lcpImage = "/learning-hero-bg-opt.webp";
+  else if (cleanPath === "/inspiration") lcpImage = "/inspiration-hero-bg-opt.webp";
+  else if (cleanPath === "/contact") lcpImage = "/contact-hero-bg-opt.webp";
+
+  if (html.includes('rel="preload" as="image"')) {
+    html = html.replace(/<link rel="preload" as="image" href=".*?"/i, `<link rel="preload" as="image" href="${lcpImage}"`);
+  } else {
+    html = html.replace("</head>", `  <link rel="preload" as="image" href="${lcpImage}" fetchpriority="high" type="image/webp" />\n  </head>`);
+  }
+
   if (extraJsonLd) {
     html = html.replace("</head>", `${extraJsonLd}\n  </head>`);
   }
@@ -8143,7 +8157,7 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
 async function startServer() {
   // Cache headers middleware for static media assets (.webp, .jpg, .png, .svg, .ico, .woff2)
   app.use((req, res, next) => {
-    if (/\.(webp|jpg|jpeg|png|svg|ico|woff2?|ttf)$/i.test(req.path)) {
+    if (/\.(webp|jpg|jpeg|png|svg|ico|woff2?|ttf|css|js)$/i.test(req.path)) {
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     }
     next();
@@ -8170,14 +8184,16 @@ async function startServer() {
       })
     );
 
-    // Serve public & root static files (favicons, sitemaps, etc.)
+    // Serve public & root static files (favicons, sitemaps, hero webp images, etc.) with 1-year cache TTL
     app.use(
       express.static(distPath, {
         index: false,
-        maxAge: "1d",
+        maxAge: "1y",
         setHeaders: (res, filePath) => {
           if (filePath.endsWith(".html")) {
             res.setHeader("Cache-Control", "no-cache, must-revalidate");
+          } else if (/\.(webp|jpg|jpeg|png|gif|svg|ico|woff2?|css|js)$/i.test(filePath)) {
+            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
           }
         },
       })

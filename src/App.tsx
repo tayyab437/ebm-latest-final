@@ -38,11 +38,7 @@ const BlogList = React.lazy(() => import("./components/blog/BlogList").then(m =>
 const BlogPostView = React.lazy(() => import("./components/blog/BlogPostView").then(m => ({ default: m.BlogPostView })));
 const BlogCategoryView = React.lazy(() => import("./components/blog/BlogCategoryView").then(m => ({ default: m.BlogCategoryView })));
 
-import { AssessmentPage } from "./components/pages/AssessmentPage";
-
-const ContactUs = React.lazy(() => import("./components/pages/ContactUs").then(m => ({ default: m.ContactUs })));
-const PrivacyPolicy = React.lazy(() => import("./components/pages/PrivacyPolicy").then(m => ({ default: m.PrivacyPolicy })));
-const TermsConditions = React.lazy(() => import("./components/pages/TermsConditions").then(m => ({ default: m.TermsConditions })));
+const AssessmentPage = React.lazy(() => import("./components/pages/AssessmentPage").then(m => ({ default: m.AssessmentPage })));
 const AnalyticsPage = React.lazy(() => import("./components/pages/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
 const InspirationPage = React.lazy(() => import("./components/pages/InspirationPage").then(m => ({ default: m.InspirationPage })));
 const CaseStudiesPage = React.lazy(() => import("./components/pages/CaseStudiesPage").then(m => ({ default: m.CaseStudiesPage })));
@@ -50,6 +46,10 @@ const AboutUs = React.lazy(() => import("./components/pages/AboutUs").then(m => 
 const PricingPage = React.lazy(() => import("./components/pages/PricingPage").then(m => ({ default: m.PricingPage })));
 const ProgramsPage = React.lazy(() => import("./components/pages/ProgramsPage").then(m => ({ default: m.ProgramsPage })));
 const LearningPage = React.lazy(() => import("./components/pages/LearningPage").then(m => ({ default: m.LearningPage })));
+const ContactUs = React.lazy(() => import("./components/pages/ContactUs").then(m => ({ default: m.ContactUs })));
+
+const PrivacyPolicy = React.lazy(() => import("./components/pages/PrivacyPolicy").then(m => ({ default: m.PrivacyPolicy })));
+const TermsConditions = React.lazy(() => import("./components/pages/TermsConditions").then(m => ({ default: m.TermsConditions })));
 const NotFoundPage = React.lazy(() => import("./components/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 
 
@@ -787,6 +787,14 @@ export default function App() {
   return (
 
     <div id="ebm-root" className={`min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-amber-100 dark:selection:bg-amber-900/50 selection:text-amber-900 dark:selection:text-amber-200 transition-colors duration-300 ${isPortalPage ? "h-screen w-screen overflow-hidden" : ""}`}>
+      {/* Skip to Main Content for Accessibility */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2.5 focus:bg-[#0070bc] focus:text-white focus:rounded-lg focus:font-bold focus:shadow-xl focus:outline-none"
+      >
+        Skip to main content
+      </a>
+
       {!isPortalPage && <AnnouncementBar />}
       
       {/* ================== GLOBAL BRAND TOPBAR ================== */}
@@ -799,7 +807,7 @@ export default function App() {
             <Link
               to="/"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className={`tracking-tighter hover:opacity-95 transition-opacity cursor-pointer flex items-center gap-2 ${
+              className={`tracking-tighter hover:opacity-95 transition-opacity cursor-pointer flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0070bc] focus-visible:outline-none rounded-md ${
                 (logoType === "image" || logoImageUrl)
                   ? "bg-transparent p-0 shadow-none border-none"
                   : "text-[#00a3e0] font-black text-2xl sm:text-3xl"
@@ -848,8 +856,9 @@ export default function App() {
                   key={tab.id}
                   to={tab.path}
                   id={`nav-btn-${tab.id}`}
+                  aria-current={isActive ? "page" : undefined}
                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className={`relative py-1.5 transition-colors duration-200 cursor-pointer select-none text-xs lg:text-sm font-bold inline-block ${
+                  className={`relative py-1.5 transition-colors duration-200 cursor-pointer select-none text-xs lg:text-sm font-bold inline-block rounded-md px-1.5 focus-visible:ring-2 focus-visible:ring-[#0070bc] focus-visible:outline-none ${
                     isActive ? "text-[#006699] dark:text-sky-400" : "text-slate-700 dark:text-slate-200 hover:text-[#006699] dark:hover:text-sky-400"
                   }`}
                 >
@@ -949,7 +958,7 @@ export default function App() {
 
 
       {/* ================== MAIN CONTENT ROUTER ================== */}
-      <main className={`flex-grow flex flex-col ${isPortalPage ? "h-screen w-full overflow-hidden" : "min-h-screen"}`}>
+      <main id="main-content" tabIndex={-1} className={`flex-grow flex flex-col focus:outline-none ${isPortalPage ? "h-screen w-full overflow-hidden" : "min-h-screen"}`}>
         <React.Suspense fallback={
           <div className="flex-grow min-h-screen flex items-center justify-center bg-[#F8FAFC]">
             <div className="w-8 h-8 border-3 border-[#00a3e0] border-t-transparent rounded-full animate-spin"></div>

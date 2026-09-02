@@ -559,7 +559,7 @@ export const EbmLearningGroups: React.FC<EbmLearningGroupsProps> = ({
                 <Target className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="text-base font-black text-slate-900">Select Any Learner Node</h4>
+                <h3 className="text-base font-black text-slate-900">Select Any Learner Node</h3>
                 <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
                   Click or hover any student node in the 3D map to inspect their current obstacle, verified evidence trace, and targeted support prescription.
                 </p>
@@ -568,22 +568,25 @@ export const EbmLearningGroups: React.FC<EbmLearningGroupsProps> = ({
           )}
 
           {/* Quick Group Breakdown Summary Cards */}
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2.5" role="tablist" aria-label="Learning group selection">
             {(["A", "B", "C", "D"] as const).map((gKey) => {
               const conf = GROUPS_CONFIG[gKey];
+              const isActive = activeGroup === gKey;
               return (
                 <button
                   key={gKey}
                   type="button"
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => setActiveGroup(gKey)}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                    activeGroup === gKey ? "bg-white border-slate-900 shadow-md" : "bg-slate-50 hover:bg-white border-slate-200/80"
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#00a3e0] focus-visible:outline-none ${
+                    isActive ? "bg-white border-slate-900 shadow-md" : "bg-slate-50 hover:bg-white border-slate-200/80"
                   }`}
                 >
                   <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${conf.badgeBg}`}>
                     {conf.code}
                   </span>
-                  <h5 className="text-xs font-black text-slate-900 mt-1.5 leading-tight">{conf.name}</h5>
+                  <h4 className="text-xs font-black text-slate-900 mt-1.5 leading-tight">{conf.name}</h4>
                   <p className="text-[10px] text-slate-500 mt-0.5">{conf.pedagogicalFocus}</p>
                 </button>
               );

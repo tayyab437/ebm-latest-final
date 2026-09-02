@@ -253,9 +253,9 @@ export function AnalyticsPage() {
             {/* Left Column: Hero Content (~42% desktop) */}
             <div className="lg:col-span-5 space-y-6 sm:space-y-7 text-left">
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
                 className="inline-flex items-center space-x-2 bg-[#00a3e0]/10 border border-[#00a3e0]/20 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-[#0076a5] shadow-xs"
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
@@ -263,9 +263,9 @@ export function AnalyticsPage() {
               </motion.div>
 
               <motion.h1
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.65, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.05 }}
                 className="text-3.5xl sm:text-5xl lg:text-[54px] xl:text-[62px] font-black tracking-tight leading-[1.02] text-slate-900"
               >
                 From Marks to <span className="text-[#00a3e0]">Meaning</span>.<br />
@@ -273,9 +273,9 @@ export function AnalyticsPage() {
               </motion.h1>
 
               <motion.p
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-slate-600 font-medium text-base sm:text-lg leading-relaxed max-w-xl"
               >
                 EBM Analytics makes the learning process visible—helping teachers, learners and parents understand what was attempted, what was understood, where learning broke down, whether correction took place, what has been mastered, and what should happen next.
@@ -283,9 +283,9 @@ export function AnalyticsPage() {
 
               {/* Action Buttons */}
               <motion.div 
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.28 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
                 className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5"
               >
                 <button
@@ -980,7 +980,15 @@ export function AnalyticsPage() {
 
         {/* ================= SUCCESS STORY DETAIL MODAL ================= */}
         {selectedTestimonialForModal && (
-          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-spotlight-title"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setSelectedTestimonialForModal(null);
+            }}
+          >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -989,14 +997,15 @@ export function AnalyticsPage() {
             >
               <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <div className="flex items-center space-x-2">
-                  <span className="w-3 h-3 rounded-full bg-[#0096db]" />
-                  <h4 className="text-sm font-extrabold text-slate-800">Teacher Success Spotlight</h4>
+                  <span className="w-3 h-3 rounded-full bg-[#0096db]" aria-hidden="true" />
+                  <h3 id="modal-spotlight-title" className="text-sm font-extrabold text-slate-800">Teacher Success Spotlight</h3>
                 </div>
                 <button 
                   onClick={() => setSelectedTestimonialForModal(null)}
-                  className="p-1.5 hover:bg-slate-200 rounded-full transition text-slate-500"
+                  aria-label="Close success spotlight modal"
+                  className="p-1.5 hover:bg-slate-200 rounded-full transition text-slate-500 focus-visible:ring-2 focus-visible:ring-[#0096db] focus-visible:outline-none"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-5 h-5" aria-hidden="true" />
                 </button>
               </div>
 
@@ -1006,7 +1015,7 @@ export function AnalyticsPage() {
                     <Quote className="w-6 h-6 text-white fill-white" />
                   </div>
                   <div>
-                    <h5 className="font-extrabold text-slate-900 text-lg leading-snug">{selectedTestimonialForModal.name}</h5>
+                    <h4 className="font-extrabold text-slate-900 text-lg leading-snug">{selectedTestimonialForModal.name}</h4>
                     <p className="text-slate-600 text-sm font-medium">
                       {selectedTestimonialForModal.role}
                     </p>

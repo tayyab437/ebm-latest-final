@@ -474,15 +474,17 @@ export const EbmInterventionWorkspace: React.FC<EbmInterventionWorkspaceProps> =
             </h4>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" role="tablist" aria-label="Intervention decision steps">
             {DECISION_PATH.map((step, idx) => {
               const isSelected = activeDecisionStep === idx;
               return (
                 <button
                   key={step.id}
                   type="button"
+                  role="tab"
+                  aria-selected={isSelected}
                   onClick={() => setActiveDecisionStep(idx)}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[110px] ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[110px] focus-visible:ring-2 focus-visible:ring-[#00a3e0] focus-visible:outline-none ${
                     isSelected
                       ? "bg-slate-900 text-white border-slate-900 shadow-md transform -translate-y-0.5"
                       : "bg-slate-50 hover:bg-white text-slate-700 border-slate-200/80"
@@ -496,9 +498,9 @@ export const EbmInterventionWorkspace: React.FC<EbmInterventionWorkspaceProps> =
                   </div>
 
                   <div>
-                    <h5 className={`text-xs font-black uppercase tracking-tight ${isSelected ? "text-white" : "text-slate-900"}`}>
+                    <h4 className={`text-xs font-black uppercase tracking-tight ${isSelected ? "text-white" : "text-slate-900"}`}>
                       {step.name}
-                    </h5>
+                    </h4>
                     <p className={`text-[10px] leading-tight mt-0.5 ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
                       {step.title}
                     </p>

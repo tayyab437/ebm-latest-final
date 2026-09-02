@@ -308,7 +308,7 @@ export const EbmMasteryExperience: React.FC = () => {
                 role="radio"
                 aria-checked={comparisonMode === "score"}
                 onClick={() => setComparisonMode("score")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#00a3e0] focus-visible:outline-none ${
                   comparisonMode === "score"
                     ? "bg-white text-slate-900 shadow-xs"
                     : "text-slate-500 hover:text-slate-900"
@@ -321,7 +321,7 @@ export const EbmMasteryExperience: React.FC = () => {
                 role="radio"
                 aria-checked={comparisonMode === "evidence"}
                 onClick={() => setComparisonMode("evidence")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#00a3e0] focus-visible:outline-none ${
                   comparisonMode === "evidence"
                     ? "bg-[#00a3e0] text-white shadow-xs"
                     : "text-slate-500 hover:text-slate-900"
@@ -1026,7 +1026,7 @@ export const EbmMasteryExperience: React.FC = () => {
                     <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block">
                       {selectedSkill.domain}
                     </span>
-                    <h5 className="text-sm font-black text-slate-900">{selectedSkill.name}</h5>
+                    <h4 className="text-sm font-black text-slate-900">{selectedSkill.name}</h4>
                   </div>
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black ${
