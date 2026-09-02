@@ -1036,7 +1036,7 @@ async function initializeDb() {
           logoType: "icon",
           logoIcon: "GraduationCap",
           logoImageUrl: "",
-          faviconUrl: "https://cdn-icons-png.flaticon.com/512/2201/2201552.png",
+          faviconUrl: "/favicon.svg",
           heroBackgroundImage: "",
           heroSlides: JSON.stringify([
             {

@@ -516,7 +516,7 @@ export function PlatformSettings() {
     setLocalLogoType("icon");
     setLocalLogoIcon("GraduationCap");
     setLocalLogoImageUrl("");
-    setLocalFaviconUrl("https://cdn-icons-png.flaticon.com/512/2201/2201552.png");
+    setLocalFaviconUrl("/favicon.svg");
     setLocalHeroBackgroundImage("");
     setLocalShowThemeToggle(true);
     setLocalHeroSlides([
@@ -576,10 +576,9 @@ export function PlatformSettings() {
 
   // High quality sample favicon options
   const faviconPresets = [
-    { name: "Blue Cap", url: "https://cdn-icons-png.flaticon.com/512/2201/2201552.png" },
-    { name: "Gold Star", url: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
-    { name: "Blue Shield", url: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
-    { name: "Purple Book", url: "https://cdn-icons-png.flaticon.com/512/2702/2702134.png" },
+    { name: "Official EBM Crest", url: "/favicon.svg" },
+    { name: "Blue Cap", url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=100&auto=format&fit=crop&q=80" },
+    { name: "Gold Star", url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&auto=format&fit=crop&q=80" },
   ];
 
   // Preset background options for Hero Section

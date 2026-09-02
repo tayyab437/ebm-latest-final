@@ -47,7 +47,7 @@ const DEFAULT_LOGO_TEXT = "EBM Digital Learning";
 const DEFAULT_LOGO_TYPE = "icon";
 const DEFAULT_LOGO_ICON = "GraduationCap";
 const DEFAULT_LOGO_IMAGE_URL = "";
-const DEFAULT_FAVICON_URL = "https://cdn-icons-png.flaticon.com/512/2201/2201552.png"; // graduation cap icon
+const DEFAULT_FAVICON_URL = "/favicon.svg";
 const DEFAULT_HERO_BG_IMAGE = "/ebm-hero-bg-opt.webp";
 
 const DEFAULT_HERO_SLIDES: HeroSlide[] = [
@@ -85,7 +85,11 @@ export const useBrandingStore = create<BrandingState>((set) => {
   const storedLogoType = isClient ? (localStorage.getItem("ebm_logo_type") ?? DEFAULT_LOGO_TYPE) as "icon" | "image" : DEFAULT_LOGO_TYPE;
   const storedLogoIcon = isClient ? localStorage.getItem("ebm_logo_icon") ?? DEFAULT_LOGO_ICON : DEFAULT_LOGO_ICON;
   const storedLogoImageUrl = isClient ? localStorage.getItem("ebm_logo_image_url") ?? DEFAULT_LOGO_IMAGE_URL : DEFAULT_LOGO_IMAGE_URL;
-  const storedFaviconUrl = isClient ? localStorage.getItem("ebm_favicon_url") ?? DEFAULT_FAVICON_URL : DEFAULT_FAVICON_URL;
+  let storedFaviconUrl = isClient ? localStorage.getItem("ebm_favicon_url") ?? DEFAULT_FAVICON_URL : DEFAULT_FAVICON_URL;
+  if (isClient && (storedFaviconUrl.includes("flaticon") || !storedFaviconUrl)) {
+    storedFaviconUrl = DEFAULT_FAVICON_URL;
+    localStorage.setItem("ebm_favicon_url", DEFAULT_FAVICON_URL);
+  }
   const storedHeroBackgroundImage = isClient ? localStorage.getItem("ebm_hero_bg_image") ?? DEFAULT_HERO_BG_IMAGE : DEFAULT_HERO_BG_IMAGE;
   const storedShowThemeToggle = isClient ? (localStorage.getItem("ebm_show_theme_toggle") !== "false") : true;
   
@@ -197,13 +201,25 @@ export const useBrandingStore = create<BrandingState>((set) => {
 export function applyFavicon(url: string) {
   if (typeof window === "undefined") return;
   try {
-    let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
-    if (!link) {
-      link = document.createElement("link");
+    const cleanUrl = url && !url.includes("flaticon") ? url : DEFAULT_FAVICON_URL;
+    const isSvg = cleanUrl.endsWith(".svg") || cleanUrl === "/favicon.svg";
+
+    let iconLinks = Array.from(document.querySelectorAll<HTMLLinkElement>("link[rel~='icon'], link[rel='apple-touch-icon']"));
+    
+    if (iconLinks.length === 0) {
+      const link = document.createElement("link");
       link.rel = "icon";
-      document.getElementsByTagName("head")[0].appendChild(link);
+      if (isSvg) link.type = "image/svg+xml";
+      link.href = cleanUrl;
+      document.head.appendChild(link);
+    } else {
+      iconLinks.forEach((link) => {
+        link.href = cleanUrl;
+        if (isSvg) {
+          link.setAttribute("type", "image/svg+xml");
+        }
+      });
     }
-    link.href = url;
   } catch (e) {
     console.error("Failed to apply favicon:", e);
   }
