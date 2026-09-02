@@ -18,6 +18,7 @@ import {
   ListOrdered
 } from "lucide-react";
 import type { BlogPost } from "../../types/blog.types";
+import { parseTags } from "../../types/blog.types";
 import { BlogService } from "../../services/blog.service";
 import { generateBlogPostStructuredData } from "../../services/seo.schema";
 import { SEOHead } from "../SEOHead";
@@ -145,6 +146,8 @@ export function BlogPostView() {
     );
   }
 
+  const safeTags = parseTags(post.tags);
+
   // Generate complete Schema.org JSON-LD BlogPosting graph
   const structuredData = generateBlogPostStructuredData({
     title: post.title,
@@ -161,7 +164,7 @@ export function BlogPostView() {
     updatedAt: post.updatedAt,
     createdAt: post.createdAt,
     readingTime: post.readingTime,
-    tags: post.tags,
+    tags: safeTags,
     canonicalUrl: post.canonicalUrl
   });
 
@@ -190,7 +193,7 @@ export function BlogPostView() {
           modifiedTime: post.updatedAt || post.publishedAt || post.createdAt,
           author: post.authorName || "Syed Ejaz Bukhari",
           section: post.categoryName || "Education",
-          tags: post.tags
+          tags: safeTags
         }}
         customSchema={structuredData}
       />
@@ -377,12 +380,12 @@ export function BlogPostView() {
         </article>
 
         {/* Tags Bar */}
-        {post.tags && post.tags.length > 0 && (
+        {safeTags.length > 0 && (
           <div className="flex items-center gap-2 flex-wrap pt-2">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">
               Topics:
             </span>
-            {post.tags.map((tag) => (
+            {safeTags.map((tag) => (
               <span
                 key={tag}
                 className="px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"

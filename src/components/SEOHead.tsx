@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { generateRouteStructuredData } from "../services/seo.schema";
+import { parseTags } from "../types/blog.types";
 
 interface SEOHeadProps {
   title?: string;
@@ -120,7 +121,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       if (articleMeta.author) setMetaTag("property", "article:author", articleMeta.author);
       if (articleMeta.section) setMetaTag("property", "article:section", articleMeta.section);
       if (articleMeta.tags) {
-        articleMeta.tags.forEach((tag, idx) => {
+        const safeTags = parseTags(articleMeta.tags);
+        safeTags.forEach((tag, idx) => {
           setMetaTag("property", `article:tag:${idx}`, tag);
         });
       }

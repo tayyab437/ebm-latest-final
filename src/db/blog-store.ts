@@ -4,6 +4,7 @@ import { getDb } from "./index.js";
 import * as schema from "./schema.js";
 import { eq, and, desc, asc, like, or, sql } from "drizzle-orm";
 import type { BlogPost, BlogCategory, BlogAuthor, BlogRedirect, PostStatus, BlogFilterOptions } from "../types/blog.types.js";
+import { parseTags } from "../types/blog.types.js";
 
 const DEFAULT_AUTHOR: BlogAuthor = {
   id: "author-ejaz-bukhari",
@@ -464,7 +465,7 @@ export async function initBlogTables() {
           ogImage: post.ogImage || null,
           canonicalUrl: post.canonicalUrl || null,
           readingTime: post.readingTime,
-          tags: JSON.stringify(post.tags),
+          tags: JSON.stringify(parseTags(post.tags)),
           relatedPostIds: JSON.stringify(post.relatedPostIds || []),
           noindex: post.noindex ? 1 : 0,
           views: post.views,
@@ -494,11 +495,10 @@ export async function getAllPosts(options: BlogFilterOptions = {}): Promise<{ po
     let posts: BlogPost[] = allDbPosts.map((p: any) => {
       const cat = catMap.get(p.categoryId);
       const auth = p.authorId ? authMap.get(p.authorId) : null;
-      let tags: string[] = [];
       let secondaryCategoryIds: string[] = [];
       let relatedPostIds: string[] = [];
 
-      try { tags = typeof p.tags === "string" ? JSON.parse(p.tags) : (Array.isArray(p.tags) ? p.tags : []); } catch (e) {}
+      const tags = parseTags(p.tags);
       try { secondaryCategoryIds = typeof p.secondaryCategoryIds === "string" ? JSON.parse(p.secondaryCategoryIds) : (Array.isArray(p.secondaryCategoryIds) ? p.secondaryCategoryIds : []); } catch (e) {}
       try { relatedPostIds = typeof p.relatedPostIds === "string" ? JSON.parse(p.relatedPostIds) : (Array.isArray(p.relatedPostIds) ? p.relatedPostIds : []); } catch (e) {}
 
@@ -550,7 +550,7 @@ export async function getAllPosts(options: BlogFilterOptions = {}): Promise<{ po
     }
     if (options.tag) {
       const tagLower = options.tag.toLowerCase();
-      posts = posts.filter(p => p.tags.some(t => t.toLowerCase() === tagLower));
+      posts = posts.filter(p => parseTags(p.tags).some(t => t.toLowerCase() === tagLower));
     }
     if (options.isFeatured !== undefined) {
       posts = posts.filter(p => p.isFeatured === options.isFeatured);
@@ -564,7 +564,7 @@ export async function getAllPosts(options: BlogFilterOptions = {}): Promise<{ po
         p.title.toLowerCase().includes(q) ||
         p.excerpt.toLowerCase().includes(q) ||
         p.content.toLowerCase().includes(q) ||
-        p.tags.some(t => t.toLowerCase().includes(q)) ||
+        parseTags(p.tags).some(t => t.toLowerCase().includes(q)) ||
         (p.categoryName && p.categoryName.toLowerCase().includes(q))
       );
     }
@@ -630,10 +630,9 @@ export async function getPostBySlug(slug: string): Promise<{ post?: BlogPost; re
       const cat = categories[0];
       const auth = authors[0];
 
-      let tags: string[] = [];
       let secondaryCategoryIds: string[] = [];
       let relatedPostIds: string[] = [];
-      try { tags = typeof p.tags === "string" ? JSON.parse(p.tags) : (Array.isArray(p.tags) ? p.tags : []); } catch (e) {}
+      const tags = parseTags(p.tags);
       try { secondaryCategoryIds = typeof p.secondaryCategoryIds === "string" ? JSON.parse(p.secondaryCategoryIds) : (Array.isArray(p.secondaryCategoryIds) ? p.secondaryCategoryIds : []); } catch (e) {}
       try { relatedPostIds = typeof p.relatedPostIds === "string" ? JSON.parse(p.relatedPostIds) : (Array.isArray(p.relatedPostIds) ? p.relatedPostIds : []); } catch (e) {}
 
@@ -715,10 +714,9 @@ export async function getPostById(id: string): Promise<BlogPost | null> {
     const cat = categories[0];
     const auth = authors[0];
 
-    let tags: string[] = [];
     let secondaryCategoryIds: string[] = [];
     let relatedPostIds: string[] = [];
-    try { tags = typeof p.tags === "string" ? JSON.parse(p.tags) : (Array.isArray(p.tags) ? p.tags : []); } catch (e) {}
+    const tags = parseTags(p.tags);
     try { secondaryCategoryIds = typeof p.secondaryCategoryIds === "string" ? JSON.parse(p.secondaryCategoryIds) : (Array.isArray(p.secondaryCategoryIds) ? p.secondaryCategoryIds : []); } catch (e) {}
     try { relatedPostIds = typeof p.relatedPostIds === "string" ? JSON.parse(p.relatedPostIds) : (Array.isArray(p.relatedPostIds) ? p.relatedPostIds : []); } catch (e) {}
 
@@ -831,7 +829,7 @@ export async function createPost(data: Partial<BlogPost>): Promise<BlogPost> {
       ogImage: newPost.ogImage || null,
       canonicalUrl: newPost.canonicalUrl || null,
       readingTime: newPost.readingTime,
-      tags: JSON.stringify(newPost.tags),
+      tags: JSON.stringify(parseTags(newPost.tags)),
       relatedPostIds: JSON.stringify(newPost.relatedPostIds),
       noindex: newPost.noindex ? 1 : 0,
       views: 0,
@@ -907,7 +905,7 @@ export async function updatePost(id: string, data: Partial<BlogPost>): Promise<B
         ogImage: updated.ogImage || null,
         canonicalUrl: updated.canonicalUrl || null,
         readingTime: updated.readingTime,
-        tags: JSON.stringify(updated.tags || []),
+        tags: JSON.stringify(parseTags(updated.tags)),
         relatedPostIds: JSON.stringify(updated.relatedPostIds || []),
         noindex: updated.noindex ? 1 : 0,
         ctaType: updated.ctaType || "assessment",

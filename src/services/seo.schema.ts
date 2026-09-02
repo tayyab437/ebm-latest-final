@@ -3,6 +3,8 @@
  * Domain: https://ejazbukharimethod.com/
  */
 
+import { parseTags } from "../types/blog.types";
+
 export const BASE_URL = "https://ejazbukharimethod.com";
 export const ORGANIZATION_ID = `${BASE_URL}/#organization`;
 export const WEBSITE_ID = `${BASE_URL}/#website`;
@@ -354,6 +356,7 @@ export function generateBlogPostStructuredData(post: {
 
   const datePub = post.publishedAt || post.createdAt || new Date().toISOString();
   const dateMod = post.updatedAt || post.publishedAt || post.createdAt || new Date().toISOString();
+  const safeTags = parseTags(post.tags);
 
   const graph: any[] = [
     {
@@ -387,7 +390,7 @@ export function generateBlogPostStructuredData(post: {
       articleSection: post.categoryName || "Education",
       timeRequired: post.readingTime ? `PT${post.readingTime}M` : "PT5M",
       ...(post.featuredImage ? { image: [post.featuredImage] } : {}),
-      ...(post.tags && post.tags.length > 0 ? { keywords: post.tags.join(", ") } : {}),
+      ...(safeTags.length > 0 ? { keywords: safeTags.join(", ") } : {}),
       author: {
         "@type": "Person",
         name: post.authorName || "Syed Ejaz Bukhari",

@@ -29,6 +29,7 @@ import {
   Image as ImageIcon
 } from "lucide-react";
 import type { BlogPost, BlogCategory, BlogAuthor, BlogRedirect } from "../../../types/blog.types";
+import { parseTags } from "../../../types/blog.types";
 import { BlogService } from "../../../services/blog.service";
 import { RichTextEditor } from "./RichTextEditor";
 import { SEOPreviewPanel } from "./SEOPreviewPanel";
@@ -172,6 +173,7 @@ export function BlogAdminManager() {
     setEditingPostId(post.id);
     setFormData({
       ...post,
+      tags: parseTags(post.tags),
       publishedAt: post.publishedAt ? post.publishedAt.split("T")[0] : new Date().toISOString().split("T")[0]
     });
     setEditorTab("content");
@@ -213,19 +215,21 @@ export function BlogAdminManager() {
   const handleAddTag = () => {
     if (!tagInput.trim()) return;
     const clean = tagInput.trim();
-    if (!formData.tags?.includes(clean)) {
+    const currentTags = parseTags(formData.tags);
+    if (!currentTags.includes(clean)) {
       setFormData(prev => ({
         ...prev,
-        tags: [...(prev.tags || []), clean]
+        tags: [...currentTags, clean]
       }));
     }
     setTagInput("");
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = parseTags(formData.tags);
     setFormData(prev => ({
       ...prev,
-      tags: (prev.tags || []).filter(t => t !== tagToRemove)
+      tags: currentTags.filter(t => t !== tagToRemove)
     }));
   };
 
@@ -980,7 +984,7 @@ export function BlogAdminManager() {
                     </div>
 
                     <div className="flex flex-wrap gap-1.5">
-                      {formData.tags?.map((t) => (
+                      {parseTags(formData.tags).map((t) => (
                         <span
                           key={t}
                           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"

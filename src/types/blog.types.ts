@@ -100,3 +100,24 @@ export interface BlogFilterOptions {
   page?: number;
   limit?: number;
 }
+
+export function parseTags(tags: any): string[] {
+  if (Array.isArray(tags)) {
+    return tags.map(t => String(t).trim()).filter(Boolean);
+  }
+  if (typeof tags === "string") {
+    const trimmed = tags.trim();
+    if (!trimmed) return [];
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed.map(t => String(t).trim()).filter(Boolean);
+      }
+      if (typeof parsed === "string") {
+        return parsed.split(",").map(t => t.trim()).filter(Boolean);
+      }
+    } catch (_) {}
+    return trimmed.split(",").map(t => t.trim()).filter(Boolean);
+  }
+  return [];
+}

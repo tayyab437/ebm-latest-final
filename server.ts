@@ -8155,13 +8155,35 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
 /* ================== VITE MIDDLEWARE & SERVER BOOT ================== */
 
 async function startServer() {
-  // Cache headers middleware for static media assets (.webp, .jpg, .png, .svg, .ico, .woff2)
+  const ONE_YEAR_MS = 31536000000;
+
+  const setStaticCacheHeaders = (res: any, filePath: string) => {
+    if (filePath.endsWith(".html")) {
+      res.setHeader("Cache-Control", "no-cache, must-revalidate");
+    } else if (/\.(webp|jpg|jpeg|png|gif|svg|ico|woff2?|ttf|css|js)$/i.test(filePath)) {
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    }
+  };
+
+  // Global cache headers middleware for static media assets (.webp, .jpg, .png, .svg, .ico, .woff2)
   app.use((req, res, next) => {
-    if (/\.(webp|jpg|jpeg|png|svg|ico|woff2?|ttf|css|js)$/i.test(req.path)) {
+    if (/\.(webp|jpg|jpeg|png|gif|svg|ico|woff2?|ttf|css|js)$/i.test(req.path)) {
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     }
     next();
   });
+
+  const publicPath = path.join(process.cwd(), "public");
+  if (fs.existsSync(publicPath)) {
+    app.use(
+      express.static(publicPath, {
+        maxAge: ONE_YEAR_MS,
+        immutable: true,
+        index: false,
+        setHeaders: setStaticCacheHeaders,
+      })
+    );
+  }
 
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -8179,8 +8201,9 @@ async function startServer() {
       "/assets",
       express.static(assetsPath, {
         immutable: true,
-        maxAge: "1y",
-        fallthrough: false, // Return 404 immediately if asset not found rather than falling through to HTML SPA router
+        maxAge: ONE_YEAR_MS,
+        fallthrough: false,
+        setHeaders: setStaticCacheHeaders,
       })
     );
 
@@ -8188,14 +8211,9 @@ async function startServer() {
     app.use(
       express.static(distPath, {
         index: false,
-        maxAge: "1y",
-        setHeaders: (res, filePath) => {
-          if (filePath.endsWith(".html")) {
-            res.setHeader("Cache-Control", "no-cache, must-revalidate");
-          } else if (/\.(webp|jpg|jpeg|png|gif|svg|ico|woff2?|css|js)$/i.test(filePath)) {
-            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-          }
-        },
+        maxAge: ONE_YEAR_MS,
+        immutable: true,
+        setHeaders: setStaticCacheHeaders,
       })
     );
 
