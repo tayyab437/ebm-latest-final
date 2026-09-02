@@ -8125,13 +8125,37 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
   html = html.replace(/<meta name="twitter:description" content=".*?" \/>/i, `<meta name="twitter:description" content="${escapeAttr(description)}" />`);
   html = html.replace(/<meta name="twitter:image" content=".*?" \/>/i, `<meta name="twitter:image" content="${escapeAttr(ogImage)}" />`);
 
-  // Inject route-specific high-priority LCP image preloads
+  // Inject route-specific high-priority LCP image preloads and body hero shell image/content
   let lcpImage = "/ebm-hero-bg-opt.webp";
-  if (cleanPath === "/analytics") lcpImage = "/analytics-hero-bg-opt.webp";
-  else if (cleanPath === "/assessment") lcpImage = "/assessment-hero-bg-opt.webp";
-  else if (cleanPath === "/learning") lcpImage = "/learning-hero-bg-opt.webp";
-  else if (cleanPath === "/inspiration") lcpImage = "/inspiration-hero-bg-opt.webp";
-  else if (cleanPath === "/contact") lcpImage = "/contact-hero-bg-opt.webp";
+  let heroAlt = "EBM Digital Learning Platform";
+  if (cleanPath === "/analytics") {
+    lcpImage = "/analytics-hero-bg-opt.webp";
+    heroAlt = "Analytics & Performance Dashboard Background";
+  } else if (cleanPath === "/assessment") {
+    lcpImage = "/assessment-hero-bg-opt.webp";
+    heroAlt = "Assessment Diagnostic Background";
+  } else if (cleanPath === "/learning") {
+    lcpImage = "/learning-hero-bg-opt.webp";
+    heroAlt = "Learning Background";
+  } else if (cleanPath === "/inspiration") {
+    lcpImage = "/inspiration-hero-bg-opt.webp";
+    heroAlt = "Inspiration Background";
+  } else if (cleanPath === "/contact") {
+    lcpImage = "/contact-hero-bg-opt.webp";
+    heroAlt = "Contact Background";
+  }
+
+  // Synchronize initial HTML body image and content with route-specific LCP image for 0ms load & render delay
+  html = html.replace(/src="\/ebm-hero-bg-opt\.webp"/g, `src="${lcpImage}"`);
+  html = html.replace(/alt="EBM Digital Learning Platform"/g, `alt="${escapeAttr(heroAlt)}"`);
+  html = html.replace(
+    /<h1 class="text-3xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight leading-tight text-slate-900">[\s\S]*?<\/h1>/i,
+    `<h1 class="text-3xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight leading-tight text-slate-900">${escapeAttr(title)}</h1>`
+  );
+  html = html.replace(
+    /<p class="text-slate-600 font-medium text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-6">[\s\S]*?<\/p>/i,
+    `<p class="text-slate-600 font-medium text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-6">${escapeAttr(description)}</p>`
+  );
 
   if (html.includes('rel="preload" as="image"')) {
     html = html.replace(/<link rel="preload" as="image" href=".*?"/i, `<link rel="preload" as="image" href="${lcpImage}"`);
