@@ -6,11 +6,11 @@ import { motion } from "motion/react";
 import { UserRole, EbmYear, CourseModule, DailyPlannerTask, StudentProgress, ParentNotification, TeacherClass, ChatMessage, CloudflareR2Upload } from "./types";
 import { EBM_ROADMAP_DETAILS, INITIAL_COURSES, MOCK_DAILY_TASKS, MOCK_STUDENTS_PROGRESS } from "./constants";
 import AnnouncementBar from "./components/home/AnnouncementBar";
-import EBMHomepage from "./components/home/EBMHomepage";
 import HomeFooter from "./components/home/Footer";
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
-// Lazy-load non-homepage components and authentication views to keep initial bundle ultra-lightweight
+// Lazy-load EBMHomepage, non-homepage components, and authentication views to keep initial bundle ultra-lightweight
+const EBMHomepage = React.lazy(() => import("./components/home/EBMHomepage"));
 const AuthLayout = React.lazy(() => import("./components/auth/AuthLayout").then(m => ({ default: m.AuthLayout })));
 const AuthCard = React.lazy(() => import("./components/auth/AuthCard").then(m => ({ default: m.AuthCard })));
 const LoginForm = React.lazy(() => import("./components/auth/LoginForm").then(m => ({ default: m.LoginForm })));
@@ -168,7 +168,7 @@ export default function App() {
   // Auth state
   const [token, setToken] = useState<string | null>(localStorage.getItem("ebm_token"));
   const [user, setUser] = useState<{ id: string; name: string; email: string; role: UserRole; ebmYear?: EbmYear; onboardingComplete?: boolean } | null>(initialUser);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(() => !!localStorage.getItem("ebm_token"));
   const [authEmail, setAuthEmail] = useState("student@ebm.edu");
   const [authError, setAuthError] = useState<string | null>(null);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean>(true);

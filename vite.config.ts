@@ -46,6 +46,15 @@ export default defineConfig(() => {
             if (id.includes('node_modules/recharts/')) {
               return 'vendor-charts';
             }
+            if (id.includes('node_modules/@dnd-kit/')) {
+              return 'vendor-dnd';
+            }
+            if (id.includes('node_modules/firebase/')) {
+              return 'vendor-firebase';
+            }
+            if (id.includes('node_modules/react-markdown/')) {
+              return 'vendor-markdown';
+            }
           },
         },
       },
