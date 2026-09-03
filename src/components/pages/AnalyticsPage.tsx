@@ -242,7 +242,7 @@ export function AnalyticsPage() {
         />
 
         {/* Multi-Layer Glass Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-50/98 via-white/95 to-slate-50/90 backdrop-blur-[4px]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-50/99 via-white/98 to-slate-50/95" />
 
         {/* Subtle Continuous Evidence Particles */}
         <EbmEvidenceParticles count={12} className="opacity-60" />

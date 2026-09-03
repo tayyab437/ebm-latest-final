@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "./design-system/EbmMotion";
 import { 
   Activity, 
   CheckCircle2, 
@@ -197,7 +198,7 @@ export const EbmAnalyticsEngine: React.FC = () => {
         className="pointer-events-none absolute inset-0 flex items-center justify-center"
       >
         <div 
-          className="w-[75%] h-[75%] rounded-full blur-[90px] opacity-70 transition-opacity duration-1000"
+          className="w-[75%] h-[75%] rounded-full opacity-70 transition-opacity duration-1000"
           style={{
             background: "radial-gradient(circle, rgba(0, 163, 224, 0.16) 0%, rgba(0, 163, 224, 0.04) 50%, transparent 75%)"
           }}
@@ -296,7 +297,7 @@ export const EbmAnalyticsEngine: React.FC = () => {
         >
           {/* Layer 1: Outer Atmospheric Depth Glow Ring */}
           <div 
-            className="absolute w-56 h-56 sm:w-64 sm:h-64 rounded-full border border-sky-200/50 bg-sky-50/20 backdrop-blur-[2px] animate-[spin_60s_linear_infinite]"
+            className="absolute w-56 h-56 sm:w-64 sm:h-64 rounded-full border border-sky-200/50 bg-sky-50/40 animate-[spin_60s_linear_infinite]"
             style={{
               boxShadow: "0 0 45px -10px rgba(0,163,224,0.18)",
             }}
@@ -309,7 +310,7 @@ export const EbmAnalyticsEngine: React.FC = () => {
 
           {/* Layer 3: Glassmorphic State Sphere */}
           <div 
-            className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-b from-white/95 via-white/85 to-sky-50/90 backdrop-blur-xl border border-white/80 shadow-[0_16px_40px_-12px_rgba(0,163,224,0.22),inset_0_2px_6px_rgba(255,255,255,0.9),inset_0_-2px_6px_rgba(0,163,224,0.1)] flex flex-col items-center justify-center p-3 text-center transition-all duration-500 hover:shadow-[0_20px_50px_-10px_rgba(0,163,224,0.32)]"
+            className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-b from-white via-white to-sky-50 border border-white shadow-[0_16px_40px_-12px_rgba(0,163,224,0.22),inset_0_2px_6px_rgba(255,255,255,0.9),inset_0_-2px_6px_rgba(0,163,224,0.1)] flex flex-col items-center justify-center p-3 text-center transition-all duration-500 hover:shadow-[0_20px_50px_-10px_rgba(0,163,224,0.32)]"
           >
             {/* Tiny Ambient Pulsing Ring inside core */}
             <div className="absolute inset-1.5 rounded-full border border-sky-100/80 pointer-events-none" />
@@ -373,7 +374,7 @@ export const EbmAnalyticsEngine: React.FC = () => {
                     className={`flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${
                       isActive
                         ? "bg-[#00a3e0] text-white border border-cyan-300/60 shadow-md"
-                        : "bg-white/95 backdrop-blur-md text-slate-700 border border-slate-200/90 group-hover:border-[#00a3e0]/50 group-hover:text-[#0076a5]"
+                        : "bg-white text-slate-700 border border-slate-200/90 group-hover:border-[#00a3e0]/50 group-hover:text-[#0076a5]"
                     }`}
                   >
                     <Icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 ${isActive ? "text-white" : "text-[#00a3e0]"}`} />
@@ -419,7 +420,7 @@ export const EbmAnalyticsEngine: React.FC = () => {
           className="hidden sm:block absolute top-[6%] left-[4%] z-20 pointer-events-none ebm-preserve-3d"
           style={{ transform: "translateZ(25px)" }}
         >
-          <div className="bg-white/85 backdrop-blur-md border border-white/80 rounded-2xl p-3 shadow-[0_12px_28px_-8px_rgba(15,23,42,0.08)] space-y-1 w-36">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-[0_12px_28px_-8px_rgba(15,23,42,0.08)] space-y-1 w-36">
             <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-wider text-slate-400">
               <span>CURRENT STATE</span>
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
@@ -438,7 +439,7 @@ export const EbmAnalyticsEngine: React.FC = () => {
           className="hidden sm:block absolute bottom-[8%] right-[4%] z-20 pointer-events-none ebm-preserve-3d"
           style={{ transform: "translateZ(45px)" }}
         >
-          <div className="bg-white/90 backdrop-blur-md border border-sky-100 rounded-2xl p-3 shadow-[0_16px_32px_-8px_rgba(0,163,224,0.18)] space-y-1 w-44">
+          <div className="bg-white border border-sky-200 rounded-2xl p-3 shadow-[0_16px_32px_-8px_rgba(0,163,224,0.18)] space-y-1 w-44">
             <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-wider text-[#0076a5]">
               <span>NEXT ACTION</span>
               <Activity className="w-3 h-3 text-[#00a3e0]" />
@@ -457,7 +458,7 @@ export const EbmAnalyticsEngine: React.FC = () => {
           className="hidden sm:block absolute bottom-[6%] left-[6%] z-10 pointer-events-none ebm-preserve-3d"
           style={{ transform: "translateZ(-15px)" }}
         >
-          <div className="bg-white/70 backdrop-blur-sm border border-slate-200/70 rounded-xl p-2.5 shadow-sm text-left w-36 opacity-85">
+          <div className="bg-white/90 border border-slate-200/90 rounded-xl p-2.5 shadow-sm text-left w-36 opacity-95">
             <span className="text-[8px] font-black uppercase tracking-wider text-slate-400 block">
               EVIDENCE RECORD
             </span>
@@ -471,15 +472,15 @@ export const EbmAnalyticsEngine: React.FC = () => {
 
       {/* Mobile Stacked Demonstration Cards (Below 640px) */}
       <div className="sm:hidden absolute -bottom-6 left-2 right-2 flex items-center justify-between gap-2 z-30 pointer-events-none">
-        <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-2 shadow-xs flex-1 text-center">
+        <div className="bg-white border border-slate-200/90 rounded-xl p-2 shadow-xs flex-1 text-center">
           <span className="text-[8px] font-bold text-slate-400 uppercase block">State</span>
           <span className="text-[10px] font-black text-amber-800 block">Developing</span>
         </div>
-        <div className="bg-white/90 backdrop-blur-md border border-sky-200 rounded-xl p-2 shadow-xs flex-1 text-center">
+        <div className="bg-white border border-sky-200 rounded-xl p-2 shadow-xs flex-1 text-center">
           <span className="text-[8px] font-bold text-[#0076a5] uppercase block">Action</span>
           <span className="text-[10px] font-black text-slate-900 block truncate">Targeted Practice</span>
         </div>
-        <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-xl p-2 shadow-xs flex-1 text-center">
+        <div className="bg-white border border-slate-200/90 rounded-xl p-2 shadow-xs flex-1 text-center">
           <span className="text-[8px] font-bold text-slate-400 uppercase block">Phase</span>
           <span className="text-[10px] font-black text-[#00a3e0] block">{currentActiveNode.name}</span>
         </div>

@@ -23,7 +23,24 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, '.'),
+        react: path.resolve(import.meta.dirname, 'node_modules/react'),
+        'react-dom': path.resolve(import.meta.dirname, 'node_modules/react-dom'),
       },
+      dedupe: ['react', 'react-dom', 'react-router-dom', 'react-router', 'zustand', 'motion'],
+    },
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        'zustand',
+        'motion/react',
+        'lucide-react',
+        'recharts',
+        '@dnd-kit/core',
+        '@dnd-kit/sortable',
+        '@dnd-kit/utilities',
+      ],
     },
     build: {
       chunkSizeWarningLimit: 1000,
@@ -31,38 +48,8 @@ export default defineConfig(() => {
       cssCodeSplit: true,
       sourcemap: false,
       minify: 'esbuild' as const,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/')) {
-              return 'vendor-core';
-            }
-            if (id.includes('node_modules/lucide-react/')) {
-              return 'vendor-icons';
-            }
-            if (id.includes('node_modules/motion/')) {
-              return 'vendor-motion';
-            }
-            if (id.includes('node_modules/recharts/')) {
-              return 'vendor-charts';
-            }
-            if (id.includes('node_modules/@dnd-kit/')) {
-              return 'vendor-dnd';
-            }
-            if (id.includes('node_modules/firebase/')) {
-              return 'vendor-firebase';
-            }
-            if (id.includes('node_modules/react-markdown/')) {
-              return 'vendor-markdown';
-            }
-          },
-        },
-      },
     },
     server: {
-      headers: {
-        'Cache-Control': 'public, max-age=31536000, immutable',
-      },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modify—file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',

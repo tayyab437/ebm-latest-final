@@ -51,7 +51,7 @@ export const EbmEvidenceParticles: React.FC<EbmEvidenceParticlesProps> = ({
       {particles.map((p) => (
         <div
           key={p.id}
-          className={`absolute rounded-full ${p.bg} blur-[0.5px] animate-pulse`}
+          className={`absolute rounded-full ${p.bg}`}
           style={{
             top: p.top,
             left: p.left,

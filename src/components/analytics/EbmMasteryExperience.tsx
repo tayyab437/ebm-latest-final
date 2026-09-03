@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import { useReducedMotion } from "./design-system/EbmMotion";
 import {
   Brain,
   CheckCircle2,
@@ -231,8 +232,7 @@ export const EbmMasteryExperience: React.FC = () => {
       <div className="text-center max-w-4xl mx-auto space-y-5 px-4">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           className="inline-flex items-center space-x-2 bg-[#764dbd]/10 border border-[#764dbd]/20 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-[#764dbd]"
         >
@@ -242,8 +242,7 @@ export const EbmMasteryExperience: React.FC = () => {
 
         <motion.h2
           initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.08 }}
           className="text-3.5xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.08]"
         >
@@ -253,8 +252,7 @@ export const EbmMasteryExperience: React.FC = () => {
 
         <motion.p
           initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.16 }}
           className="text-slate-600 font-medium text-base sm:text-lg leading-relaxed max-w-2xl mx-auto"
         >
@@ -264,8 +262,7 @@ export const EbmMasteryExperience: React.FC = () => {
         {/* Visual Editorial Anchor Statement */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.45, delay: 0.22 }}
           className="pt-2"
         >
@@ -423,8 +420,7 @@ export const EbmMasteryExperience: React.FC = () => {
           {/* Card 01 */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.05 }}
             className="bg-slate-50/80 hover:bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 hover:border-sky-300 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
           >
@@ -448,8 +444,7 @@ export const EbmMasteryExperience: React.FC = () => {
           {/* Card 02 */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
             className="bg-slate-50/80 hover:bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
           >
@@ -473,8 +468,7 @@ export const EbmMasteryExperience: React.FC = () => {
           {/* Card 03 */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15 }}
             className="bg-slate-50/80 hover:bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 hover:border-rose-300 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
           >
@@ -498,8 +492,7 @@ export const EbmMasteryExperience: React.FC = () => {
           {/* Card 04 */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
             className="bg-slate-50/80 hover:bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 hover:border-purple-300 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
           >
@@ -523,8 +516,7 @@ export const EbmMasteryExperience: React.FC = () => {
           {/* Card 05 */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.25 }}
             className="bg-slate-50/80 hover:bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 hover:border-indigo-300 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
           >
@@ -548,8 +540,7 @@ export const EbmMasteryExperience: React.FC = () => {
           {/* Card 06 — VISUALLY DOMINANT */}
           <motion.div
             initial={{ opacity: 0, y: 15, scale: 0.98 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="bg-gradient-to-br from-[#008fc7] via-[#0076a5] to-[#0b5171] text-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-cyan-900/20 border-2 border-cyan-300/40 relative overflow-hidden flex flex-col justify-between transform hover:-translate-y-1 transition-all duration-300"
           >

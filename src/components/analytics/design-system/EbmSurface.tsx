@@ -33,11 +33,11 @@ export const EbmSurface: React.FC<EbmSurfaceProps> = ({
           interactive ? "hover:border-slate-300 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5" : ""
         }`;
       case "3":
-        return `bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-[24px] shadow-[0_16px_40px_-16px_rgba(0,163,224,0.12),0_4px_16px_-4px_rgba(15,23,42,0.04)] ${
+        return `bg-white/98 border border-slate-200/80 rounded-[24px] shadow-[0_16px_40px_-16px_rgba(0,163,224,0.12),0_4px_16px_-4px_rgba(15,23,42,0.04)] ${
           interactive ? "hover:border-[#00a3e0]/40 hover:shadow-[0_20px_48px_-12px_rgba(0,163,224,0.18)] transition-all duration-300 hover:-translate-y-1" : ""
         }`;
       case "glass":
-        return "bg-white/75 backdrop-blur-xl border border-white/70 rounded-[22px] shadow-[0_8px_32px_0_rgba(15,23,42,0.06)]";
+        return "bg-white/90 border border-slate-200/80 rounded-[22px] shadow-[0_8px_32px_0_rgba(15,23,42,0.06)]";
       case "dark":
         return "bg-slate-950 text-white border border-slate-800/80 rounded-[24px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.08),0_20px_40px_-15px_rgba(0,0,0,0.6)] relative overflow-hidden";
       case "dark-accent":

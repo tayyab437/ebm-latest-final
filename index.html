@@ -101,66 +101,7 @@
     </style>
   </head>
   <body>
-    <div id="root">
-      <!-- Universal Application Shell (Hydrated seamlessly by React to prevent CLS layout shifts) -->
-      <div class="min-h-screen flex flex-col bg-[#F8FAFC]">
-        <!-- Top Navbar Shell -->
-        <header class="bg-white/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200/80 shadow-xs">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <span class="text-2xl sm:text-3xl font-black text-[#00a3e0] tracking-tight">EBM</span>
-              <div class="hidden sm:flex items-center pl-3.5 border-l border-slate-300/80">
-                <span class="text-slate-700 font-bold tracking-tight text-xs sm:text-sm leading-tight">Digital learning<br />platform</span>
-              </div>
-            </div>
-            <nav class="hidden md:flex items-center space-x-6 text-sm font-bold text-slate-600">
-              <a href="/" class="text-[#00a3e0]">Home</a>
-              <a href="/about" class="hover:text-[#00a3e0] transition-colors">About Us</a>
-              <a href="/programs" class="hover:text-[#00a3e0] transition-colors">Programs</a>
-              <a href="/learning" class="hover:text-[#00a3e0] transition-colors">Learning</a>
-              <a href="/assessment" class="hover:text-[#00a3e0] transition-colors">Assessment</a>
-              <a href="/analytics" class="hover:text-[#00a3e0] transition-colors">Analytics</a>
-              <a href="/blog" class="hover:text-[#00a3e0] transition-colors">Blog</a>
-              <a href="/pricing" class="hover:text-[#00a3e0] transition-colors">Pricing</a>
-            </nav>
-            <div class="flex items-center space-x-3">
-              <a href="/login" class="px-4 py-1.5 bg-[#00a3e0] text-white text-xs sm:text-sm font-bold rounded-md shadow-sm">Sign in</a>
-              <a href="/register" class="px-4 py-1.5 border-2 border-[#00a3e0] text-[#00a3e0] text-xs sm:text-sm font-bold rounded-md">Registration</a>
-            </div>
-          </div>
-        </header>
-
-        <!-- Main Shell Container with Instant-Paint Pre-rendered Hero Shell -->
-        <main class="flex-grow flex flex-col min-h-screen bg-[#F8FAFC]">
-          <section class="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm min-h-[320px]">
-            <img
-              src="/ebm-hero-bg-opt.webp"
-              alt="EBM Digital Learning Platform"
-              width="1200"
-              height="600"
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-              referrerpolicy="no-referrer"
-              class="absolute inset-0 w-full h-full object-cover object-center transform scale-105"
-            />
-            <div class="absolute inset-0 bg-gradient-to-r from-white/95 via-sky-50/90 to-white/85 backdrop-blur-[2px]"></div>
-            <div class="relative z-10 max-w-4xl mx-auto text-center space-y-4">
-              <div class="inline-flex items-center space-x-2 bg-[#00a3e0]/10 border border-[#00a3e0]/20 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-[#0076a5] mx-auto shadow-xs">
-                <svg class="w-3.5 h-3.5 text-amber-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-                <span>Syed Ejaz Bukhari Method</span>
-              </div>
-              <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight leading-tight text-slate-900">
-                EBM: A Personalized Learning Platform for Every Student
-              </h1>
-              <p class="text-slate-600 font-medium text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-6">
-                EBM combines structured learning, personalized guidance, and AI-enhanced educational tools to help students build strong academic foundations and progress with confidence.
-              </p>
-            </div>
-          </section>
-        </main>
-      </div>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

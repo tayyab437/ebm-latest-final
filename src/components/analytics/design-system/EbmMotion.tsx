@@ -1,5 +1,29 @@
-import React from "react";
-import { motion, useReducedMotion } from "motion/react";
+import React, { useState, useEffect } from "react";
+import { motion } from "motion/react";
+
+export function useReducedMotion(): boolean {
+  const [shouldReduce, setShouldReduce] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setShouldReduce(mq.matches);
+
+    const onChange = (e: MediaQueryListEvent) => {
+      setShouldReduce(e.matches);
+    };
+
+    if (mq.addEventListener) {
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    } else if ((mq as any).addListener) {
+      (mq as any).addListener(onChange);
+      return () => (mq as any).removeListener(onChange);
+    }
+  }, []);
+
+  return shouldReduce;
+}
 
 interface EbmRevealProps {
   children: React.ReactNode;
@@ -58,8 +82,7 @@ export const EbmReveal: React.FC<EbmRevealProps> = ({
   return (
     <motion.div
       initial={initial}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once, margin: viewportMargin }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
       transition={{
         duration,
         delay,
@@ -98,8 +121,7 @@ export const EbmStaggerContainer: React.FC<EbmStaggerContainerProps> = ({
   return (
     <motion.div
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once, margin: viewportMargin }}
+      animate="visible"
       variants={{
         hidden: {},
         visible: {
