@@ -1,0 +1,22 @@
+# Inspiration Hub - Ejaz Bukhari Method (EBM)
+
+> The Inspiration Hub is the primary pedagogical and institutional excellence repository of the Ejaz Bukhari Method (EBM), providing battle-tested classroom toolkits, administrative leadership blueprints, implementation strategies, and parent collaboration resources.
+
+## Core Inspiration Hub Sections
+
+- [Inspiration Hub Overview](https://ejazbukharimethod.com/inspiration): Full portal overview of instructional practices, downloadable printables, and teaching playbooks.
+- [Teacher Toolkit](https://ejazbukharimethod.com/inspiration?tab=teacher): Formative diagnostic checks, differentiated lesson planning frameworks, mastery trackers, and student engagement rubrics.
+- [Administrator Resource Center](https://ejazbukharimethod.com/inspiration?tab=admin): School governance matrices, curriculum alignment protocols, teacher development modules, and institutional performance scorecards.
+- [Implementation Strategies](https://ejazbukharimethod.com/inspiration?tab=implementation): Phased onboarding roadmaps, cognitive scaffolding milestones, and real-time student feedback loops.
+- [Parent Collaboration Playbooks](https://ejazbukharimethod.com/inspiration?tab=parent): Home-school academic alignment routines, growth mindset conversation prompts, and student milestone tracking.
+
+## Core EBM Platform Pathways
+
+- [Home](https://ejazbukharimethod.com/): Main platform portal, pedagogical pillars, and foundational learning methodology.
+- [Academic Programs](https://ejazbukharimethod.com/programs): Grade 1 to Cambridge O/A Levels curriculum pathways.
+- [Learning Hub](https://ejazbukharimethod.com/learning): Self-paced modules, interactive exercises, and video tutorials.
+- [Assessment Center](https://ejazbukharimethod.com/assessment): Automated skill-gap diagnosis and adaptive quizzes.
+- [Analytics & Growth](https://ejazbukharimethod.com/analytics): Learning velocity tracking, mastery scorecards, and cohort benchmarks.
+- [Case Studies](https://ejazbukharimethod.com/casestudies): Documented student turnarounds and Cambridge distinction outcomes.
+- [Pricing & Subscriptions](https://ejazbukharimethod.com/pricing): Membership tiers for individual students and schools.
+- [Blog & Educational Research](https://ejazbukharimethod.com/blog): Articles on cognitive science, exam preparation, and pedagogy.

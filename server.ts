@@ -664,20 +664,59 @@ app.get(["/rss.xml", "/blog/rss.xml"], async (req, res) => {
 });
 
 // Official llms.txt standard endpoints for Large Language Models & AI crawlers
-app.get("/llms.txt", (req, res) => {
-  const filePath = path.join(process.cwd(), "public", "llms.txt");
-  res.setHeader("Content-Type", "text/markdown; charset=utf-8");
-  res.setHeader("Cache-Control", "public, max-age=86400");
-  if (fs.existsSync(filePath)) {
-    return res.sendFile(filePath);
-  }
-  return res.send(`# Ejaz Bukhari Method (EBM)
+// Supports root /llms.txt, /inspiration/llms.txt, /.well-known/llms.txt, and wildcards
+const sendLlmsResponse = (
+  res: express.Response,
+  targetType: "summary" | "full" | "inspiration"
+) => {
+  const filename =
+    targetType === "inspiration"
+      ? "inspiration-llms.txt"
+      : targetType === "full"
+      ? "llms-full.txt"
+      : "llms.txt";
+  const filePath = path.join(process.cwd(), "public", filename);
 
-> The Ejaz Bukhari Method (EBM) is an intelligent, multi-portal digital learning platform delivering personalized mastery-based education, adaptive testing, curriculum management, and academic growth analytics.
+  let content = "";
+  if (fs.existsSync(filePath)) {
+    try {
+      content = fs.readFileSync(filePath, "utf-8");
+    } catch (e) {
+      console.error(`Error reading ${filename}:`, e);
+    }
+  }
+
+  if (!content) {
+    if (targetType === "inspiration") {
+      content = `# Inspiration Hub - Ejaz Bukhari Method (EBM)
+
+> The Inspiration Hub is the primary pedagogical and instructional excellence repository of the Ejaz Bukhari Method (EBM), providing actionable classroom toolkits, administrative blueprints, implementation strategies, and parent collaboration resources.
+
+## Core Inspiration Hub Sections
+
+- [Inspiration Hub](https://ejazbukharimethod.com/inspiration): Central hub for teacher toolkits, classroom printables, and leadership resources.
+- [Teacher Toolkit](https://ejazbukharimethod.com/inspiration?tab=teacher): Fast-start classroom essentials, formative assessment strategies, differentiated instruction guides, and mastery trackers.
+- [Administrator Resource Center](https://ejazbukharimethod.com/inspiration?tab=admin): Institutional leadership blueprints, curriculum mapping protocols, staff development frameworks, and parent engagement metrics.
+- [Implementation Strategies](https://ejazbukharimethod.com/inspiration?tab=implementation): Step-by-step rollout roadmaps, cohort scaffolding guides, and continuous feedback loop templates.
+- [Parent Collaboration Playbooks](https://ejazbukharimethod.com/inspiration?tab=parent): Home-school synchronization tools, growth mindset prompts, and academic milestone checklists.
+
+## Core EBM Platform Pathways
+
+- [Home](https://ejazbukharimethod.com/): Primary portal overview, pedagogical pillars, and platform features.
+- [Academic Programs](https://ejazbukharimethod.com/programs): Grade 1 through Year 5 curriculum pathways.
+- [Learning Hub](https://ejazbukharimethod.com/learning): Self-paced learning modules and interactive video lessons.
+- [Assessment Center](https://ejazbukharimethod.com/assessment): Diagnostic evaluations and adaptive quizzes.
+- [Analytics & Growth](https://ejazbukharimethod.com/analytics): Cohort performance metrics and proficiency benchmarks.
+`;
+    } else {
+      content = `# Ejaz Bukhari Method (EBM)
+
+> The Ejaz Bukhari Method (EBM) is an intelligent, multi-portal digital learning platform delivering personalized mastery-based education, adaptive testing, curriculum management, and academic growth analytics for students, teachers, parents, and school administrators.
 
 ## Core Website & Academic Pathways
 
 - [Home](https://ejazbukharimethod.com/): Primary portal overview, pedagogical pillars, and platform features.
+- [Inspiration Hub](https://ejazbukharimethod.com/inspiration): Curated teacher toolkits, classroom best practices, administrative leadership resources, parent collaboration playbooks, and pedagogical inspiration.
 - [About Us](https://ejazbukharimethod.com/about): Mission, leadership, and teaching philosophy.
 - [Programs](https://ejazbukharimethod.com/programs): Comprehensive Year 1 to Year 5 curriculum pathways.
 - [Learning Hub](https://ejazbukharimethod.com/learning): Self-paced learning modules and interactive video lessons.
@@ -687,28 +726,85 @@ app.get("/llms.txt", (req, res) => {
 - [Pricing & Subscriptions](https://ejazbukharimethod.com/pricing): Membership plans and licensing.
 - [Blog & Insights](https://ejazbukharimethod.com/blog): Educational research and study strategies.
 - [Contact Support](https://ejazbukharimethod.com/contact): Admissions inquiries and technical help.
-`);
+
+## Inspiration Hub & Pedagogical Toolkits
+
+- [Teacher Toolkit](https://ejazbukharimethod.com/inspiration?tab=teacher): Fast-start classroom essentials, formative assessment strategies, differentiated instruction guides, and mastery trackers.
+- [Administrator Resource Center](https://ejazbukharimethod.com/inspiration?tab=admin): Institutional leadership blueprints, curriculum mapping protocols, staff development frameworks, and parent engagement metrics.
+- [Implementation Strategies](https://ejazbukharimethod.com/inspiration?tab=implementation): Step-by-step rollout roadmaps, cohort scaffolding guides, and continuous feedback loop templates.
+- [Parent Collaboration Playbooks](https://ejazbukharimethod.com/inspiration?tab=parent): Home-school synchronization tools, growth mindset prompts, and academic milestone checklists.
+`;
+    }
+  }
+
+  // Universal headers for AI agents, crawlers, and Lighthouse audits
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.setHeader("Cache-Control", "public, max-age=86400, s-maxage=86400");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+
+  return res.status(200).send(content);
+};
+
+// Route matching for summary llms.txt (root, subpaths like /inspiration/llms.txt, .well-known, etc.)
+app.all(
+  [
+    "/llms.txt",
+    "/inspiration/llms.txt",
+    "/.well-known/llms.txt",
+    "/inspiration-llms.txt",
+  ],
+  (req, res) => {
+    if (req.method === "OPTIONS") {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+      return res.status(204).end();
+    }
+    const isInsp = req.path.includes("inspiration");
+    return sendLlmsResponse(res, isInsp ? "inspiration" : "summary");
+  }
+);
+
+// Fallback regex for any other subpath ending with /llms.txt
+app.get(/\/(?:.+?\/)?llms\.txt$/i, (req, res) => {
+  const isInsp = req.path.includes("inspiration");
+  return sendLlmsResponse(res, isInsp ? "inspiration" : "summary");
 });
 
-app.get("/llms-full.txt", (req, res) => {
-  const filePath = path.join(process.cwd(), "public", "llms-full.txt");
-  res.setHeader("Content-Type", "text/markdown; charset=utf-8");
-  res.setHeader("Cache-Control", "public, max-age=86400");
-  if (fs.existsSync(filePath)) {
-    return res.sendFile(filePath);
+// Route matching for full llms-full.txt
+app.all(
+  [
+    "/llms-full.txt",
+    "/inspiration/llms-full.txt",
+    "/.well-known/llms-full.txt",
+  ],
+  (req, res) => {
+    if (req.method === "OPTIONS") {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+      return res.status(204).end();
+    }
+    return sendLlmsResponse(res, "full");
   }
-  return res.sendFile(path.join(process.cwd(), "public", "llms.txt"));
+);
+
+// Fallback regex for any other subpath ending with /llms-full.txt
+app.get(/\/(?:.+?\/)?llms-full\.txt$/i, (req, res) => {
+  return sendLlmsResponse(res, "full");
 });
 
 // Search Engine Robots.txt
 app.get("/robots.txt", (req, res) => {
   const filePath = path.join(process.cwd(), "public", "robots.txt");
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Cache-Control", "public, max-age=86400");
   if (fs.existsSync(filePath)) {
     return res.sendFile(filePath);
   }
-  return res.send("User-agent: *\nAllow: /\nDisallow: /dashboard/\nDisallow: /admin/\nDisallow: /teacher/\nDisallow: /parent/\n\nSitemap: https://ejazbukharimethod.com/sitemap.xml\n");
+  return res.send("User-agent: *\nAllow: /\nAllow: /llms.txt\nAllow: /llms-full.txt\nAllow: /*/llms.txt\nAllow: /*/llms-full.txt\nDisallow: /dashboard/\nDisallow: /admin/\nDisallow: /teacher/\nDisallow: /parent/\n\nSitemap: https://ejazbukharimethod.com/sitemap.xml\n");
 });
 
 // Blog REST API router

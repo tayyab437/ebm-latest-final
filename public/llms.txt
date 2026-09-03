@@ -5,6 +5,7 @@
 ## Core Website & Academic Pathways
 
 - [Home](https://ejazbukharimethod.com/): Primary portal overview, pedagogical pillars, methodology, and platform features.
+- [Inspiration Hub](https://ejazbukharimethod.com/inspiration): Curated teacher toolkits, classroom best practices, administrative leadership resources, parent collaboration playbooks, and pedagogical inspiration.
 - [About Us](https://ejazbukharimethod.com/about): Mission, historical milestones, educational leadership, and teaching philosophy.
 - [Programs](https://ejazbukharimethod.com/programs): Comprehensive Year 1 to Year 5 curriculum pathways and academic tracks.
 - [Learning Hub](https://ejazbukharimethod.com/learning): Self-paced learning modules, interactive video lessons, and mastery practice.
@@ -14,6 +15,13 @@
 - [Pricing & Subscriptions](https://ejazbukharimethod.com/pricing): Flexible plans for individual students, family bundles, and institutional licensing.
 - [Blog & Insights](https://ejazbukharimethod.com/blog): Educational research, exam preparation strategies, and parent guidance articles.
 - [Contact Support](https://ejazbukharimethod.com/contact): Direct assistance for admissions inquiries, customer service, and technical help.
+
+## Inspiration Hub & Pedagogical Toolkits
+
+- [Teacher Toolkit](https://ejazbukharimethod.com/inspiration?tab=teacher): Fast-start classroom essentials, formative assessment strategies, differentiated instruction guides, and mastery trackers.
+- [Administrator Resource Center](https://ejazbukharimethod.com/inspiration?tab=admin): Institutional leadership blueprints, curriculum mapping protocols, staff development frameworks, and parent engagement metrics.
+- [Implementation Strategies](https://ejazbukharimethod.com/inspiration?tab=implementation): Step-by-step rollout roadmaps, cohort scaffolding guides, and continuous feedback loop templates.
+- [Parent Collaboration Playbooks](https://ejazbukharimethod.com/inspiration?tab=parent): Home-school synchronization tools, growth mindset prompts, and academic milestone checklists.
 
 ## Portal Applications
 

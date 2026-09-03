@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /*/llms.txt
+Allow: /*/llms-full.txt
 Disallow: /dashboard/
 Disallow: /admin/
 Disallow: /teacher/

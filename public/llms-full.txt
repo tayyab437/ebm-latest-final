@@ -9,6 +9,7 @@ The Ejaz Bukhari Method (EBM) is a full-stack, AI-enhanced educational ecosystem
 ## Primary Documentation Links
 
 - [Homepage](https://ejazbukharimethod.com/): Core platform features and pedagogical philosophy.
+- [Inspiration Hub](https://ejazbukharimethod.com/inspiration): Curated teacher toolkits, classroom best practices, administrative leadership resources, parent collaboration playbooks, and pedagogical inspiration.
 - [About the Method](https://ejazbukharimethod.com/about): Background on the instructional model, mastery-based pacing, and faculty.
 - [Academic Programs](https://ejazbukharimethod.com/programs): Grade-by-grade course breakdown from Year 1 foundational concepts to Year 5 advanced scholarship.
 - [Learning Management](https://ejazbukharimethod.com/learning): Structure of digital assignments, flashcard reviews, interactive problem solving, and multimedia content.
@@ -18,6 +19,13 @@ The Ejaz Bukhari Method (EBM) is a full-stack, AI-enhanced educational ecosystem
 - [Tuition & Membership](https://ejazbukharimethod.com/pricing): Pricing models for standard, pro, and enterprise tiers.
 - [Educational Articles](https://ejazbukharimethod.com/blog): In-depth articles covering pedagogy, cognitive science in learning, and exam techniques.
 - [Help & Inquiries](https://ejazbukharimethod.com/contact): Customer support and campus location contacts.
+
+## Inspiration & Pedagogical Toolkits
+
+- [Teacher Toolkit](https://ejazbukharimethod.com/inspiration?tab=teacher): Fast-start classroom essentials, formative assessment strategies, differentiated instruction guides, and mastery trackers.
+- [Administrator Resource Center](https://ejazbukharimethod.com/inspiration?tab=admin): Institutional leadership blueprints, curriculum mapping protocols, staff development frameworks, and parent engagement metrics.
+- [Implementation Strategies](https://ejazbukharimethod.com/inspiration?tab=implementation): Step-by-step rollout roadmaps, cohort scaffolding guides, and continuous feedback loop templates.
+- [Parent Collaboration Guides](https://ejazbukharimethod.com/inspiration?tab=parent): Home-school synchronization tools, growth mindset prompts, and academic milestone checklists.
 
 ## Multi-User Portal Ecosystem
 
