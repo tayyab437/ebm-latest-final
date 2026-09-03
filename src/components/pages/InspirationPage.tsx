@@ -152,13 +152,13 @@ export function InspirationPage() {
         canonicalUrl="https://ejazbukharimethod.com/inspiration"
       />
       {/* ================= HEADER SECTION ================= */}
-      <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm text-center">
+      <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-sky-100 shadow-sm text-center min-h-[320px] flex flex-col justify-center items-center">
         {/* Background Image */}
         <img
           src={inspirationHeroBg}
           alt="EBM Inspiration & Resources Background"
-          width="1200"
-          height="600"
+          width="800"
+          height="416"
           loading="eager"
           fetchPriority="high"
           decoding="async"
@@ -170,40 +170,40 @@ export function InspirationPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-sky-50/90 to-white/85 backdrop-blur-[2px]" />
 
         <div className="max-w-4xl mx-auto space-y-4 relative z-10">
-          <div className="inline-flex items-center space-x-2 bg-[#00a3e0]/10 border border-[#00a3e0]/20 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-[#0076a5] mx-auto shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <div className="inline-flex items-center space-x-2 bg-sky-100 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-800 px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider text-sky-900 dark:text-sky-200 mx-auto shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>Ecosystem Inspiration Hub</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight leading-tight text-slate-900">
             EBM Inspiration & Resources
           </h1>
-          <p className="text-slate-600 font-medium text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-700 dark:text-slate-200 font-medium text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             Explore premium pedagogical tools, lesson structures, and acceleration guides designed to maximize student velocity in the Ejaz Bukhari Method.
           </p>
         </div>
       </section>
 
       {/* ================= SUB-NAVIGATION TABS ================= */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm transition-colors duration-200">
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm transition-colors duration-200 min-h-[114px]">
         <div className="max-w-5xl mx-auto px-4">
           {/* Main groups toggler */}
           <div className="flex border-b border-slate-100 dark:border-slate-800">
             <button
               onClick={() => handleGroupSwitch("educators")}
-              className={`flex-1 py-4 text-center font-bold text-sm md:text-base border-b-2 transition ${
+              className={`flex-1 py-4 text-center font-bold text-sm md:text-base border-b-2 transition cursor-pointer ${
                 activeGroup === "educators"
-                  ? "border-blue-600 text-blue-600 dark:text-blue-400 font-extrabold"
-                  : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
+                  ? "border-blue-700 text-blue-700 dark:text-blue-400 font-extrabold"
+                  : "border-transparent text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
               }`}
             >
               For Educators
             </button>
             <button
               onClick={() => handleGroupSwitch("families")}
-              className={`flex-1 py-4 text-center font-bold text-sm md:text-base border-b-2 transition ${
+              className={`flex-1 py-4 text-center font-bold text-sm md:text-base border-b-2 transition cursor-pointer ${
                 activeGroup === "families"
-                  ? "border-blue-600 text-blue-600 dark:text-blue-400 font-extrabold"
-                  : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
+                  ? "border-blue-700 text-blue-700 dark:text-blue-400 font-extrabold"
+                  : "border-transparent text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
               }`}
             >
               For Families
@@ -211,7 +211,7 @@ export function InspirationPage() {
           </div>
 
           {/* Subcategories checklist nav */}
-          <div className="flex space-x-1 md:space-x-3 overflow-x-auto scrollbar-hide py-3 text-xs md:text-sm font-semibold">
+          <div className="flex space-x-1 md:space-x-3 overflow-x-auto scrollbar-hide py-3 text-xs md:text-sm font-semibold min-h-[58px] items-center">
             {activeGroup === "educators" ? (
               <>
                 {[
@@ -226,8 +226,8 @@ export function InspirationPage() {
                     onClick={() => setActiveSub(sub.id as SubCategory)}
                     className={`px-4 py-2 rounded-full whitespace-nowrap transition cursor-pointer ${
                       activeSub === sub.id
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                        ? "bg-blue-600 text-white shadow-sm font-bold"
+                        : "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                     }`}
                   >
                     {sub.label}
@@ -246,8 +246,8 @@ export function InspirationPage() {
                     onClick={() => setActiveSub(sub.id as SubCategory)}
                     className={`px-4 py-2 rounded-full whitespace-nowrap transition cursor-pointer ${
                       activeSub === sub.id
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                        ? "bg-blue-600 text-white shadow-sm font-bold"
+                        : "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                     }`}
                   >
                     {sub.label}
@@ -260,14 +260,14 @@ export function InspirationPage() {
       </div>
 
       {/* ================= VIEWPORT CONTENT ================= */}
-      <main className="max-w-5xl mx-auto px-4 mt-10">
-        <AnimatePresence mode="wait">
+      <div className="max-w-5xl mx-auto px-4 mt-10 min-h-[600px]">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeSub}
-            initial={{ opacity: 0, y: 15 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
           >
             {/* ================= WELCOME HUB ================= */}
             {activeSub === "welcome" && (
@@ -276,7 +276,7 @@ export function InspirationPage() {
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">
                     EBM Educator Resources
                   </h2>
-                  <p className="text-slate-500 text-sm leading-relaxed">
+                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
                     Designed around cognitive load science to help school teachers and tutors fast-track curriculum milestones with maximum retention.
                   </p>
                 </div>
@@ -285,13 +285,13 @@ export function InspirationPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                   
                   {/* Column 1: Green Items - Toolkit & Engagement */}
-                  <div className="bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-200/50 dark:border-emerald-900/30 rounded-3xl p-6 space-y-6 shadow-xs relative pt-16">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white p-4 rounded-2xl shadow">
+                  <div className="bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 rounded-3xl p-6 space-y-6 shadow-xs relative pt-16">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-600 text-white p-4 rounded-2xl shadow">
                       <Rocket className="w-8 h-8" />
                     </div>
-                    <div className="text-center pb-2 border-b border-emerald-100 dark:border-emerald-900/30">
-                      <h3 className="font-bold text-emerald-800 dark:text-emerald-400 text-lg">Toolkit & Engagement</h3>
-                      <span className="text-[10px] font-mono text-emerald-600 block uppercase tracking-wider">Fast-start essentials</span>
+                    <div className="text-center pb-2 border-b border-emerald-200 dark:border-emerald-900/40">
+                      <h3 className="font-bold text-emerald-900 dark:text-emerald-300 text-lg">Toolkit & Engagement</h3>
+                      <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 block uppercase tracking-wider font-bold">Fast-start essentials</span>
                     </div>
                     <div className="space-y-4">
                       {greenResources.map((res, index) => (
@@ -308,10 +308,10 @@ export function InspirationPage() {
                               <h4 className="font-extrabold text-sm text-slate-800 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">
                                 {res.title}
                               </h4>
-                              <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
+                              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
                                 {res.description}
                               </p>
-                              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold inline-flex items-center gap-1 mt-1">
+                              <span className="text-xs text-emerald-800 dark:text-emerald-300 font-bold inline-flex items-center gap-1 mt-1">
                                 {res.ctaText} <ChevronRight className="w-3.5 h-3.5" />
                               </span>
                             </div>
@@ -322,13 +322,13 @@ export function InspirationPage() {
                   </div>
 
                   {/* Column 2: Blue Items - Implementation & Diagnostics */}
-                  <div className="bg-blue-50/50 dark:bg-blue-950/10 border border-blue-200/50 dark:border-blue-900/30 rounded-3xl p-6 space-y-6 shadow-xs relative pt-16">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white p-4 rounded-2xl shadow">
+                  <div className="bg-blue-50/70 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40 rounded-3xl p-6 space-y-6 shadow-xs relative pt-16">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white p-4 rounded-2xl shadow">
                       <FileUp className="w-8 h-8" />
                     </div>
-                    <div className="text-center pb-2 border-b border-blue-100 dark:border-blue-900/30">
-                      <h3 className="font-bold text-blue-800 dark:text-blue-400 text-lg">Pacing & Diagnostics</h3>
-                      <span className="text-[10px] font-mono text-blue-600 block uppercase tracking-wider">Classroom execution</span>
+                    <div className="text-center pb-2 border-b border-blue-200 dark:border-blue-900/40">
+                      <h3 className="font-bold text-blue-900 dark:text-blue-300 text-lg">Pacing & Diagnostics</h3>
+                      <span className="text-[11px] font-mono text-blue-800 dark:text-blue-300 block uppercase tracking-wider font-bold">Classroom execution</span>
                     </div>
                     <div className="space-y-4">
                       {blueResources.map((res, index) => (
@@ -345,10 +345,10 @@ export function InspirationPage() {
                               <h4 className="font-extrabold text-sm text-slate-800 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 transition">
                                 {res.title}
                               </h4>
-                              <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
+                              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
                                 {res.description}
                               </p>
-                              <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold inline-flex items-center gap-1 mt-1">
+                              <span className="text-xs text-blue-800 dark:text-blue-300 font-bold inline-flex items-center gap-1 mt-1">
                                 {res.ctaText} <ChevronRight className="w-3.5 h-3.5" />
                               </span>
                             </div>
@@ -359,13 +359,13 @@ export function InspirationPage() {
                   </div>
 
                   {/* Column 3: Purple Items - Professional Development */}
-                  <div className="bg-purple-50/50 dark:bg-purple-950/10 border border-purple-200/50 dark:border-purple-900/30 rounded-3xl p-6 space-y-6 shadow-xs relative pt-16">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-500 text-white p-4 rounded-2xl shadow">
+                  <div className="bg-purple-50/70 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900/40 rounded-3xl p-6 space-y-6 shadow-xs relative pt-16">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-600 text-white p-4 rounded-2xl shadow">
                       <GraduationCap className="w-8 h-8" />
                     </div>
-                    <div className="text-center pb-2 border-b border-purple-100 dark:border-purple-900/30">
-                      <h3 className="font-bold text-purple-800 dark:text-purple-400 text-lg">Professional Training</h3>
-                      <span className="text-[10px] font-mono text-purple-600 block uppercase tracking-wider">Methodology training</span>
+                    <div className="text-center pb-2 border-b border-purple-200 dark:border-purple-900/40">
+                      <h3 className="font-bold text-purple-900 dark:text-purple-300 text-lg">Professional Training</h3>
+                      <span className="text-[11px] font-mono text-purple-800 dark:text-purple-300 block uppercase tracking-wider font-bold">Methodology training</span>
                     </div>
                     <div className="space-y-4">
                       {purpleResources.map((res, index) => (
@@ -382,10 +382,10 @@ export function InspirationPage() {
                               <h4 className="font-extrabold text-sm text-slate-800 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-400 transition">
                                 {res.title}
                               </h4>
-                              <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
+                              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
                                 {res.description}
                               </p>
-                              <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold inline-flex items-center gap-1 mt-1">
+                              <span className="text-xs text-purple-800 dark:text-purple-300 font-bold inline-flex items-center gap-1 mt-1">
                                 {res.ctaText} <ChevronRight className="w-3.5 h-3.5" />
                               </span>
                             </div>
@@ -400,9 +400,9 @@ export function InspirationPage() {
                 {/* Bottom Callout Banner for EBM Masterclass */}
                 <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-8 text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow">
                   <div className="space-y-2 text-center md:text-left">
-                    <span className="text-xs font-mono text-amber-400 uppercase tracking-widest block font-bold">Interactive Educational Workshops</span>
+                    <span className="text-xs font-mono text-amber-300 uppercase tracking-widest block font-bold">Interactive Educational Workshops</span>
                     <h3 className="text-2xl font-bold font-serif">Join us at EBM Live: Professional Masterclass!</h3>
-                    <p className="text-xs text-indigo-100 max-w-xl leading-normal">
+                    <p className="text-xs text-slate-200 max-w-xl leading-normal">
                       Learn the cognitive load balance science directly from Ejaz Bukhari and our team of senior curriculum architects in Pakistan and internationally.
                     </p>
                   </div>
@@ -413,7 +413,7 @@ export function InspirationPage() {
                       ctaText: "Inquire about workshops",
                       icon: <Sparkles className="w-6 h-6 text-purple-600" />
                     })}
-                    className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-black px-6 py-3 rounded-2xl text-xs uppercase tracking-wider transition shrink-0 shadow"
+                    className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-6 py-3 rounded-2xl text-xs uppercase tracking-wider transition shrink-0 shadow cursor-pointer"
                   >
                     Request Workshop Booking
                   </button>
@@ -426,23 +426,23 @@ export function InspirationPage() {
               <div className="space-y-8 animate-fade-in">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Teacher Toolkit</h2>
-                  <p className="text-slate-500 text-sm">Hit the ground running with EBM's curated starting materials.</p>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">Hit the ground running with EBM's curated starting materials.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
-                    { title: "Get Started Guide for Educators", desc: "Step-by-step PDF manual on structuring accelerated daily classroom sessions.", icon: <FileText className="text-emerald-600" /> },
-                    { title: "Syllabus Checklist Template", desc: "Printable year-wise milestone charts to keep track of Grade 5 to O-Level acceleration.", icon: <ClipboardList className="text-blue-600" /> },
-                    { title: "EBM Classroom Posters", desc: "High-resolution graphic printables featuring mathematical syntax keys and ocular focus patterns.", icon: <Layout className="text-purple-600" /> },
-                    { title: "Quick-Start Session Slides", desc: "A sleek slide deck to introduce students and co-teachers to EBM's self-paced philosophy.", icon: <Presentation className="text-amber-600" /> },
-                    { title: "Student Goal Tracking Sheets", desc: "Custom physical tracking logs to encourage independent milestone logging.", icon: <CheckCircle2 className="text-emerald-600" /> },
-                    { title: "EBM Method Handbook", desc: "Deep-dive theoretical guide explaining the neuroscientific foundations of 3-year acceleration.", icon: <Library className="text-blue-600" /> }
+                    { title: "Get Started Guide for Educators", desc: "Step-by-step PDF manual on structuring accelerated daily classroom sessions.", icon: <FileText className="text-emerald-700 dark:text-emerald-400" /> },
+                    { title: "Syllabus Checklist Template", desc: "Printable year-wise milestone charts to keep track of Grade 5 to O-Level acceleration.", icon: <ClipboardList className="text-blue-700 dark:text-blue-400" /> },
+                    { title: "EBM Classroom Posters", desc: "High-resolution graphic printables featuring mathematical syntax keys and ocular focus patterns.", icon: <Layout className="text-purple-700 dark:text-purple-400" /> },
+                    { title: "Quick-Start Session Slides", desc: "A sleek slide deck to introduce students and co-teachers to EBM's self-paced philosophy.", icon: <Presentation className="text-amber-700 dark:text-amber-400" /> },
+                    { title: "Student Goal Tracking Sheets", desc: "Custom physical tracking logs to encourage independent milestone logging.", icon: <CheckCircle2 className="text-emerald-700 dark:text-emerald-400" /> },
+                    { title: "EBM Method Handbook", desc: "Deep-dive theoretical guide explaining the neuroscientific foundations of 3-year acceleration.", icon: <Library className="text-blue-700 dark:text-blue-400" /> }
                   ].map((item, idx) => (
                     <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition flex items-start space-x-4">
                       <div className="bg-slate-50 dark:bg-slate-850 p-3 rounded-xl flex-shrink-0">{item.icon}</div>
                       <div className="space-y-1">
                         <h4 className="font-bold text-slate-800 dark:text-white text-sm">{item.title}</h4>
-                        <p className="text-xs text-slate-500 leading-normal">{item.desc}</p>
-                        <button className="text-[10px] text-blue-600 dark:text-blue-400 font-bold inline-flex items-center gap-1 pt-2">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">{item.desc}</p>
+                        <button className="text-xs text-blue-800 dark:text-blue-300 font-bold inline-flex items-center gap-1 pt-2 cursor-pointer">
                           Download Resource <Download className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -457,21 +457,21 @@ export function InspirationPage() {
               <div className="space-y-8 animate-fade-in">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Admin Resource Center</h2>
-                  <p className="text-slate-500 text-sm">Empower school administrators with high-fidelity program oversight.</p>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">Empower school administrators with high-fidelity program oversight.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
-                    { title: "Administrator Onboarding Blueprint", desc: "A complete governance framework on scheduling, load balancing, and curriculum adjustments.", icon: <Settings className="text-blue-600" /> },
-                    { title: "Syllabus Load Balancing Calculator", desc: "An excel-based tracking grid to map EBM Year 1-3 progress milestones with school calendars.", icon: <FileCheck className="text-emerald-600" /> },
-                    { title: "Teacher Observation Rubrics", desc: "Standardized evaluation scorecards to measure classroom self-pacing efficacy and diagnostic execution.", icon: <UserCheck className="text-purple-600" /> },
-                    { title: "District Progress Analytics Kit", desc: "Guides on integrating EBM API outcomes into school ERP databases for broad district monitoring.", icon: <ShieldCheck className="text-amber-600" /> }
+                    { title: "Administrator Onboarding Blueprint", desc: "A complete governance framework on scheduling, load balancing, and curriculum adjustments.", icon: <Settings className="text-blue-700 dark:text-blue-400" /> },
+                    { title: "Syllabus Load Balancing Calculator", desc: "An excel-based tracking grid to map EBM Year 1-3 progress milestones with school calendars.", icon: <FileCheck className="text-emerald-700 dark:text-emerald-400" /> },
+                    { title: "Teacher Observation Rubrics", desc: "Standardized evaluation scorecards to measure classroom self-pacing efficacy and diagnostic execution.", icon: <UserCheck className="text-purple-700 dark:text-purple-400" /> },
+                    { title: "District Progress Analytics Kit", desc: "Guides on integrating EBM API outcomes into school ERP databases for broad district monitoring.", icon: <ShieldCheck className="text-amber-700 dark:text-amber-400" /> }
                   ].map((item, idx) => (
                     <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition flex items-start space-x-4">
                       <div className="bg-slate-50 dark:bg-slate-850 p-3 rounded-xl flex-shrink-0">{item.icon}</div>
                       <div className="space-y-1">
                         <h4 className="font-bold text-slate-800 dark:text-white text-sm">{item.title}</h4>
-                        <p className="text-xs text-slate-500 leading-normal">{item.desc}</p>
-                        <button className="text-[10px] text-blue-600 dark:text-blue-400 font-bold inline-flex items-center gap-1 pt-2">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">{item.desc}</p>
+                        <button className="text-xs text-blue-800 dark:text-blue-300 font-bold inline-flex items-center gap-1 pt-2 cursor-pointer">
                           Access Portal <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -486,21 +486,21 @@ export function InspirationPage() {
               <div className="space-y-8 animate-fade-in">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Implementation Strategies</h2>
-                  <p className="text-slate-500 text-sm">Concrete blueprints for accelerated academic progress.</p>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">Concrete blueprints for accelerated academic progress.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
-                    { title: "3-Year Cambridge Acceleration Roadmap", desc: "Detailed month-wise logical mapping from Grade 5 basic concepts up to CIE O-Level physics, chemistry, and maths.", icon: <Compass className="text-purple-600" /> },
-                    { title: "Cognitive Load Balance Guidelines", desc: "Practical strategies on prevention of conceptual overload and maintaining fluid learning speeds.", icon: <Lightbulb className="text-amber-600" /> },
-                    { title: "Diagnostic Error Analysis Guide", desc: "How to read EBM real-time diagnostic curves to pinpoint spatial and mathematical reasoning gaps.", icon: <FileText className="text-blue-600" /> },
-                    { title: "Heuristic Mathematical Practice Guides", desc: "Frameworks on teaching advanced algebraic derivations to students without heavy rote memorization.", icon: <Trophy className="text-emerald-600" /> }
+                    { title: "3-Year Cambridge Acceleration Roadmap", desc: "Detailed month-wise logical mapping from Grade 5 basic concepts up to CIE O-Level physics, chemistry, and maths.", icon: <Compass className="text-purple-700 dark:text-purple-400" /> },
+                    { title: "Cognitive Load Balance Guidelines", desc: "Practical strategies on prevention of conceptual overload and maintaining fluid learning speeds.", icon: <Lightbulb className="text-amber-700 dark:text-amber-400" /> },
+                    { title: "Diagnostic Error Analysis Guide", desc: "How to read EBM real-time diagnostic curves to pinpoint spatial and mathematical reasoning gaps.", icon: <FileText className="text-blue-700 dark:text-blue-400" /> },
+                    { title: "Heuristic Mathematical Practice Guides", desc: "Frameworks on teaching advanced algebraic derivations to students without heavy rote memorization.", icon: <Trophy className="text-emerald-700 dark:text-emerald-400" /> }
                   ].map((item, idx) => (
                     <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition flex items-start space-x-4">
                       <div className="bg-slate-50 dark:bg-slate-850 p-3 rounded-xl flex-shrink-0">{item.icon}</div>
                       <div className="space-y-1">
                         <h4 className="font-bold text-slate-800 dark:text-white text-sm">{item.title}</h4>
-                        <p className="text-xs text-slate-500 leading-normal">{item.desc}</p>
-                        <button className="text-[10px] text-blue-600 dark:text-blue-400 font-bold inline-flex items-center gap-1 pt-2">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">{item.desc}</p>
+                        <button className="text-xs text-blue-800 dark:text-blue-300 font-bold inline-flex items-center gap-1 pt-2 cursor-pointer">
                           View Strategy <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -515,21 +515,21 @@ export function InspirationPage() {
               <div className="space-y-8 animate-fade-in">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Professional Development</h2>
-                  <p className="text-slate-500 text-sm">Become an EBM certified expert and transform your classroom.</p>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">Become an EBM certified expert and transform your classroom.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
-                    { title: "On-Demand Video Modules", desc: "Self-paced training videos on accelerated mathematics, modular syllabus pacing, and diagnostic evaluation.", icon: <Video className="text-purple-600" /> },
-                    { title: "Webinar Schedules", desc: "Check upcoming weekly live webinar schedules hosted by Ejaz Bukhari Method certified master trainers.", icon: <Calendar className="text-blue-600" /> },
-                    { title: "EBM Certified Educator Path", desc: "Syllabus guide and registration portal to earn your official EBM Educator Certification.", icon: <Award className="text-emerald-600" /> },
-                    { title: "Institutional Training Inquiry", desc: "Request custom multi-day on-site training sessions and workshops for your school or district staff.", icon: <Users className="text-amber-600" /> }
+                    { title: "On-Demand Video Modules", desc: "Self-paced training videos on accelerated mathematics, modular syllabus pacing, and diagnostic evaluation.", icon: <Video className="text-purple-700 dark:text-purple-400" /> },
+                    { title: "Webinar Schedules", desc: "Check upcoming weekly live webinar schedules hosted by Ejaz Bukhari Method certified master trainers.", icon: <Calendar className="text-blue-700 dark:text-blue-400" /> },
+                    { title: "EBM Certified Educator Path", desc: "Syllabus guide and registration portal to earn your official EBM Educator Certification.", icon: <Award className="text-emerald-700 dark:text-emerald-400" /> },
+                    { title: "Institutional Training Inquiry", desc: "Request custom multi-day on-site training sessions and workshops for your school or district staff.", icon: <Users className="text-amber-700 dark:text-amber-400" /> }
                   ].map((item, idx) => (
                     <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition flex items-start space-x-4">
                       <div className="bg-slate-50 dark:bg-slate-850 p-3 rounded-xl flex-shrink-0">{item.icon}</div>
                       <div className="space-y-1">
                         <h4 className="font-bold text-slate-800 dark:text-white text-sm">{item.title}</h4>
-                        <p className="text-xs text-slate-500 leading-normal">{item.desc}</p>
-                        <button className="text-[10px] text-blue-600 dark:text-blue-400 font-bold inline-flex items-center gap-1 pt-2">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">{item.desc}</p>
+                        <button className="text-xs text-blue-800 dark:text-blue-300 font-bold inline-flex items-center gap-1 pt-2 cursor-pointer">
                           Learn More <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -544,28 +544,28 @@ export function InspirationPage() {
               <div className="space-y-8 animate-fade-in">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Family Quick-Start Guide</h2>
-                  <p className="text-slate-500 text-sm">Unlock your child's true academic potential at home.</p>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">Unlock your child's true academic potential at home.</p>
                 </div>
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-6">
                   <h3 className="text-xl font-bold text-slate-800 dark:text-white">Accelerating at Home: The EBM Parent Blueprint</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                     EBM allows your child to learn up to twice as fast as traditional schools by balancing conceptual difficulty with immediate feedback loops. Here is how you can support them:
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                     <div className="space-y-2">
-                      <div className="bg-amber-100 dark:bg-amber-950 p-3 rounded-2xl w-fit"><Sparkle className="text-amber-600 w-5 h-5" /></div>
+                      <div className="bg-amber-100 dark:bg-amber-950 p-3 rounded-2xl w-fit"><Sparkle className="text-amber-700 dark:text-amber-400 w-5 h-5" /></div>
                       <h4 className="font-bold text-sm text-slate-800 dark:text-white">1. Focus on Daily Streaks</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed">Keep study routines consistent. Just 20-30 minutes of diagnostic matching daily builds a high-frequency habit.</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Keep study routines consistent. Just 20-30 minutes of diagnostic matching daily builds a high-frequency habit.</p>
                     </div>
                     <div className="space-y-2">
-                      <div className="bg-emerald-100 dark:bg-emerald-950 p-3 rounded-2xl w-fit"><CheckCircle2 className="text-emerald-600 w-5 h-5" /></div>
+                      <div className="bg-emerald-100 dark:bg-emerald-950 p-3 rounded-2xl w-fit"><CheckCircle2 className="text-emerald-700 dark:text-emerald-400 w-5 h-5" /></div>
                       <h4 className="font-bold text-sm text-slate-800 dark:text-white">2. Encourage Self-Pacing</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed">If your child gets stuck, encourage them to consult the Socratic AI Tutor instead of giving them the answer.</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">If your child gets stuck, encourage them to consult the Socratic AI Tutor instead of giving them the answer.</p>
                     </div>
                     <div className="space-y-2">
-                      <div className="bg-blue-100 dark:bg-blue-950 p-3 rounded-2xl w-fit"><Trophy className="text-blue-600 w-5 h-5" /></div>
+                      <div className="bg-blue-100 dark:bg-blue-950 p-3 rounded-2xl w-fit"><Trophy className="text-blue-700 dark:text-blue-400 w-5 h-5" /></div>
                       <h4 className="font-bold text-sm text-slate-800 dark:text-white">3. Celebrate Gaps Closed</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed">Review the Parent Diagnostics tab weekly to see precise proficiency scores and praise progress milestones.</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Review the Parent Diagnostics tab weekly to see precise proficiency scores and praise progress milestones.</p>
                     </div>
                   </div>
                 </div>
@@ -577,21 +577,21 @@ export function InspirationPage() {
               <div className="space-y-8 animate-fade-in">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Printables & Routines</h2>
-                  <p className="text-slate-500 text-sm">Download physical resources to structure home learning environments.</p>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">Download physical resources to structure home learning environments.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
-                    { title: "Daily Home Study Planner", desc: "A customizable weekly schedule to help children track their daily homework and diagnostic progress.", icon: <Calendar className="text-emerald-600" /> },
-                    { title: "EBM Ocular Exercise Cards", desc: "Printable cards for sensory-motor focus and speed reading practices at home.", icon: <Flame className="text-amber-600" /> },
-                    { title: "At-Home Achievement Certificates", desc: "Printable full-color certificates to award your child as they close academic syllabus gaps.", icon: <Award className="text-purple-600" /> },
-                    { title: "Summer Brain Challenge Logs", desc: "Fun goal-tracking posters to motivate continuous summer study routines.", icon: <Trophy className="text-blue-600" /> }
+                    { title: "Daily Home Study Planner", desc: "A customizable weekly schedule to help children track their daily homework and diagnostic progress.", icon: <Calendar className="text-emerald-700 dark:text-emerald-400" /> },
+                    { title: "EBM Ocular Exercise Cards", desc: "Printable cards for sensory-motor focus and speed reading practices at home.", icon: <Flame className="text-amber-700 dark:text-amber-400" /> },
+                    { title: "At-Home Achievement Certificates", desc: "Printable full-color certificates to award your child as they close academic syllabus gaps.", icon: <Award className="text-purple-700 dark:text-purple-400" /> },
+                    { title: "Summer Brain Challenge Logs", desc: "Fun goal-tracking posters to motivate continuous summer study routines.", icon: <Trophy className="text-blue-700 dark:text-blue-400" /> }
                   ].map((item, idx) => (
                     <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition flex items-start space-x-4">
                       <div className="bg-slate-50 dark:bg-slate-850 p-3 rounded-xl flex-shrink-0">{item.icon}</div>
                       <div className="space-y-1">
                         <h4 className="font-bold text-slate-800 dark:text-white text-sm">{item.title}</h4>
-                        <p className="text-xs text-slate-500 leading-normal">{item.desc}</p>
-                        <button className="text-[10px] text-blue-600 dark:text-blue-400 font-bold inline-flex items-center gap-1 pt-2">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">{item.desc}</p>
+                        <button className="text-xs text-blue-800 dark:text-blue-300 font-bold inline-flex items-center gap-1 pt-2 cursor-pointer">
                           Download PDF <Download className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -606,21 +606,21 @@ export function InspirationPage() {
               <div className="space-y-8 animate-fade-in">
                 <div className="text-center max-w-2xl mx-auto space-y-2">
                   <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Parent Analytics Hub</h2>
-                  <p className="text-slate-500 text-sm">Understand EBM's diagnostic curves to help guide your child.</p>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">Understand EBM's diagnostic curves to help guide your child.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
-                    { title: "Understanding Diagnostic Levels", desc: "A parent-facing guide to understanding mathematical and English level scores.", icon: <FileText className="text-blue-600" /> },
-                    { title: "Spotting Cognitive Gaps Guide", desc: "How to analyze weekly progress logs and determine if your child has specific learning latencies.", icon: <ShieldCheck className="text-emerald-600" /> },
-                    { title: "Weekly Progress Email Explanation", desc: "Detailed breakdown of parent-facing progress notifications and metrics delivered to your inbox.", icon: <Layout className="text-purple-600" /> },
-                    { title: "Action Plan Intervention Strategies", desc: "Simple tips on how to support your child's action plans without creating academic stress.", icon: <Heart className="text-amber-600" /> }
+                    { title: "Understanding Diagnostic Levels", desc: "A parent-facing guide to understanding mathematical and English level scores.", icon: <FileText className="text-blue-700 dark:text-blue-400" /> },
+                    { title: "Spotting Cognitive Gaps Guide", desc: "How to analyze weekly progress logs and determine if your child has specific learning latencies.", icon: <ShieldCheck className="text-emerald-700 dark:text-emerald-400" /> },
+                    { title: "Weekly Progress Email Explanation", desc: "Detailed breakdown of parent-facing progress notifications and metrics delivered to your inbox.", icon: <Layout className="text-purple-700 dark:text-purple-400" /> },
+                    { title: "Action Plan Intervention Strategies", desc: "Simple tips on how to support your child's action plans without creating academic stress.", icon: <Heart className="text-amber-700 dark:text-amber-400" /> }
                   ].map((item, idx) => (
                     <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition flex items-start space-x-4">
                       <div className="bg-slate-50 dark:bg-slate-850 p-3 rounded-xl flex-shrink-0">{item.icon}</div>
                       <div className="space-y-1">
                         <h4 className="font-bold text-slate-800 dark:text-white text-sm">{item.title}</h4>
-                        <p className="text-xs text-slate-500 leading-normal">{item.desc}</p>
-                        <button className="text-[10px] text-blue-600 dark:text-blue-400 font-bold inline-flex items-center gap-1 pt-2">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">{item.desc}</p>
+                        <button className="text-xs text-blue-800 dark:text-blue-300 font-bold inline-flex items-center gap-1 pt-2 cursor-pointer">
                           Read Guide <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -631,7 +631,7 @@ export function InspirationPage() {
             )}
           </motion.div>
         </AnimatePresence>
-      </main>
+      </div>
 
       {/* ================= DETAIL MODAL ================= */}
       <AnimatePresence>
@@ -652,7 +652,7 @@ export function InspirationPage() {
             >
               <button 
                 onClick={() => setSelectedResource(null)}
-                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition"
+                className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 dark:hover:text-white transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -663,15 +663,15 @@ export function InspirationPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 dark:text-white font-serif">{selectedResource.title}</h3>
-                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mt-0.5">EBM Ecosystem Resource</span>
+                  <span className="text-[11px] font-mono text-slate-600 dark:text-slate-300 font-bold uppercase tracking-widest block mt-0.5">EBM Ecosystem Resource</span>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                   {selectedResource.description}
                 </p>
-                <p className="text-xs text-slate-500 leading-normal">
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">
                   All resources, printable worksheets, guides, and schedules are instantly accessible within the EBM Learning Management portal for registered accounts.
                 </p>
               </div>
@@ -679,7 +679,7 @@ export function InspirationPage() {
               <div className="flex space-x-3 pt-2">
                 <button 
                   onClick={() => setSelectedResource(null)}
-                  className="flex-1 py-3 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-2xl text-xs font-bold transition text-slate-700 dark:text-slate-350"
+                  className="flex-1 py-3 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-2xl text-xs font-bold transition text-slate-800 dark:text-slate-200 cursor-pointer"
                 >
                   Close Window
                 </button>
@@ -689,7 +689,7 @@ export function InspirationPage() {
                     const event = new CustomEvent("navigate", { detail: "auth" });
                     window.dispatchEvent(event);
                   }}
-                  className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition shadow-md"
+                  className="flex-1 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition shadow-md cursor-pointer"
                 >
                   Join EBM Ecosystem
                 </button>

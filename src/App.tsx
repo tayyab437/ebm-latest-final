@@ -7,6 +7,7 @@ import { UserRole, EbmYear, CourseModule, DailyPlannerTask, StudentProgress, Par
 import { EBM_ROADMAP_DETAILS, INITIAL_COURSES, MOCK_DAILY_TASKS, MOCK_STUDENTS_PROGRESS } from "./constants";
 import AnnouncementBar from "./components/home/AnnouncementBar";
 import HomeFooter from "./components/home/Footer";
+import { InspirationPage } from "./components/pages/InspirationPage";
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
 // Lazy-load EBMHomepage, non-homepage components, and authentication views to keep initial bundle ultra-lightweight
@@ -40,7 +41,6 @@ const BlogCategoryView = React.lazy(() => import("./components/blog/BlogCategory
 
 const AssessmentPage = React.lazy(() => import("./components/pages/AssessmentPage").then(m => ({ default: m.AssessmentPage })));
 const AnalyticsPage = React.lazy(() => import("./components/pages/AnalyticsPage").then(m => ({ default: m.AnalyticsPage })));
-const InspirationPage = React.lazy(() => import("./components/pages/InspirationPage").then(m => ({ default: m.InspirationPage })));
 const CaseStudiesPage = React.lazy(() => import("./components/pages/CaseStudiesPage").then(m => ({ default: m.CaseStudiesPage })));
 const AboutUs = React.lazy(() => import("./components/pages/AboutUs").then(m => ({ default: m.AboutUs })));
 const PricingPage = React.lazy(() => import("./components/pages/PricingPage").then(m => ({ default: m.PricingPage })));
@@ -1101,7 +1101,7 @@ export default function App() {
             {/* Marketing & Content Pages */}
             <Route path="/assessment" element={<div className="flex-grow animate-fade-in"><AssessmentPage /></div>} />
             <Route path="/analytics" element={<div className="flex-grow animate-fade-in"><AnalyticsPage /></div>} />
-            <Route path="/inspiration" element={<div className="flex-grow animate-fade-in"><InspirationPage /></div>} />
+            <Route path="/inspiration" element={<div className="flex-grow"><InspirationPage /></div>} />
             <Route path="/blog" element={<div className="flex-grow animate-fade-in"><BlogList /></div>} />
             <Route path="/blog/category/:slug" element={<div className="flex-grow animate-fade-in"><BlogCategoryView /></div>} />
             <Route path="/blog/:slug" element={<div className="flex-grow animate-fade-in"><BlogPostView /></div>} />
