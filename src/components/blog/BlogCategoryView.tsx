@@ -135,7 +135,7 @@ export function BlogCategoryView() {
       </header>
 
       {/* Grid */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
         {posts.length === 0 ? (
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-slate-200 dark:border-slate-800 space-y-4">
             <BookOpen className="w-12 h-12 text-slate-300 mx-auto" />
@@ -145,12 +145,107 @@ export function BlogCategoryView() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map(post => (
-              <BlogCard key={post.id} post={post} />
-            ))}
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                Published Research Articles in {category.name}
+              </h2>
+              <Link to="/blog" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                View All Publications &rarr;
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {posts.map(post => (
+                <BlogCard key={post.id} post={post} />
+              ))}
+            </div>
           </div>
         )}
+
+        {/* Knowledge Network: Explore Other Topic Hubs */}
+        <section className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                Pedagogical Knowledge Network
+              </span>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                Explore Other Educational Research Hubs
+              </h3>
+            </div>
+            <Link to="/blog" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+              All Archives &rarr;
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { slug: "personalized-learning", name: "Personalized Learning", desc: "Adaptive pacing & schemas" },
+              { slug: "mathematical-thinking", name: "Mathematical Thinking", desc: "Intuition & deductive logic" },
+              { slug: "diagnostic-assessment", name: "Diagnostic Assessment", desc: "Precision baseline evaluations" },
+              { slug: "cognitive-acceleration", name: "Cognitive Acceleration", desc: "Primary to Cambridge STEM" },
+              { slug: "ai-edtech", name: "AI & Educational Technology", desc: "Socratic AI tutoring frameworks" },
+            ]
+              .filter(hub => hub.slug !== slug)
+              .map(hub => (
+                <Link
+                  key={hub.slug}
+                  to={`/blog/category/${hub.slug}`}
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/30 border border-slate-200/80 dark:border-slate-700/60 transition group text-left"
+                >
+                  <div className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {hub.name}
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-1">
+                    {hub.desc}
+                  </div>
+                  <div className="text-[11px] font-bold text-blue-600 dark:text-blue-400 mt-3 flex items-center gap-1">
+                    <span>Browse Hub</span>
+                    <span>&rarr;</span>
+                  </div>
+                </Link>
+              ))}
+          </div>
+        </section>
+
+        {/* Academic Program Connections */}
+        <section className="bg-gradient-to-br from-blue-900 to-indigo-950 text-white rounded-3xl p-8 sm:p-10 space-y-6">
+          <div className="max-w-2xl space-y-2">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-300">
+              Operationalize This Research
+            </span>
+            <h3 className="text-2xl font-black tracking-tight text-white">
+              Connect Research Principles to Structured Academic Progress
+            </h3>
+            <p className="text-sm text-blue-200 leading-relaxed">
+              Every theoretical insight published in our knowledge network is directly implemented across the Ejaz Bukhari Method curriculum, from diagnostic baseline evaluations to Cambridge distinction coaching.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <Link
+              to="/assessment"
+              className="p-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition text-left space-y-1 block"
+            >
+              <div className="font-bold text-sm text-white">Diagnostic Baseline &rarr;</div>
+              <div className="text-xs text-blue-200">Evaluate student cognitive thresholds & error vectors</div>
+            </Link>
+            <Link
+              to="/programs"
+              className="p-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition text-left space-y-1 block"
+            >
+              <div className="font-bold text-sm text-white">Academic Programs &rarr;</div>
+              <div className="text-xs text-blue-200">Cambridge O/A Level & Primary Acceleration tracks</div>
+            </Link>
+            <Link
+              to="/analytics"
+              className="p-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition text-left space-y-1 block"
+            >
+              <div className="font-bold text-sm text-white">Mastery Analytics &rarr;</div>
+              <div className="text-xs text-blue-200">Real-time velocity tracking & retention curves</div>
+            </Link>
+          </div>
+        </section>
       </main>
 
     </div>

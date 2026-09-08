@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Clock, Calendar, ArrowRight, User } from "lucide-react";
 import type { BlogPost } from "../../types/blog.types";
+import { getCardThumbnailAttrs, getAvatarImageAttrs } from "../../utils/image-optimizer";
 
 interface BlogCardProps {
   post: BlogPost;
@@ -33,15 +34,20 @@ export function BlogCard({ post, variant = "standard" }: BlogCardProps) {
   const badgeClass = badgeClasses[categoryColor] || badgeClasses.blue;
 
   if (variant === "compact") {
+    const compactImgAttrs = getCardThumbnailAttrs(post.featuredImage, 80, 80);
     return (
       <article className="group flex gap-4 items-start p-3.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-850 border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition">
         {post.featuredImage && (
           <Link to={`/blog/${post.slug}`} className="shrink-0 overflow-hidden rounded-xl w-20 h-20 bg-slate-100 dark:bg-slate-800">
             <img
-              src={post.featuredImage}
+              src={compactImgAttrs.src}
+              srcSet={compactImgAttrs.srcSet}
+              width={80}
+              height={80}
               alt={post.featuredImageAlt || post.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
+              decoding="async"
               referrerPolicy="no-referrer"
             />
           </Link>
@@ -61,16 +67,24 @@ export function BlogCard({ post, variant = "standard" }: BlogCardProps) {
     );
   }
 
+  const standardImgAttrs = getCardThumbnailAttrs(post.featuredImage, 400, 225);
+  const cardAvatarAttrs = getAvatarImageAttrs(post.authorAvatar, 28);
+
   return (
     <article className="group flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-500/30 transition-all duration-300">
       {/* Card Image */}
       <div className="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800">
         {post.featuredImage ? (
           <img
-            src={post.featuredImage}
+            src={standardImgAttrs.src}
+            srcSet={standardImgAttrs.srcSet}
+            sizes="(max-width: 768px) 100vw, 400px"
+            width={400}
+            height={225}
             alt={post.featuredImageAlt || post.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
+            decoding="async"
             referrerPolicy="no-referrer"
           />
         ) : (
@@ -123,10 +137,15 @@ export function BlogCard({ post, variant = "standard" }: BlogCardProps) {
           <div className="flex items-center gap-2.5">
             {post.authorAvatar ? (
               <img
-                src={post.authorAvatar}
+                src={cardAvatarAttrs.src}
+                srcSet={cardAvatarAttrs.srcSet}
+                width={28}
+                height={28}
                 alt={post.authorName || "Author"}
                 className="w-7 h-7 rounded-full object-cover border border-slate-200 dark:border-slate-700"
                 referrerPolicy="no-referrer"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center text-xs font-bold">
@@ -145,7 +164,7 @@ export function BlogCard({ post, variant = "standard" }: BlogCardProps) {
 
           <Link
             to={`/blog/${post.slug}`}
-            className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 flex items-center gap-1 group/btn"
+            className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-2.5 py-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 gap-1 group/btn"
           >
             <span>Read</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />

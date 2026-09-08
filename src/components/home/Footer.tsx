@@ -31,7 +31,7 @@ export default function Footer({ onNavigate }: FooterProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Footer Top Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 sm:gap-12 pb-12 border-b border-slate-200 dark:border-slate-800/80">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 sm:gap-10 pb-12 border-b border-slate-200 dark:border-slate-800/80">
           
           {/* Brand Bio */}
           <div className="col-span-2 space-y-4 text-left">
@@ -64,7 +64,7 @@ export default function Footer({ onNavigate }: FooterProps) {
               </span>
             </Link>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-xs">
-              Empowering academic acceleration under the Ejaz Bukhari Method. Delivering high-yielding cognitive frameworks globally.
+              Empowering academic acceleration under the Ejaz Bukhari Method. Delivering high-yielding cognitive frameworks, diagnostic baselines, and Cambridge syllabus mastery globally.
             </p>
             {/* Social icons */}
             <div className="flex gap-2 text-slate-400 dark:text-slate-550 pt-1">
@@ -89,42 +89,101 @@ export default function Footer({ onNavigate }: FooterProps) {
             </div>
           </div>
 
-          {/* Column: Learning */}
+          {/* Column: Academic Curricula */}
           <div className="text-left space-y-3">
-            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Learning</h3>
+            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Curricula & Pathways</h3>
             <ul className="space-y-1 text-xs">
-              <li><Link to="/assessment" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Assessment Arena</Link></li>
-              <li><Link to="/analytics" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Learning Analytics</Link></li>
-              <li><Link to="/inspiration" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Inspiration Hub</Link></li>
-              <li><Link to="/case-studies" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Case Studies & Videos</Link></li>
+              <li><Link to="/programs" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5 font-medium">Academic Programs</Link></li>
+              <li><Link to="/assessment" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Diagnostic Assessment</Link></li>
+              <li><Link to="/learning" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Interactive Portal</Link></li>
+              <li><Link to="/pricing" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Tuition & Plans</Link></li>
+              <li><Link to="/about" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">About EBM Pedagogy</Link></li>
             </ul>
           </div>
 
-          {/* Column: Resources */}
+          {/* Column: Learning & Analytics */}
           <div className="text-left space-y-3">
-            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Resources</h3>
+            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Telemetry & Insights</h3>
             <ul className="space-y-1 text-xs">
-              <li><Link to="/blog" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer font-medium text-blue-600 dark:text-blue-400 inline-flex items-center min-h-[44px] py-2">EBM Blog & Publications</Link></li>
-              <li><a href="#faq" onClick={(e) => handleAnchorClick(e, "faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">FAQs</a></li>
-              <li><Link to="/contact" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Contact Us</Link></li>
+              <li><Link to="/analytics" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Cognitive Analytics</Link></li>
+              <li><Link to="/inspiration" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Inspiration Hub</Link></li>
+              <li><Link to="/case-studies" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Student Success Cases</Link></li>
+              <li><Link to="/login" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Student Portal Login</Link></li>
+              <li><Link to="/register" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Enroll Student</Link></li>
             </ul>
           </div>
 
-          {/* Column: Legal & Contact */}
+          {/* Column: Featured Research Publications (Incoming Links for All Core Articles) */}
           <div className="text-left space-y-3">
-            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Legal</h3>
+            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Featured Research</h3>
             <ul className="space-y-1 text-xs">
-              <li><Link to="/privacy" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Privacy Policy</Link></li>
-              <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-2">Terms of Service</Link></li>
-              <li className="pt-2 text-xs text-slate-600 dark:text-slate-400 flex flex-col gap-2 font-mono">
-                <a href="mailto:syedejazbukari@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition inline-flex items-center gap-2 min-h-[44px] py-2">
-                  <Mail className="h-4 w-4 shrink-0" /> <span className="break-all">syedejazbukari@gmail.com</span>
-                </a>
-                <a href="tel:+923334541572" className="hover:text-blue-600 dark:hover:text-blue-400 transition inline-flex items-center gap-2 min-h-[44px] py-2">
-                  <Phone className="h-4 w-4 shrink-0" /> <span>+92 333 4541572</span>
-                </a>
-              </li>
+              <li><Link to="/blog/how-personalized-learning-supports-students" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5 text-left">Personalized Learning Pathways</Link></li>
+              <li><Link to="/blog/how-students-develop-mathematical-thinking" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5 text-left">Mathematical Problem-Solving</Link></li>
+              <li><Link to="/blog/understanding-learning-mastery" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5 text-left">Diagnostic Baselines & Mastery</Link></li>
+              <li><Link to="/blog/cognitive-acceleration-stem-foundations" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5 text-left">Cognitive Acceleration in STEM</Link></li>
+              <li><Link to="/blog/ai-socratic-tutoring-self-directed-learning" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5 text-left">Socratic AI Tutoring Framework</Link></li>
             </ul>
+          </div>
+
+          {/* Column: Resources & Legal */}
+          <div className="text-left space-y-3">
+            <h3 className="text-slate-900 dark:text-white text-xs font-black uppercase tracking-wider font-mono">Resources & Contact</h3>
+            <ul className="space-y-1 text-xs">
+              <li><Link to="/blog" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer font-medium text-blue-600 dark:text-blue-400 inline-flex items-center min-h-[44px] py-1.5">All Publications</Link></li>
+              <li><a href="#faq" onClick={(e) => handleAnchorClick(e, "faq")} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Curriculum FAQs</a></li>
+              <li><Link to="/contact" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Admissions Contact</Link></li>
+              <li><Link to="/privacy" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Privacy Policy</Link></li>
+              <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer inline-flex items-center min-h-[44px] py-1.5">Terms of Service</Link></li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Research Topic Hubs Strip (Contextual Knowledge Network Links for AI Search Engines) */}
+        <div className="py-8 border-b border-slate-200 dark:border-slate-800/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="text-left">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 block">
+              Pedagogical Knowledge Hubs:
+            </span>
+            <span className="text-xs text-slate-500">
+              Explore specialized educational frameworks and cognitive research archives
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to="/blog/category/personalized-learning"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700/60 transition"
+            >
+              Personalized Learning
+            </Link>
+            <Link
+              to="/blog/category/mathematical-thinking"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700/60 transition"
+            >
+              Mathematical Thinking
+            </Link>
+            <Link
+              to="/blog/category/diagnostic-assessment"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700/60 transition"
+            >
+              Diagnostic Assessment
+            </Link>
+            <Link
+              to="/blog/category/cognitive-acceleration"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700/60 transition"
+            >
+              Cognitive Acceleration
+            </Link>
+            <Link
+              to="/blog/category/ai-edtech"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700/60 transition"
+            >
+              AI & EdTech
+            </Link>
           </div>
         </div>
  

@@ -178,6 +178,54 @@ export const ROUTE_REGISTRY: Record<string, RouteMetaConfig> = {
     canonicalUrl: `${BASE_URL}/terms`,
     breadcrumbName: "Terms & Conditions",
     pageType: "WebPage"
+  },
+  "/login": {
+    title: "Sign In | EBM Student, Parent & Educator Portal",
+    description:
+      "Access your EBM student dashboard, parent insights feed, educator tools, and personalized coursework. Sign in with your registered account.",
+    canonicalUrl: `${BASE_URL}/login`,
+    breadcrumbName: "Sign In",
+    pageType: "WebPage"
+  },
+  "/register": {
+    title: "Create an Account | EBM Student & Parent Registration",
+    description:
+      "Register for the Ejaz Bukhari Method (EBM) learning platform. Begin diagnostic skill assessments, individualized learning plans, and Cambridge syllabus prep.",
+    canonicalUrl: `${BASE_URL}/register`,
+    breadcrumbName: "Register",
+    pageType: "WebPage"
+  },
+  "/forgot-password": {
+    title: "Reset Password | EBM Account Recovery",
+    description:
+      "Recover your EBM account password. Enter your registered email to receive secure password reset instructions.",
+    canonicalUrl: `${BASE_URL}/forgot-password`,
+    breadcrumbName: "Recover Password",
+    pageType: "WebPage"
+  },
+  "/reset-password": {
+    title: "Set New Password | EBM Account Security",
+    description:
+      "Create a new secure password for your EBM account to regain access to your student or parent portal.",
+    canonicalUrl: `${BASE_URL}/reset-password`,
+    breadcrumbName: "Set New Password",
+    pageType: "WebPage"
+  },
+  "/verify-email": {
+    title: "Verify Email | EBM Account Activation",
+    description:
+      "Verify your email address to activate your EBM learning account and complete registration.",
+    canonicalUrl: `${BASE_URL}/verify-email`,
+    breadcrumbName: "Verify Email",
+    pageType: "WebPage"
+  },
+  "/dashboard": {
+    title: "Student Learning Dashboard | EBM Portal",
+    description:
+      "Personalized student dashboard for tracking mastery goals, daily tasks, study roadmap milestones, and learning analytics.",
+    canonicalUrl: `${BASE_URL}/dashboard`,
+    breadcrumbName: "Dashboard",
+    pageType: "WebPage"
   }
 };
 

@@ -23,18 +23,65 @@ import { BlogService } from "../../services/blog.service";
 import { generateBlogPostStructuredData } from "../../services/seo.schema";
 import { SEOHead } from "../SEOHead";
 import { BlogCard } from "./BlogCard";
+import {
+  getFeaturedImageAttrs,
+  getAvatarImageAttrs
+} from "../../utils/image-optimizer";
+
+declare global {
+  interface Window {
+    __INITIAL_POST__?: { post: BlogPost; relatedPosts?: BlogPost[] };
+  }
+}
+
+function extractHeadings(html: string) {
+  if (!html) return [];
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const headings = Array.from(doc.querySelectorAll("h2, h3"));
+    return headings.map((h, i) => {
+      const id = h.id || `section-${i + 1}`;
+      return {
+        id,
+        text: h.textContent || `Section ${i + 1}`,
+        level: h.tagName.toLowerCase() === "h2" ? 2 : 3
+      };
+    });
+  } catch {
+    return [];
+  }
+}
 
 export function BlogPostView() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Instant hydration from pre-rendered SSR script for 0ms render delay
+  const initialPostData =
+    typeof window !== "undefined" && window.__INITIAL_POST__?.post?.slug === slug
+      ? window.__INITIAL_POST__
+      : null;
+
+  const [post, setPost] = useState<BlogPost | null>(initialPostData?.post || null);
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>(initialPostData?.relatedPosts || []);
+  const [isLoading, setIsLoading] = useState(!initialPostData);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [tocHeadings, setTocHeadings] = useState<Array<{ id: string; text: string; level: number }>>([]);
+  const [tocHeadings, setTocHeadings] = useState<Array<{ id: string; text: string; level: number }>>(() => {
+    return initialPostData?.post?.content ? extractHeadings(initialPostData.post.content) : [];
+  });
 
   useEffect(() => {
     if (!slug) return;
+
+    // If pre-hydrated from SSR, track view and ensure TOC is ready without network fetch
+    if (initialPostData?.post?.slug === slug && post?.slug === slug) {
+      BlogService.trackView(post.id);
+      if (tocHeadings.length === 0 && post.content) {
+        setTocHeadings(extractHeadings(post.content));
+      }
+      return;
+    }
 
     const fetchPost = async () => {
       setIsLoading(true);
@@ -61,18 +108,7 @@ export function BlogPostView() {
           BlogService.trackView(res.post.id);
 
           // Extract table of contents from content H2/H3
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(res.post.content, "text/html");
-          const headings = Array.from(doc.querySelectorAll("h2, h3"));
-          const toc = headings.map((h, i) => {
-            const id = h.id || `section-${i + 1}`;
-            return {
-              id,
-              text: h.textContent || `Section ${i + 1}`,
-              level: h.tagName.toLowerCase() === "h2" ? 2 : 3
-            };
-          });
-          setTocHeadings(toc);
+          setTocHeadings(extractHeadings(res.post.content));
         }
       } catch (err) {
         console.error("Error loading blog post:", err);
@@ -176,6 +212,17 @@ export function BlogPostView() {
       })
     : "Recently Published";
 
+  // Optimized responsive image attributes
+  const featuredImgAttrs = getFeaturedImageAttrs(post.featuredImage, {
+    displayWidth: 760,
+    aspectRatioWidth: 760,
+    aspectRatioHeight: 442,
+    quality: 75,
+  });
+
+  const headerAvatarAttrs = getAvatarImageAttrs(post.authorAvatar, 44, 75);
+  const bioAvatarAttrs = getAvatarImageAttrs(post.authorAvatar, 80, 75);
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       
@@ -202,21 +249,34 @@ export function BlogPostView() {
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 pt-10 pb-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           
-          {/* Breadcrumb Navigation */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 flex-wrap">
-            <Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition">Home</Link>
-            <span>/</span>
-            <Link to="/blog" className="hover:text-blue-600 dark:hover:text-blue-400 transition">Blog</Link>
+          {/* Accessible Breadcrumb Navigation with Generous Touch Targets */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 flex-wrap">
+            <Link
+              to="/"
+              className="inline-flex items-center min-h-[44px] px-2.5 py-2 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            >
+              Home
+            </Link>
+            <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">/</span>
+            <Link
+              to="/blog"
+              className="inline-flex items-center min-h-[44px] px-2.5 py-2 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            >
+              Blog
+            </Link>
             {post.categoryName && post.categorySlug && (
               <>
-                <span>/</span>
-                <Link to={`/blog/category/${post.categorySlug}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition">
+                <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">/</span>
+                <Link
+                  to={`/blog/category/${post.categorySlug}`}
+                  className="inline-flex items-center min-h-[44px] px-2.5 py-2 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
                   {post.categoryName}
                 </Link>
               </>
             )}
-            <span>/</span>
-            <span className="text-slate-900 dark:text-white font-bold truncate max-w-[200px]" aria-current="page">
+            <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">/</span>
+            <span className="inline-flex items-center min-h-[44px] px-2.5 py-2 text-slate-900 dark:text-white font-bold truncate max-w-[220px]" aria-current="page">
               {post.title}
             </span>
           </nav>
@@ -226,7 +286,7 @@ export function BlogPostView() {
             {post.categoryName && (
               <Link
                 to={post.categorySlug ? `/blog/category/${post.categorySlug}` : "/blog"}
-                className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-100 dark:border-blue-800 hover:bg-blue-100 transition"
+                className="inline-flex items-center min-h-[44px] px-4 py-2 rounded-full text-xs font-bold bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-100 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition"
               >
                 {post.categoryName}
               </Link>
@@ -257,14 +317,18 @@ export function BlogPostView() {
           {/* Author Byline & Social Share Row */}
           <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             
-            {/* Author */}
+            {/* Author with Optimized Avatar */}
             <div className="flex items-center gap-3">
               {post.authorAvatar ? (
                 <img
-                  src={post.authorAvatar}
+                  src={headerAvatarAttrs.src}
+                  srcSet={headerAvatarAttrs.srcSet}
+                  width={44}
+                  height={44}
                   alt={post.authorName || "Author"}
                   className="w-11 h-11 rounded-full object-cover border border-slate-200 dark:border-slate-700"
                   referrerPolicy="no-referrer"
+                  decoding="async"
                 />
               ) : (
                 <div className="w-11 h-11 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
@@ -281,7 +345,7 @@ export function BlogPostView() {
               </div>
             </div>
 
-            {/* Share Buttons */}
+            {/* Accessible Share Buttons (Full 48x48px Touch Targets) */}
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">
                 Share:
@@ -289,8 +353,9 @@ export function BlogPostView() {
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition relative"
+                className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition relative"
                 title="Copy Article Link"
+                aria-label="Copy Article Link"
               >
                 {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Link2 className="w-4 h-4" />}
                 {copiedLink && (
@@ -302,16 +367,18 @@ export function BlogPostView() {
               <button
                 type="button"
                 onClick={handleShareTwitter}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition"
+                className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition"
                 title="Share on Twitter / X"
+                aria-label="Share on Twitter / X"
               >
                 <Twitter className="w-4 h-4 text-blue-400" />
               </button>
               <button
                 type="button"
                 onClick={handleShareLinkedIn}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition"
+                className="w-12 h-12 min-w-[48px] min-h-[48px] flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition"
                 title="Share on LinkedIn"
+                aria-label="Share on LinkedIn"
               >
                 <Linkedin className="w-4 h-4 text-blue-600" />
               </button>
@@ -325,14 +392,20 @@ export function BlogPostView() {
       {/* Main Content Layout */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
         
-        {/* Featured Image */}
+        {/* Optimized Featured Image with Responsive SrcSet & Explicit Dimensions */}
         {post.featuredImage && (
           <figure className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 dark:border-slate-800 bg-slate-900">
             <img
-              src={post.featuredImage}
+              src={featuredImgAttrs.src}
+              srcSet={featuredImgAttrs.srcSet}
+              sizes={featuredImgAttrs.sizes}
+              width={featuredImgAttrs.width || 760}
+              height={featuredImgAttrs.height || 442}
               alt={post.featuredImageAlt || post.title}
               className="w-full h-auto max-h-[500px] object-cover"
               referrerPolicy="no-referrer"
+              fetchPriority="high"
+              decoding="async"
             />
             {post.featuredImageAlt && (
               <figcaption className="p-3 text-center text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
@@ -342,16 +415,16 @@ export function BlogPostView() {
           </figure>
         )}
 
-        {/* Table of Contents (if at least 2 headings present) */}
+        {/* Table of Contents with Full 48px Touch Targets & 12px Spacing */}
         {tocHeadings.length >= 2 && (
-          <nav aria-label="Table of contents" className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-600">
+          <nav aria-label="Table of contents" className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
+            <div className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
               <ListOrdered className="w-4 h-4" />
               <span>In This Article</span>
             </div>
-            <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+            <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-200">
               {tocHeadings.map((heading, idx) => (
-                <li key={idx} className={heading.level === 3 ? "pl-4 text-slate-500" : "font-semibold"}>
+                <li key={idx} className={heading.level === 3 ? "pl-5" : ""}>
                   <a
                     href={`#${heading.id}`}
                     onClick={(e) => {
@@ -361,9 +434,12 @@ export function BlogPostView() {
                         element.scrollIntoView({ behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition"
+                    className="flex items-center gap-3 min-h-[48px] py-3 px-4 rounded-xl text-slate-700 dark:text-slate-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 bg-slate-50/70 dark:bg-slate-800/50 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 border border-slate-200/60 dark:border-slate-700/60 hover:border-blue-200 dark:hover:border-blue-800 transition-all group"
                   >
-                    {heading.text}
+                    <span className="w-7 h-7 rounded-lg bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 group-hover:bg-blue-600 group-hover:text-white border border-slate-200/70 dark:border-slate-700/70 group-hover:border-blue-600 flex items-center justify-center text-xs font-bold shrink-0 transition-colors shadow-2xs">
+                      {idx + 1}
+                    </span>
+                    <span className="flex-1 leading-snug">{heading.text}</span>
                   </a>
                 </li>
               ))}
@@ -379,7 +455,7 @@ export function BlogPostView() {
           />
         </article>
 
-        {/* Tags Bar */}
+        {/* Tags Bar with Accessible Touch Padding */}
         {safeTags.length > 0 && (
           <div className="flex items-center gap-2 flex-wrap pt-2">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">
@@ -388,7 +464,7 @@ export function BlogPostView() {
             {safeTags.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                className="min-h-[44px] inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
               >
                 #{tag}
               </span>
@@ -396,14 +472,19 @@ export function BlogPostView() {
           </div>
         )}
 
-        {/* Author Bio Card */}
+        {/* Author Bio Card with Lightweight Responsive Avatar */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center sm:items-start gap-6">
           {post.authorAvatar ? (
             <img
-              src={post.authorAvatar}
+              src={bioAvatarAttrs.src}
+              srcSet={bioAvatarAttrs.srcSet}
+              width={80}
+              height={80}
               alt={post.authorName || "Syed Ejaz Bukhari"}
               className="w-20 h-20 rounded-2xl object-cover border-2 border-blue-500 shrink-0"
               referrerPolicy="no-referrer"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <div className="w-20 h-20 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-2xl shrink-0">
@@ -411,7 +492,7 @@ export function BlogPostView() {
             </div>
           )}
           <div className="space-y-2 text-center sm:text-left flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
                   About {post.authorName || "Syed Ejaz Bukhari"}
@@ -422,7 +503,7 @@ export function BlogPostView() {
               </div>
               <Link
                 to="/about"
-                className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 justify-center sm:justify-start"
+                className="min-h-[48px] px-4 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-xs font-bold text-blue-600 dark:text-blue-400 inline-flex items-center gap-1.5 justify-center sm:justify-start border border-blue-100 dark:border-blue-900 transition"
               >
                 <span>Learn about EBM Pedagogy</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -434,7 +515,7 @@ export function BlogPostView() {
           </div>
         </div>
 
-        {/* Diagnostic Assessment Banner CTA */}
+        {/* Diagnostic Assessment Banner CTA with Accessible Touch Targets */}
         <section className="bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 rounded-3xl p-8 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-blue-800/40">
           <div className="space-y-2 max-w-lg">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">
@@ -452,14 +533,14 @@ export function BlogPostView() {
           <div className="shrink-0 flex flex-col sm:flex-row gap-3">
             <Link
               to="/assessment"
-              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition"
+              className="min-h-[48px] px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs inline-flex items-center justify-center gap-2 shadow-md transition"
             >
               <span>Take Assessment</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               to="/analytics"
-              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs text-center border border-slate-700 transition"
+              className="min-h-[48px] px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs inline-flex items-center justify-center border border-slate-700 transition"
             >
               <span>View Analytics</span>
             </Link>
@@ -473,7 +554,7 @@ export function BlogPostView() {
               <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
                 Related Educational Perspectives
               </h3>
-              <Link to="/blog" className="text-xs font-bold text-blue-600 hover:underline">
+              <Link to="/blog" className="min-h-[44px] inline-flex items-center px-3 py-2 text-xs font-bold text-blue-600 hover:underline">
                 View All Articles
               </Link>
             </div>

@@ -12,12 +12,18 @@ import { HistoryView } from "./HistoryView";
 import { DownloadsView } from "./DownloadsView";
 import { SearchView } from "./SearchView";
 import { LearningView } from "./learning.types";
+import { SEOHead } from "../../SEOHead";
 
 export function LearningLayout() {
   const { currentView, isAssistantOpen } = useLearningStore();
 
   return (
     <div className="h-screen w-full flex bg-slate-50 overflow-hidden font-sans selection:bg-indigo-100 selection:text-indigo-900">
+      <SEOHead 
+        title="EBM Learning Portal | Courses, Curriculum & Practice"
+        description="Access EBM interactive learning modules, curriculum syllabi, guided practice lessons, and diagnostic exercises from Grade 1 to O/A Levels."
+        canonicalUrl="https://ejazbukharimethod.com/learning"
+      />
       <DashboardSidebar activeContext="learning" />
       
       <div className="flex-1 flex flex-col min-w-0 relative">

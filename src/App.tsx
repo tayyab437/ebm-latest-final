@@ -986,6 +986,12 @@ export default function App() {
             {/* Authentication Pages */}
             <Route path="/login" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <SEOHead
+                  title="Sign In | EBM Student, Parent & Educator Portal"
+                  description="Access your EBM student dashboard, parent insights feed, educator tools, and personalized coursework. Sign in with your registered account."
+                  canonicalUrl="https://ejazbukharimethod.com/login"
+                  noindex={true}
+                />
                 <AuthLayout 
                   onNavigateRegister={() => handleNavigatePath("/register")}
                   onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
@@ -1017,6 +1023,12 @@ export default function App() {
 
             <Route path="/register" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <SEOHead
+                  title="Create an Account | EBM Student & Parent Registration"
+                  description="Register for the Ejaz Bukhari Method (EBM) learning platform. Begin diagnostic skill assessments, individualized learning plans, and Cambridge syllabus prep."
+                  canonicalUrl="https://ejazbukharimethod.com/register"
+                  noindex={true}
+                />
                 <AuthLayout 
                   onNavigateRegister={() => handleNavigatePath("/register")}
                   onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
@@ -1039,6 +1051,12 @@ export default function App() {
 
             <Route path="/forgot-password" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <SEOHead
+                  title="Reset Password | EBM Account Recovery"
+                  description="Recover your EBM account password. Enter your registered email to receive secure password reset instructions."
+                  canonicalUrl="https://ejazbukharimethod.com/forgot-password"
+                  noindex={true}
+                />
                 <AuthLayout 
                   onNavigateRegister={() => handleNavigatePath("/register")}
                   onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
@@ -1061,6 +1079,12 @@ export default function App() {
 
             <Route path="/reset-password" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <SEOHead
+                  title="Set New Password | EBM Account Security"
+                  description="Create a new secure password for your EBM account to regain access to your student or parent portal."
+                  canonicalUrl="https://ejazbukharimethod.com/reset-password"
+                  noindex={true}
+                />
                 <AuthLayout 
                   onNavigateRegister={() => handleNavigatePath("/register")}
                   onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
@@ -1081,6 +1105,12 @@ export default function App() {
 
             <Route path="/verify-email" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
+                <SEOHead
+                  title="Verify Email | EBM Account Activation"
+                  description="Verify your email address to activate your EBM learning account and complete registration."
+                  canonicalUrl="https://ejazbukharimethod.com/verify-email"
+                  noindex={true}
+                />
                 <AuthLayout 
                   onNavigateRegister={() => handleNavigatePath("/register")}
                   onNavigateTab={(tab) => handleNavigatePath(`/${tab}`)}
@@ -1129,8 +1159,27 @@ export default function App() {
             } />
 
             {/* Portal Layouts */}
-            <Route path="/dashboard" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><StudentDashboardView /></div>} />
-            <Route path="/learning" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><LearningLayout /></div>} />
+            <Route path="/dashboard" element={
+              <div className="w-full h-screen overflow-hidden animate-fade-in">
+                <SEOHead
+                  title="Student Learning Dashboard | EBM Portal"
+                  description="Personalized student dashboard for tracking mastery goals, daily tasks, study roadmap milestones, and learning analytics."
+                  canonicalUrl="https://ejazbukharimethod.com/dashboard"
+                  noindex={true}
+                />
+                <StudentDashboardView />
+              </div>
+            } />
+            <Route path="/learning" element={
+              <div className="w-full h-screen overflow-hidden animate-fade-in">
+                <SEOHead
+                  title="EBM Learning Portal | Courses, Curriculum & Practice"
+                  description="Access EBM interactive learning modules, curriculum syllabi, guided practice lessons, and diagnostic exercises from Grade 1 to O/A Levels."
+                  canonicalUrl="https://ejazbukharimethod.com/learning"
+                />
+                <LearningLayout />
+              </div>
+            } />
             <Route path="/content" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><ContentLayout /></div>} />
             <Route path="/student-success" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><SuccessLayout /></div>} />
             <Route path="/ai-tutor" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AILayout /></div>} />
