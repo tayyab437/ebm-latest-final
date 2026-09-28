@@ -748,20 +748,32 @@ export function CurriculumManager() {
       </AnimatePresence>
 
       {/* Header section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-5 shrink-0 gap-4 p-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 shrink-0 gap-3 p-1">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-            <GraduationCap className="h-7 w-7 text-blue-600" />
+          <h1 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+            <GraduationCap className="h-6 w-6 md:h-7 md:w-7 text-blue-600" />
             Curriculum Content Mapper
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-xs md:text-sm text-slate-500">
             Organize courses, set grade targets, customize reading durations, map quiz items and utilize AI upload pipelines.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => {
+              setDualParseError(null);
+              setIsDualModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm transition-all duration-200 cursor-pointer"
+            title="Open Dual-Section AI Course Generator"
+          >
+            <Sparkles className="h-4 w-4 text-amber-300" />
+            AI Course Creator
+          </button>
+          
           <button
             onClick={handleOpenCreateModal}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-md transition-all duration-200"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs md:text-sm rounded-xl shadow-sm transition-all duration-200 cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             Add Course Manually
@@ -769,19 +781,19 @@ export function CurriculumManager() {
         </div>
       </div>
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0 overflow-hidden px-1">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 min-h-0 overflow-hidden px-1">
         
-        {/* Left Column (Filters, List, and File Drop) (4 Cols) */}
-        <div className="lg:col-span-4 flex flex-col gap-4 min-h-0 overflow-hidden">
+        {/* Left Column (Filters, List, and File Drop) - Fully scrollable */}
+        <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-3.5 min-h-0 overflow-y-auto pr-1.5 h-full scrollbar-thin">
           
           {/* Filters Pane */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col gap-3 shrink-0">
+          <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-xs flex flex-col gap-2.5 shrink-0">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <Filter className="h-3.5 w-3.5 text-slate-400" /> Filter & Categorize
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <Filter className="h-3.5 w-3.5 text-blue-600" /> Filter & Categorize
               </span>
-              <span className="text-[11px] font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                {filteredCurriculums.length} found
+              <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full">
+                {filteredCurriculums.length} courses
               </span>
             </div>
 
@@ -793,12 +805,12 @@ export function CurriculumManager() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search course title or unit..."
-                className="w-full pl-9 pr-4 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-blue-400 focus:outline-none transition-all"
+                className="w-full pl-9 pr-4 py-1.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -816,7 +828,7 @@ export function CurriculumManager() {
                     setFilterClassId(e.target.value);
                     setFilterSubject("All");
                   }}
-                  className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded p-1 focus:outline-none focus:border-blue-400"
+                  className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg p-1.5 focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
                 >
                   <option value="All">All Classes</option>
                   {classes.map(c => (
@@ -831,7 +843,7 @@ export function CurriculumManager() {
                 <select
                   value={filterSubject}
                   onChange={(e) => setFilterSubject(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded p-1 focus:outline-none focus:border-blue-400"
+                  className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg p-1.5 focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
                 >
                   <option value="All">All Subjects</option>
                   {(() => {
@@ -865,7 +877,7 @@ export function CurriculumManager() {
                 <select
                   value={filterDuration}
                   onChange={(e) => setFilterDuration(e.target.value)}
-                  className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded p-1 focus:outline-none focus:border-blue-400"
+                  className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg p-1.5 focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
                 >
                   <option value="All">Any Time</option>
                   <option value="short">Quick (≤15m)</option>
@@ -877,19 +889,26 @@ export function CurriculumManager() {
           </div>
 
           {/* Curriculum List Scrollable container */}
-          <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-3 flex flex-col min-h-0 shadow-sm overflow-hidden">
-            <h3 className="font-bold text-slate-800 text-xs mb-2 uppercase tracking-wider text-slate-400 px-1">
-              Active Courses
-            </h3>
+          <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-4 flex flex-col min-h-[260px] shadow-sm overflow-hidden shrink-0">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <h3 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-blue-600" />
+                Active Courses
+              </h3>
+              <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                Showing {filteredCurriculums.length}
+              </span>
+            </div>
 
             {isLoading ? (
               <div className="flex-1 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
             ) : filteredCurriculums.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-400">
-                <BookOpen className="h-10 w-10 mb-2 stroke-1" />
-                <p className="text-xs font-semibold">No courses match filters.</p>
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-8 text-slate-400">
+                <BookOpen className="h-12 w-12 mb-3 stroke-1 text-slate-300" />
+                <p className="text-sm font-bold text-slate-600">No courses match filters.</p>
+                <p className="text-xs text-slate-400 mt-1">Try resetting your search query or dropdowns.</p>
                 <button
                   onClick={() => {
                     setSearchQuery("");
@@ -897,13 +916,13 @@ export function CurriculumManager() {
                     setFilterClassId("All");
                     setFilterDuration("All");
                   }}
-                  className="text-blue-600 underline text-xs mt-1.5 hover:text-blue-800"
+                  className="text-blue-600 font-bold underline text-xs mt-3 hover:text-blue-800 cursor-pointer"
                 >
                   Reset all filters
                 </button>
               </div>
             ) : (
-              <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1.5 scrollbar-thin">
                 {filteredCurriculums.map((item, index) => {
                   const isSelected = selectedItem?.id === item.id;
                   const isMath = item.subject === "MATH";
@@ -920,12 +939,12 @@ export function CurriculumManager() {
                       }}
                       className={`group relative rounded-xl border overflow-hidden transition-all cursor-pointer flex flex-col ${
                         isSelected
-                          ? "bg-blue-50/40 border-blue-300 shadow-sm ring-1 ring-blue-100"
-                          : "border-slate-100 hover:bg-slate-50/50 hover:border-slate-200"
+                          ? "bg-blue-50/50 border-blue-400 shadow-md ring-2 ring-blue-100"
+                          : "border-slate-200/80 bg-white hover:bg-slate-50/80 hover:border-slate-300 hover:shadow-sm"
                       }`}
                     >
                       {/* Top banner / Image preview */}
-                      <div className="h-14 w-full relative overflow-hidden bg-slate-100 shrink-0">
+                      <div className="h-20 w-full relative overflow-hidden bg-slate-100 shrink-0">
                         {item.thumbnailUrl ? (
                           <img
                             src={item.thumbnailUrl}
@@ -934,19 +953,19 @@ export function CurriculumManager() {
                             referrerPolicy="no-referrer"
                           />
                         ) : (
-                          <div className={`w-full h-full bg-gradient-to-r ${isMath ? 'from-amber-400 to-amber-600' : 'from-blue-400 to-blue-600'}`} />
+                          <div className={`w-full h-full bg-gradient-to-r ${isMath ? 'from-amber-500 to-amber-600' : 'from-blue-600 to-indigo-600'}`} />
                         )}
-                        <div className="absolute inset-0 bg-black/10" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
                         {/* Badges on top of thumbnail */}
-                        <div className="absolute top-2 left-2 flex items-center gap-1 flex-wrap">
+                        <div className="absolute top-2 left-2 flex items-center gap-1.5 flex-wrap">
                           {item.testNumber ? (
-                            <span className="text-[9px] font-black px-2 py-0.5 rounded-md bg-indigo-600 text-white shadow-xs border border-indigo-500">
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-indigo-600 text-white shadow-xs border border-indigo-500">
                               Test #{item.testNumber}
                             </span>
                           ) : (
                             <span
-                              className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white shadow-sm ${
+                              className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md text-white shadow-sm ${
                                 isMath ? "bg-amber-500" : isEnglish ? "bg-sky-500" : "bg-purple-500"
                               }`}
                             >
@@ -954,62 +973,63 @@ export function CurriculumManager() {
                             </span>
                           )}
                           <span
-                            className="text-[9px] font-extrabold text-slate-800 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded shadow-sm"
+                            className="text-[10px] font-extrabold text-slate-800 bg-white/95 backdrop-blur-xs px-2 py-0.5 rounded-md shadow-sm"
                           >
                             {item.subject}
                           </span>
                         </div>
 
                         {/* Duration banner on top of thumbnail */}
-                        <div className="absolute bottom-1 right-2 flex items-center gap-1 text-[10px] font-bold text-white bg-black/40 backdrop-blur-xs px-1.5 py-0.5 rounded">
-                          <Clock className="h-2.5 w-2.5" />
+                        <div className="absolute bottom-1.5 right-2 flex items-center gap-1 text-[10px] font-bold text-white bg-black/60 backdrop-blur-xs px-2 py-0.5 rounded-md">
+                          <Clock className="h-3 w-3" />
                           {item.duration || 20}m
                         </div>
                       </div>
 
                       {/* Info body */}
-                      <div className="p-3">
-                        <h4 className="font-bold text-slate-800 text-xs leading-tight line-clamp-1 group-hover:text-blue-600 transition-colors pr-6">
-                          {item.title}
-                        </h4>
+                      <div className="p-3.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-bold text-slate-900 text-sm leading-snug line-clamp-1 group-hover:text-blue-600 transition-colors flex-1">
+                            {item.title}
+                          </h4>
+                          
+                          {/* Action hover/tap buttons */}
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenEditModal(item);
+                              }}
+                              className="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 bg-slate-50 border border-slate-200 transition-all cursor-pointer"
+                              title="Edit course"
+                            >
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={(e) => handleDelete(item.id, e)}
+                              className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 bg-slate-50 border border-slate-200 transition-all cursor-pointer"
+                              title="Delete course"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
                         {item.unitTitle && (
-                          <p className="text-[10px] text-slate-500 truncate mt-0.5">
-                            Unit: {item.unitTitle}
+                          <p className="text-[11px] text-slate-500 truncate mt-1">
+                            Unit: <span className="font-semibold text-slate-700">{item.unitTitle}</span>
                           </p>
                         )}
-                        {item.testNumber && (
-                          <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50/80 border border-indigo-200/60 text-indigo-700 text-[10px] font-black shadow-2xs">
-                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                            <span>Test #{item.testNumber}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-50">
-                          <span className="text-[10px] font-medium text-slate-400 flex items-center gap-1">
-                            <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
+                        
+                        <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100">
+                          <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                             {mappedQ.length} Questions Mapped
                           </span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded">
+                            {item.gradeLevel || "Grade 4"}
+                          </span>
                         </div>
-                      </div>
-
-                      {/* Action hover buttons */}
-                      <div className="absolute right-2 top-16 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenEditModal(item);
-                          }}
-                          className="p-1 rounded-md text-slate-500 hover:text-blue-600 hover:bg-blue-50 bg-white shadow-xs border border-slate-100"
-                          title="Edit course"
-                        >
-                          <Edit2 className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={(e) => handleDelete(item.id, e)}
-                          className="p-1 rounded-md text-slate-500 hover:text-rose-600 hover:bg-rose-50 bg-white shadow-xs border border-slate-100"
-                          title="Delete course"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
                       </div>
                     </div>
                   );
@@ -1018,18 +1038,18 @@ export function CurriculumManager() {
             )}
           </div>
 
-          {/* Upload and AI parsing Area */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm shrink-0 flex flex-col gap-3" id="curriculum-upload-zone">
+          {/* Upload and AI parsing Area (Compact) */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-xs shrink-0 flex flex-col gap-2.5" id="curriculum-upload-zone">
             <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <Sparkles className="h-3.5 w-3.5 text-blue-500 animate-pulse" /> AI Upload Channels
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {/* Channel 1: Single File Drop */}
               <div
-                className={`p-3 rounded-xl border border-dashed transition-all duration-200 flex flex-col items-center justify-center cursor-pointer ${
+                className={`p-2.5 rounded-xl border border-dashed transition-all duration-200 flex flex-col items-center justify-center cursor-pointer ${
                   dragActive
                     ? "border-blue-500 bg-blue-50/50"
                     : "border-slate-200 hover:border-blue-400 hover:bg-slate-50/50"
@@ -1040,17 +1060,17 @@ export function CurriculumManager() {
                 onDrop={handleDrop}
               >
                 {isUploading ? (
-                  <div className="flex flex-col items-center py-2 text-center">
-                    <Sparkle className="h-5 w-5 text-blue-500 animate-spin mb-1" />
-                    <p className="font-bold text-slate-700 text-[11px]">Parsing document...</p>
+                  <div className="flex flex-col items-center py-1 text-center">
+                    <Sparkle className="h-4 w-4 text-blue-500 animate-spin mb-0.5" />
+                    <p className="font-bold text-slate-700 text-[10px]">Parsing...</p>
                   </div>
                 ) : (
                   <div className="text-center">
-                    <Upload className="h-5 w-5 text-slate-400 mx-auto mb-1" />
-                    <p className="text-[11px] font-semibold text-slate-700">
-                      Drag file here or <label className="text-blue-600 hover:underline cursor-pointer">browse<input type="file" className="hidden" accept=".docx,.json,.md,.txt" onChange={handleFileChange} /></label>
+                    <Upload className="h-4 w-4 text-slate-400 mx-auto mb-0.5" />
+                    <p className="text-[10px] font-semibold text-slate-700 leading-tight">
+                      Drop file or <label className="text-blue-600 hover:underline cursor-pointer">browse<input type="file" className="hidden" accept=".docx,.json,.md,.txt" onChange={handleFileChange} /></label>
                     </p>
-                    <p className="text-[9px] text-slate-400">Word (.docx), Markdown, or JSON</p>
+                    <p className="text-[8px] text-slate-400">.docx, .md, .json</p>
                   </div>
                 )}
               </div>
@@ -1061,18 +1081,18 @@ export function CurriculumManager() {
                   setDualParseError(null);
                   setIsDualModalOpen(true);
                 }}
-                className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all text-left bg-white"
+                className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all text-left bg-white cursor-pointer"
               >
-                <div className="flex items-start gap-2.5">
+                <div className="flex items-center gap-2">
                   <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 shrink-0">
-                    <BookOpen className="h-4 w-4" />
+                    <BookOpen className="h-3.5 w-3.5" />
                   </div>
                   <div>
-                    <h5 className="text-[11px] font-bold text-slate-700">Dual-Section AI Creator</h5>
-                    <p className="text-[9px] text-slate-400">Comprehension + Answer Key mapping</p>
+                    <h5 className="text-[10px] font-bold text-slate-800 leading-tight">Dual AI Creator</h5>
+                    <p className="text-[8px] text-slate-400">Passage + Answers</p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-slate-400 animate-pulse" />
+                <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
               </button>
             </div>
 
@@ -1086,8 +1106,8 @@ export function CurriculumManager() {
 
         </div>
 
-        {/* Right Column: Detailed Reader and practice (8 Cols) */}
-        <div className="lg:col-span-8 flex flex-col min-h-0 overflow-hidden">
+        {/* Right Column: Detailed Reader and practice (7 Cols) */}
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col min-h-0 overflow-hidden">
           {selectedItem ? (
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm min-h-0">
               
@@ -1298,14 +1318,21 @@ export function CurriculumManager() {
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-start gap-2 flex-1 min-w-0">
-                              <span className="h-5 w-5 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0 mt-0.5">
+                              <span className="h-6 w-6 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-black shrink-0 mt-0.5 border border-blue-100">
                                 {idx + 1}
                               </span>
-                              <div className="flex-1">
-                                <span className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded uppercase mr-2">
-                                  {q.type === "FIB" ? "Fill in Blank" : q.type}
-                                </span>
-                                <p className="text-xs font-bold text-slate-800 inline">
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="text-[9px] font-black text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded uppercase">
+                                    {q.type === "FIB" ? "Fill in Blank" : q.type}
+                                  </span>
+                                  {q.section && (
+                                    <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                      {q.section}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs font-bold text-slate-900 leading-snug">
                                   {q.question}
                                 </p>
                               </div>
@@ -1316,7 +1343,7 @@ export function CurriculumManager() {
                                 handleOpenEditModal(selectedItem);
                                 handleEditQuestionInForm(q);
                               }}
-                              className="p-1 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shrink-0"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 bg-slate-50 border border-slate-100 transition-colors shrink-0 cursor-pointer"
                               title="Edit this question"
                             >
                               <Edit2 className="h-3.5 w-3.5" />
@@ -1325,21 +1352,31 @@ export function CurriculumManager() {
 
                           {/* Options if MCQ */}
                           {q.type === "MCQ" && q.options && (
-                            <div className="grid grid-cols-1 gap-2 pl-7">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-8">
                               {q.options.map((option) => {
                                 const isSelected = currentVal === option;
+                                const isThisCorrect = q.correctAnswer && (
+                                  option.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase() ||
+                                  q.correctAnswer.trim().toLowerCase().includes(option.trim().toLowerCase())
+                                );
                                 return (
                                   <button
                                     key={option}
                                     onClick={() => handleAnswerChange(q.id, option)}
-                                    className={`text-left text-xs p-2.5 rounded-lg border transition-all flex items-center justify-between ${
+                                    className={`text-left text-xs p-2.5 rounded-xl border transition-all flex items-center justify-between cursor-pointer ${
                                       isSelected
-                                        ? "bg-blue-50 border-blue-300 text-blue-700 font-bold"
-                                        : "border-slate-100 hover:bg-slate-50 hover:border-slate-200 text-slate-600"
+                                        ? isThisCorrect
+                                          ? "bg-emerald-50 border-emerald-300 text-emerald-800 font-black ring-1 ring-emerald-200"
+                                          : "bg-blue-50 border-blue-300 text-blue-700 font-bold"
+                                        : "border-slate-200/80 hover:bg-slate-50 hover:border-slate-300 text-slate-700 bg-white"
                                     }`}
                                   >
-                                    <span>{option}</span>
-                                    {isSelected && <Check className="h-4 w-4 text-blue-600" />}
+                                    <span className="font-semibold">{option}</span>
+                                    {isSelected ? (
+                                      <Check className="h-4 w-4 text-blue-600" />
+                                    ) : isThisCorrect && showResults ? (
+                                      <span className="text-[9px] font-black text-emerald-600 uppercase">Correct</span>
+                                    ) : null}
                                   </button>
                                 );
                               })}
@@ -1348,7 +1385,7 @@ export function CurriculumManager() {
 
                           {/* Text input if SHORT or FIB */}
                           {(q.type === "SHORT" || q.type === "FIB") && (
-                            <div className="pl-7 space-y-3">
+                            <div className="pl-8 space-y-3">
                               {q.type === "FIB" && q.options && q.options.length > 0 && (
                                 <div className="flex flex-wrap items-center gap-1.5 bg-amber-50/70 p-2 rounded-lg border border-amber-200/60">
                                   <span className="text-[10px] font-bold uppercase text-amber-800 tracking-wider">Word Bank:</span>
@@ -1369,8 +1406,8 @@ export function CurriculumManager() {
                                   type="text"
                                   value={currentVal}
                                   onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                                  placeholder={q.type === "FIB" ? "Fill in the blank space..." : "Type your answer here..."}
-                                  className="flex-1 text-xs p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-blue-400 focus:outline-none transition-all"
+                                  placeholder={q.type === "FIB" ? "Fill in the blank space..." : "Type test answer..."}
+                                  className="flex-1 text-xs p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-blue-400 focus:outline-none transition-all font-medium"
                                 />
                                 {currentVal.trim() && (
                                   <button
@@ -1430,42 +1467,34 @@ export function CurriculumManager() {
                             </div>
                           )}
 
-                          {/* Answers and Correct Indicators */}
-                          {showResults && (
-                            <div className="mt-2 pl-7 pt-2 border-t border-slate-100 space-y-1 text-xs">
-                              {q.correctAnswer && (
-                                <p className="text-slate-500 font-medium flex items-center gap-1.5">
-                                  <span className="text-emerald-600 font-bold">Answer:</span>{" "}
-                                  <span className="text-slate-800">{q.correctAnswer}</span>
-                                </p>
-                              )}
-                              {currentVal && (
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-slate-500 font-medium">Your response:</span>
-                                  <span className="text-slate-800 font-medium">{currentVal}</span>
-                                  {isCorrect ? (
-                                    <span className="text-emerald-600 font-bold flex items-center gap-0.5">
-                                      <CheckCircle2 className="h-3.5 w-3.5" /> Correct
-                                    </span>
-                                  ) : q.type === "MCQ" ? (
-                                    <span className="text-rose-600 font-bold flex items-center gap-0.5">
-                                      <X className="h-3.5 w-3.5" /> Incorrect
-                                    </span>
-                                  ) : aiEvaluations[q.id] ? (
-                                    <span className={`font-bold flex items-center gap-0.5 ${
-                                      aiEvaluations[q.id].status === "correct" ? "text-emerald-600" :
-                                      aiEvaluations[q.id].status === "partially_correct" ? "text-amber-600" : "text-rose-600"
-                                    }`}>
-                                      {aiEvaluations[q.id].status === "correct" ? "AI Rated Correct" :
-                                       aiEvaluations[q.id].status === "partially_correct" ? "AI Rated Partial" : "AI Rated Incorrect"}
-                                    </span>
-                                  ) : (
-                                    <span className="text-rose-600 font-semibold">Self-Verify (or use AI Evaluate)</span>
-                                  )}
-                                </div>
-                              )}
+                          {/* Always-visible Mapped Correct Answer Badge */}
+                          <div className="pl-8 pt-2 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2 text-xs">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                Mapped Answer:
+                              </span>
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-xs">
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                                {q.correctAnswer ? q.correctAnswer : <em className="text-slate-400 font-normal">Not configured</em>}
+                              </span>
                             </div>
-                          )}
+
+                            {currentVal && (
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-slate-500 font-medium">Input:</span>
+                                <span className="font-bold text-slate-800">{currentVal}</span>
+                                {isCorrect ? (
+                                  <span className="text-emerald-600 font-bold flex items-center gap-0.5">
+                                    <CheckCircle2 className="h-3.5 w-3.5" /> Match
+                                  </span>
+                                ) : (
+                                  <span className="text-rose-600 font-bold flex items-center gap-0.5">
+                                    <X className="h-3.5 w-3.5" /> Mismatch
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       );
                     })
@@ -2398,7 +2427,7 @@ export function CurriculumManager() {
               <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between shrink-0">
                 <span className="text-[11px] text-slate-400 flex items-center gap-1">
                   <Sparkle className="h-3.5 w-3.5 text-amber-500 animate-spin" />
-                  EBM Curriculum Parser utilizes Gemini 3.5 Flash Model
+                  EBM Curriculum Parser utilizes Gemini 2.5 Flash Model
                 </span>
                 <div className="flex items-center gap-2">
                   <button

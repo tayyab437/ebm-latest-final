@@ -126,6 +126,17 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const autoAdvanceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clear auto-advance timer on active question index change
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceTimeoutRef.current) {
+        clearTimeout(autoAdvanceTimeoutRef.current);
+      }
+    };
+  }, [activeQuestionIndex]);
+
   const showSplitPassage = !isMath && isSplitView;
   const hasText = !!lesson?.content && lesson.content.trim().length > 0;
 
@@ -1019,6 +1030,11 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
                                     alert("Please enter or select an answer first.");
                                     return;
                                   }
+
+                                  if (autoAdvanceTimeoutRef.current) {
+                                    clearTimeout(autoAdvanceTimeoutRef.current);
+                                  }
+
                                   const isCorrect = checkAnswer(q, userAns);
                                   setCheckedQuestions(prev => ({
                                     ...prev,
@@ -1026,12 +1042,23 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
                                       isChecked: true,
                                       isCorrect,
                                       feedback: isCorrect
-                                        ? "✓ Correct answer! Excellent job."
+                                        ? "✓ Correct answer! Moving to next question..."
                                         : q.correctAnswer
                                           ? `✗ Incorrect. Expected answer: "${q.correctAnswer}". Try again!`
-                                          : "✓ Answer evaluated and saved!"
+                                          : "✗ Incorrect. Try recalculating!"
                                     }
                                   }));
+
+                                  // If correct, automatically advance to next question after 1 second
+                                  if (isCorrect) {
+                                    autoAdvanceTimeoutRef.current = setTimeout(() => {
+                                      if (activeQuestionIndex < questions.length - 1) {
+                                        setActiveQuestionIndex(prev => prev + 1);
+                                      } else {
+                                        setActiveQuestionIndex(prev => (prev + 1) % questions.length);
+                                      }
+                                    }, 1000);
+                                  }
                                 }}
                                 className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95"
                               >
@@ -1040,6 +1067,9 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
 
                               <button
                                 onClick={() => {
+                                  if (autoAdvanceTimeoutRef.current) {
+                                    clearTimeout(autoAdvanceTimeoutRef.current);
+                                  }
                                   setActiveQuestionIndex((prev) => (prev + 1) % questions.length);
                                 }}
                                 className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer border border-slate-300"

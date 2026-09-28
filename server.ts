@@ -7440,7 +7440,7 @@ function resolveMCQCorrectAnswer(
   }
 
   // Strip prefix "Answer:", "Correct Answer:", "Ans:"
-  candidate = candidate.replace(/^(correct\s*answer|answer\s*key|answer|ans)\s*:\s*/i, "").trim();
+  candidate = cleanAnswerText(candidate);
 
   if (!candidate && opts.length > 0) {
     return opts[0];
@@ -7452,7 +7452,7 @@ function resolveMCQCorrectAnswer(
     const combinedMatch = candidate.match(/^\(?([a-f])[\.\)\-]?\s+(.*)/i);
     if (combinedMatch) {
       letterMatch = combinedMatch;
-      const textAfterLetter = combinedMatch[2].trim();
+      const textAfterLetter = cleanAnswerText(combinedMatch[2]);
       const matchedOpt = opts.find(o => o.toLowerCase() === textAfterLetter.toLowerCase());
       if (matchedOpt) return matchedOpt;
     }
@@ -7482,6 +7482,16 @@ function resolveMCQCorrectAnswer(
   return opts.length > 0 ? opts[0] : (candidate || "Sample Answer");
 }
 
+function cleanAnswerText(ans: string): string {
+  if (!ans) return "";
+  let cleaned = ans.trim();
+  cleaned = cleaned.replace(/^(correct\s*answer|answer|model\s*answer|ans)\s*:\s*/i, "").trim();
+  if (/^([<>=+\-*\/]|Rs\.?\s*\d+|\d+|[A-Za-z]+)\.$/.test(cleaned)) {
+    cleaned = cleaned.slice(0, -1).trim();
+  }
+  return cleaned;
+}
+
 // Robust offline/fallback parser for curriculum questions and answer keys
 function runHeuristicParser(comprehensionText: string, answerKeyText: string): any {
   let comp = comprehensionText || "";
@@ -7491,79 +7501,119 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
     const parts = comp.split("### SECTION 2: ANSWER KEY");
     comp = parts[0].replace("### SECTION 1: COMPREHENSION WITH QUESTIONS AND MCQS", "").trim();
     ansKey = parts[1] || "";
+  } else if (!ansKey) {
+    const lowerComp = comp.toLowerCase();
+    const keyIdx = lowerComp.lastIndexOf("complete answer key") !== -1 
+      ? lowerComp.lastIndexOf("complete answer key") 
+      : lowerComp.lastIndexOf("answer key");
+    if (keyIdx !== -1) {
+      ansKey = comp.substring(keyIdx);
+      comp = comp.substring(0, keyIdx).trim();
+    }
   }
 
   const lines = comp.split("\n");
-  let title = "Comprehension Lesson";
+  let title = "";
   let subject = "ENGLISH";
-  let gradeLevel = "Grade 5";
-  let unitTitle = "Comprehension Unit";
-  let skillFocus = "Reading Comprehension";
-  let lifeConnection = "Connecting stories to real-life understanding.";
+  let gradeLevel = "Grade 2";
+  let unitTitle = "";
+  let skillFocus = "";
+  let lifeConnection = "";
   
   let contentLines: string[] = [];
   let questionsLines: string[] = [];
   let isComprehension = false;
   let isQuestions = false;
+  let currentSectionTitle = "";
 
   for (let line of lines) {
     const trimmed = line.trim();
-    if (trimmed.toLowerCase().startsWith("title:")) {
-      title = trimmed.substring(6).trim();
-      continue;
-    }
-    if (trimmed.toLowerCase().startsWith("subject:")) {
-      const sub = trimmed.substring(8).trim().toUpperCase();
-      subject = sub.includes("MATH") ? "MATH" : "ENGLISH";
-      continue;
-    }
-    if (trimmed.toLowerCase().startsWith("grade level:")) {
-      gradeLevel = trimmed.substring(12).trim();
-      continue;
-    }
-    if (trimmed.toLowerCase().startsWith("unit title:")) {
-      unitTitle = trimmed.substring(11).trim();
-      continue;
-    }
-    if (trimmed.toLowerCase().startsWith("skill focus:")) {
-      skillFocus = trimmed.substring(12).trim();
-      continue;
-    }
-    if (trimmed.toLowerCase().startsWith("life connection:")) {
-      lifeConnection = trimmed.substring(16).trim();
+    if (!trimmed) continue;
+    const lower = trimmed.toLowerCase();
+
+    // Document noise filters
+    if (
+      lower.startsWith("ebm-") ||
+      lower.startsWith("facilitator") ||
+      lower.startsWith("marks:") ||
+      lower.startsWith("duration:") ||
+      lower.startsWith("date:") ||
+      lower.startsWith("name:") ||
+      lower.startsWith("main series:") ||
+      lower.includes("ejazbukharimethod.com")
+    ) {
       continue;
     }
 
-    if (trimmed.toLowerCase().startsWith("comprehension:") || trimmed.toLowerCase().startsWith("passage:")) {
+    if (lower.startsWith("subject title:") || lower.startsWith("subject:")) {
+      const sub = trimmed.replace(/^(subject\s*title|subject)\s*:\s*/i, "").trim().toUpperCase();
+      subject = sub.includes("MATH") ? "MATH" : "ENGLISH";
+      continue;
+    }
+    if (lower.startsWith("unit title:") || lower.startsWith("unit:")) {
+      unitTitle = trimmed.replace(/^(unit\s*title|unit)\s*:\s*/i, "").trim();
+      if (!title) title = unitTitle;
+      continue;
+    }
+    if (lower.startsWith("level:") || lower.startsWith("grade level:") || lower.startsWith("grade:")) {
+      gradeLevel = trimmed.replace(/^(grade\s*level|level|grade)\s*:\s*/i, "").trim();
+      continue;
+    }
+    if (lower.startsWith("skill focus:") || lower.startsWith("skills:")) {
+      skillFocus = trimmed.replace(/^(skill\s*focus|skills)\s*:\s*/i, "").trim();
+      continue;
+    }
+    if (lower.startsWith("life connection:")) {
+      lifeConnection = trimmed.replace(/^life\s*connection\s*:\s*/i, "").trim();
+      continue;
+    }
+    if (lower.startsWith("title:")) {
+      title = trimmed.replace(/^title\s*:\s*/i, "").trim();
+      continue;
+    }
+
+    if (lower.startsWith("comprehension:") || lower.startsWith("passage:") || lower.startsWith("reading passage:")) {
       isComprehension = true;
       isQuestions = false;
       continue;
     }
-    if (trimmed.toLowerCase().startsWith("questions:") || trimmed.toLowerCase().startsWith("question:")) {
+    if (lower.startsWith("questions:") || lower.startsWith("question:") || lower.startsWith("exercise:")) {
       isComprehension = false;
       isQuestions = true;
       continue;
     }
 
-    if (isComprehension) {
-      contentLines.push(line);
-    } else if (isQuestions) {
+    const isSectionHeading = /^[A-Z]\.\s+([A-Za-z0-9\s><=,–—\-\/]+)/i.test(trimmed);
+    const isNumberedQ = /^q?\d+[\.\):-]\s+/i.test(trimmed);
+
+    if (isSectionHeading) {
+      isQuestions = true;
+      isComprehension = false;
+      currentSectionTitle = trimmed;
+      questionsLines.push(`### ${trimmed}`);
+      continue;
+    }
+
+    if (isNumberedQ) {
+      isQuestions = true;
+      isComprehension = false;
+    }
+
+    if (isQuestions) {
       questionsLines.push(line);
+    } else if (isComprehension) {
+      contentLines.push(line);
     } else {
-      // If we haven't hit headers yet, push to comprehension/content if not blank
-      if (contentLines.length === 0 && trimmed && !trimmed.startsWith("#")) {
-        contentLines.push(line);
-      } else if (contentLines.length > 0 && !isQuestions) {
-        contentLines.push(line);
-      }
+      contentLines.push(line);
     }
   }
 
-  const content = contentLines.join("\n").trim() || "Comprehension content reading passage.";
+  const content = contentLines.join("\n").trim() || (title ? `Curriculum module and reference guide for ${title}.` : "Comprehension content reading passage.");
 
   // Parse questions
   const questions: any[] = [];
   let currentQuestion: any = null;
+  let activeSectionPrefix = "";
 
   const qLines = questionsLines.length > 0 ? questionsLines : lines;
   let qIdCounter = 1;
@@ -7571,40 +7621,61 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
   for (let line of qLines) {
     const trimmed = line.trim();
     if (!trimmed) continue;
-
-    // Ignore headers and titles to prevent them from appending to the previous question's text
     const lower = trimmed.toLowerCase();
+
+    if (trimmed.startsWith("### ")) {
+      activeSectionPrefix = trimmed.replace("### ", "").trim();
+      continue;
+    }
+
     if (
+      lower.startsWith("answer:") ||
       lower === "mcqs" || 
       lower === "mcq" || 
       lower === "questions" || 
       lower === "question-answer questions" || 
       lower === "question-answer answers" || 
-      lower === "mcq answer key" ||
-      lower.startsWith("section") ||
-      lower.startsWith("###")
+      lower === "mcq answer key"
     ) {
       continue;
     }
 
-    // Check if line starts with a number, e.g., "1.", "1)", "Q1:"
-    // Require a delimiter like . or ) or : or - to avoid treating "1 ten" as a question number!
     const qMatch = trimmed.match(/^q?(\d+)[\.\):-]\s*(.*)/i);
     if (qMatch) {
       if (currentQuestion) {
         questions.push(currentQuestion);
       }
       const qNum = qMatch[1];
-      const qText = qMatch[2].trim();
+      let qText = qMatch[2].trim();
+
+      let detectedType = "SHORT";
+      let detectedOpts: string[] = [];
+
+      const slashMatch = qText.match(/^([0-9A-Za-z\s]+)\s*\/\s*([0-9A-Za-z\s]+)$/);
+      const orMatch = qText.match(/Which is (?:greater|smaller|more|fewer|larger)[:\s]+([0-9A-Za-z\s]+)\s+or\s+([0-9A-Za-z\s]+)\??/i);
+      const isComparisonSigns = activeSectionPrefix.includes(">, <, or =") || activeSectionPrefix.includes("Write >") || qText.includes("__________");
+
+      if (slashMatch) {
+        detectedType = "MCQ";
+        detectedOpts = [slashMatch[1].trim(), slashMatch[2].trim()];
+      } else if (orMatch) {
+        detectedType = "MCQ";
+        detectedOpts = [orMatch[1].trim(), orMatch[2].trim()];
+      } else if (isComparisonSigns && !qText.includes("costs") && !qText.includes("scored")) {
+        detectedType = "MCQ";
+        detectedOpts = [">", "<", "="];
+      }
+
       currentQuestion = {
         id: `q_${qNum || qIdCounter}_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
+        questionNumber: qNum || String(qIdCounter),
         question: qText,
-        type: "SHORT",
-        options: []
+        type: detectedType,
+        options: detectedOpts,
+        section: activeSectionPrefix
       };
       qIdCounter++;
     } else if (currentQuestion) {
-      // Check for standalone letter options or inline options
       const optMatch = trimmed.match(/^\(?([A-F])[\.\)\-]\s*(.*)/i);
       const hasInlineOptions = trimmed.match(/([B-F])[\.\)\-]\s+/gi);
       if (optMatch || hasInlineOptions) {
@@ -7618,7 +7689,7 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
             currentQuestion.options.push(opt);
           }
         }
-      } else if (trimmed.toLowerCase().includes("options:") || trimmed.startsWith("[")) {
+      } else if (lower.includes("options:") || trimmed.startsWith("[")) {
         currentQuestion.type = "MCQ";
         let optsText = trimmed;
         if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
@@ -7629,7 +7700,7 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
         if (parsedOpts.length > 0) {
           currentQuestion.options = [...(currentQuestion.options || []), ...parsedOpts];
         }
-      } else if (trimmed.toLowerCase().includes("true or false")) {
+      } else if (lower.includes("true or false")) {
         currentQuestion.type = "MCQ";
         currentQuestion.options = ["True", "False"];
       } else {
@@ -7652,13 +7723,15 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
     for (const line of ansLines) {
       const trimmed = line.trim();
       if (!trimmed) continue;
-
       const lower = trimmed.toLowerCase();
 
-      // Ignore headers / metadata / sections / labels
       if (
+        lower === "complete answer key" ||
         lower === "answer key" ||
         lower === "answers" ||
+        lower.startsWith("subject title:") ||
+        lower.startsWith("unit title:") ||
+        lower.startsWith("level:") ||
         lower.startsWith("###") ||
         lower.startsWith("section") ||
         lower.includes("mcq") ||
@@ -7666,31 +7739,28 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
         lower.includes("multiple-choice") ||
         lower.includes("short answer") ||
         lower.includes("question answer") ||
-        lower.includes("question-answer") ||
         lower.includes("written") ||
-        lower.includes("subjective") ||
-        lower.includes("qa")
+        lower.includes("subjective")
       ) {
         continue;
       }
 
-      // Check if line starts with a number, e.g., "1.", "1)", "Q1:"
       const shortMatch = trimmed.match(/^q?(\d+)[\.\):-]\s*(.*)/i);
       if (shortMatch) {
         const num = shortMatch[1];
-        const text = shortMatch[2].trim();
+        const rawText = shortMatch[2].trim();
+        const text = cleanAnswerText(rawText);
         if (text) {
           allAnswersMap.set(num, text);
           allAnswersList.push(text);
           lastNum = num;
         }
       } else {
-        // Fall back to inline question-answer matches
         const rawMatches = [...trimmed.matchAll(/(?:q|question)\s*(\d+)[\.\):\s-]+\s*([^0-9\n,;]+)/gi)];
         const validInlineMatches: { num: string; val: string }[] = [];
         for (const m of rawMatches) {
           const num = m[1];
-          const val = m[2].trim();
+          const val = cleanAnswerText(m[2]);
           const lowerVal = val.toLowerCase();
           const isHeaderWord = lowerVal.includes("grade") || lowerVal.includes("comprehension") || lowerVal.includes("lesson") || lowerVal.includes("answer key") || lowerVal.includes("safety");
           if (val && val.length <= 15 && !isHeaderWord) {
@@ -7705,16 +7775,13 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
             lastNum = m.num;
           }
         } else {
-          // No number match and no inline matches! This is a continuation of the previous answer!
           if (lastNum) {
             const prev = allAnswersMap.get(lastNum) || "";
             const updated = prev ? `${prev} ${trimmed}` : trimmed;
-            allAnswersMap.set(lastNum, updated);
-            
-            // Also update in list
+            allAnswersMap.set(lastNum, cleanAnswerText(updated));
             const idx = allAnswersList.indexOf(prev);
             if (idx !== -1) {
-              allAnswersList[idx] = updated;
+              allAnswersList[idx] = cleanAnswerText(updated);
             }
           }
         }
@@ -7724,9 +7791,8 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
 
   // Map answers back to questions
   questions.forEach((q, idx) => {
-    // Try to extract original question number from q.id (formatted as q_${qNum}_...)
-    let qNum: string | null = null;
-    if (q.id && q.id.startsWith("q_")) {
+    let qNum: string | null = q.questionNumber || null;
+    if (!qNum && q.id && q.id.startsWith("q_")) {
       const parts = q.id.split("_");
       if (parts[1] && /^\d+$/.test(parts[1])) {
         qNum = parts[1];
@@ -7735,20 +7801,17 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
 
     let mappedAns = "";
     let foundInKey = false;
-    if (qNum) {
-      if (allAnswersMap.has(qNum)) {
-        mappedAns = allAnswersMap.get(qNum) || "";
-        foundInKey = true;
-      }
+    if (qNum && allAnswersMap.has(qNum)) {
+      mappedAns = allAnswersMap.get(qNum) || "";
+      foundInKey = true;
     }
 
-    // Fall back to sequential global index if not found by question number
     if (!foundInKey && idx >= 0 && allAnswersList[idx] !== undefined) {
       mappedAns = allAnswersList[idx] || "";
       foundInKey = true;
     }
 
-    const resolvedAns = mappedAns || q.correctAnswer || "Sample Answer";
+    const resolvedAns = cleanAnswerText(mappedAns || q.correctAnswer || "Sample Answer");
 
     if (q.type === "SHORT") {
       q.correctAnswer = resolvedAns;
@@ -7757,28 +7820,26 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
     }
   });
 
-  // If no questions found, create sample ones
   if (questions.length === 0) {
-    questions.push(
-      {
-        id: `q_1_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
-        question: "What is the main topic of this passage?",
-        type: "SHORT",
-        correctAnswer: "The core concept discussed in the text."
-      }
-    );
+    questions.push({
+      id: `q_1_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
+      questionNumber: "1",
+      question: "What is the main concept of this lesson?",
+      type: "SHORT",
+      correctAnswer: "The core concept discussed in the text."
+    });
   }
 
   return {
-    title: title || "Comprehension Lesson",
-    subject: subject || "ENGLISH",
-    gradeLevel: gradeLevel || "Grade 5",
-    unitTitle: unitTitle || "Comprehension Unit",
-    skillFocus: skillFocus || "Reading Comprehension",
-    lifeConnection: lifeConnection || "Connecting stories to real-life understanding.",
+    title: title || unitTitle || "Mathematics & Number Sense",
+    subject: subject || "MATH",
+    gradeLevel: gradeLevel || "Grade 2",
+    unitTitle: unitTitle || title || "Comparing Numbers",
+    skillFocus: skillFocus || "Comparing Numbers & Place Value",
+    lifeConnection: lifeConnection || "Real-world numerical reasoning and comparisons.",
     content,
     questions,
-    duration: 15,
+    duration: 30,
     thumbnailUrl: subject === "MATH" 
       ? "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=300&q=80"
       : "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=300&q=80"
@@ -7810,7 +7871,6 @@ app.post("/api/curriculum/parse", async (req, res) => {
 
     let parsedData: any = null;
     try {
-      // 30 second timeout to avoid infinite hanging if the Gemini API is offline or slow
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Gemini API request timed out after 30s")), 30000)
       );
@@ -7818,20 +7878,18 @@ app.post("/api/curriculum/parse", async (req, res) => {
       const geminiPromise = (async () => {
         const client = getAiClient();
         const response = await client.models.generateContent({
-          model: "gemini-3.5-flash",
-          contents: `Below is the raw text of an educational curriculum document. Please parse it and extract the title, subject, grade level, unit title, skill focus, life connection, content, and the questions correctly mapping MCQs and short answer questions.\n\nRaw Text:\n${rawText}`,
+          model: "gemini-3.8-flash",
+          contents: `Below is the raw text of an educational curriculum document across Grade 1 to O/A levels. Please parse it and extract all metadata and EVERY SINGLE numbered question (e.g. all questions from 1 to 50+) with its corresponding answer.\n\nRaw Text:\n${rawText}`,
           config: {
-            systemInstruction: `You are an expert educational curriculum content parser.
-Map questions accurately, detecting subjects as MATH or ENGLISH. Keep the literal question text EXACTLY as written.
-ALWAYS extract and include the original question number (e.g., "1", "26") into the 'questionNumber' field for every single question.
-For mathematical questions starting with a digit/number (e.g., '1 ten and 2 ones = ______'), DO NOT strip or remove the leading digit (e.g. do not parse it as 'ten and 2 ones'). The digit is part of the question.
-For MCQ questions:
-1. 'options' MUST be an array of clean choice strings (DO NOT include option letter prefixes like 'A.', 'B)', 'C.').
-2. ALWAYS preserve the EXACT order of option choices as they appear in the original document. Do NOT sort, re-order, or shuffle them.
-3. DO NOT include answer lines (e.g., 'Answer: 12' or 'B') or question text inside the options array.
-4. Remove any duplicate options.
-5. 'correctAnswer' MUST be set to the EXACT text of the correct option choice from the options array (or matching the Section 2 Answer Key). NEVER set 'correctAnswer' to 'Sample Answer' for MCQs if choices or answer keys exist.
-Match questions to the Section 2 Answer Key correctly using question numbers. Return only valid JSON conforming to the schema.`,
+            systemInstruction: `You are an expert educational curriculum parser and assessment engineer for the Ejaz Bukhari Method (EBM).
+1. Parse and extract metadata: 'title', 'subject' (strictly 'MATH' or 'ENGLISH'), 'gradeLevel' (e.g., 'Grade 2', 'Grade 4', 'O Level'), 'unitTitle', 'skillFocus', 'lifeConnection', 'content' (the lesson notes or reading passage), and 'duration'.
+2. Extract ALL questions without skipping ANY question from 1 to N (e.g., all 50 questions).
+3. 'questionNumber': ALWAYS extract the original question number (e.g., "1", "11", "50") as a string.
+4. 'question': The exact question text without trailing blank lines like 'Answer: __________'. Keep mathematical expressions like '125 __________ 152' or '245 / 254' intact.
+5. 'type': 'MCQ' if options exist (or comparisons like '245 / 254', 'Write >, <, or =', '456 or 465', 'True/False', 'A/B/C/D'), or 'SHORT' for open written/numerical/symbol responses.
+6. 'options': Array of clean choices without letter prefixes. For 'Write >, <, or =', options are [">", "<", "="]. For '245 / 254', options are ["245", "254"]. For 'Which is greater: 456 or 465?', options are ["456", "465"].
+7. 'correctAnswer': The exact matching correct answer from the Answer Key for that specific questionNumber. Strip trailing periods from simple symbols or numbers (e.g. '<.' becomes '<', '254.' becomes '254').
+Return pure JSON conforming to the schema.`,
             responseMimeType: "application/json",
             responseSchema: {
               type: Type.OBJECT,
@@ -7843,8 +7901,8 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
                 skillFocus: { type: Type.STRING },
                 lifeConnection: { type: Type.STRING },
                 content: { type: Type.STRING },
-                duration: { type: Type.INTEGER, description: "Estimated duration or reading time in minutes (e.g. 20)" },
-                thumbnailUrl: { type: Type.STRING, description: "A high-quality Unsplash image URL related to the topic of the curriculum" },
+                duration: { type: Type.INTEGER, description: "Duration in minutes" },
+                thumbnailUrl: { type: Type.STRING, description: "Unsplash image URL related to the topic" },
                 questions: {
                   type: Type.ARRAY,
                   items: {
@@ -7853,7 +7911,7 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
                       id: { type: Type.STRING },
                       question: { type: Type.STRING },
                       type: { type: Type.STRING, description: "Must be 'MCQ' or 'SHORT'" },
-                      questionNumber: { type: Type.STRING, description: "The original question number from the document (e.g., '1', '26')" },
+                      questionNumber: { type: Type.STRING, description: "Original question number (e.g., '1', '50')" },
                       options: {
                         type: Type.ARRAY,
                         items: { type: Type.STRING }
@@ -7877,6 +7935,19 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
       parsedData = runHeuristicParser(comprehensionText || rawText, answerKeyText || "");
     }
 
+    // Comprehensive fallback if AI returns 0 questions
+    const heuristicData = runHeuristicParser(comprehensionText || rawText, answerKeyText || "");
+    if (!parsedData || !Array.isArray(parsedData.questions) || parsedData.questions.length < (heuristicData.questions?.length || 0)) {
+      if (heuristicData && Array.isArray(heuristicData.questions) && heuristicData.questions.length > 0) {
+        console.log(`Using ${heuristicData.questions.length} questions parsed by heuristic engine.`);
+        parsedData = {
+          ...heuristicData,
+          ...(parsedData || {}),
+          questions: heuristicData.questions
+        };
+      }
+    }
+
     const defaultThumb = parsedData.subject === "MATH" 
       ? "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=300&q=80"
       : "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=300&q=80";
@@ -7889,7 +7960,9 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
         answerKeyPart = parts[1] || "";
       } else {
         const lowerRaw = rawText.toLowerCase();
-        const keyIdx = lowerRaw.lastIndexOf("answer key");
+        const keyIdx = lowerRaw.lastIndexOf("complete answer key") !== -1
+          ? lowerRaw.lastIndexOf("complete answer key")
+          : lowerRaw.lastIndexOf("answer key");
         if (keyIdx !== -1) {
           answerKeyPart = rawText.substring(keyIdx);
         }
@@ -7907,13 +7980,15 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
       for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed) continue;
-
         const lower = trimmed.toLowerCase();
 
-        // Ignore headers / metadata / sections / labels
         if (
+          lower === "complete answer key" ||
           lower === "answer key" ||
           lower === "answers" ||
+          lower.startsWith("subject title:") ||
+          lower.startsWith("unit title:") ||
+          lower.startsWith("level:") ||
           lower.startsWith("###") ||
           lower.startsWith("section") ||
           lower.includes("mcq") ||
@@ -7921,31 +7996,28 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
           lower.includes("multiple-choice") ||
           lower.includes("short answer") ||
           lower.includes("question answer") ||
-          lower.includes("question-answer") ||
           lower.includes("written") ||
-          lower.includes("subjective") ||
-          lower.includes("qa")
+          lower.includes("subjective")
         ) {
           continue;
         }
 
-        // Check if line starts with a number, e.g., "1.", "1)", "Q1:"
         const numMatch = trimmed.match(/^q?(\d+)[\.\):-]\s*(.*)/i);
         if (numMatch) {
           const num = numMatch[1];
-          const ansText = numMatch[2].trim();
+          const rawAnsText = numMatch[2].trim();
+          const ansText = cleanAnswerText(rawAnsText);
           if (ansText) {
             allAnswersMap.set(num, ansText);
             allAnswersList.push(ansText);
             lastNum = num;
           }
         } else {
-          // Fall back to inline question-answer matches
           const rawMatches = [...trimmed.matchAll(/(?:q|question)\s*(\d+)[\.\):\s-]+\s*([^0-9\n,;]+)/gi)];
           const validInlineMatches: { num: string; val: string }[] = [];
           for (const m of rawMatches) {
             const num = m[1];
-            const val = m[2].trim();
+            const val = cleanAnswerText(m[2]);
             const lowerVal = val.toLowerCase();
             const isHeaderWord = lowerVal.includes("grade") || lowerVal.includes("comprehension") || lowerVal.includes("lesson") || lowerVal.includes("answer key") || lowerVal.includes("safety");
             if (val && val.length <= 15 && !isHeaderWord) {
@@ -7960,27 +8032,20 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
               lastNum = m.num;
             }
           } else {
-            // No number match and no inline matches! This is a continuation of the previous answer!
             if (lastNum) {
               const prevAns = allAnswersMap.get(lastNum) || "";
               const updatedAns = prevAns ? `${prevAns} ${trimmed}` : trimmed;
-              allAnswersMap.set(lastNum, updatedAns);
-              
-              // Also update in allAnswersList
+              const cleanedUpdated = cleanAnswerText(updatedAns);
+              allAnswersMap.set(lastNum, cleanedUpdated);
               const listIdx = allAnswersList.indexOf(prevAns);
               if (listIdx !== -1) {
-                allAnswersList[listIdx] = updatedAns;
+                allAnswersList[listIdx] = cleanedUpdated;
               }
             }
           }
         }
       }
     }
-
-    console.log("Parsed Unified Answer Key Map & List:", { 
-      map: Array.from(allAnswersMap.entries()), 
-      list: allAnswersList
-    });
 
     const rawQuestions = parsedData.questions || [];
 
@@ -7990,7 +8055,6 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
       let qOpts = q.options || [];
       let qAns = q.correctAnswer || "";
 
-      // 1. If options are embedded in the question text (e.g. separated by newlines and starting with A, B, C, D)
       if (typeof qText === "string" && qText.includes("\n") && qOpts.length === 0) {
         const qLines = qText.split("\n");
         const newTextLines: string[] = [];
@@ -8013,7 +8077,6 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
         }
       }
 
-      // 1.5 Split any options that are concatenated / inline (e.g., ["A. Option 1B. Option 2C. Option 3"])
       if (Array.isArray(qOpts) && qOpts.length > 0) {
         let splitOpts: string[] = [];
         for (const opt of qOpts) {
@@ -8032,7 +8095,6 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
         qOpts = splitOpts;
       }
 
-      // 2. Clean up option prefixes and remove duplicate options
       if (Array.isArray(qOpts) && qOpts.length > 0) {
         qOpts = qOpts
           .map((opt: any) => {
@@ -8040,7 +8102,7 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
             let trimmed = opt.trim();
             if (trimmed.toLowerCase().startsWith("answer:") || trimmed.toLowerCase().startsWith("correct answer:")) {
               if (!qAns || qAns.toLowerCase() === "sample answer") {
-                qAns = trimmed.replace(/^(correct\s*answer|answer)\s*:\s*/i, "").trim();
+                qAns = cleanAnswerText(trimmed);
               }
               return null;
             }
@@ -8049,11 +8111,8 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
           })
           .filter(Boolean) as string[];
 
-        // Remove duplicates while preserving order
         qOpts = Array.from(new Set(qOpts));
 
-        // If there are multiple real options (e.g., ["9", "12", "14"]),
-        // filter out any trailing single-letter options like "B" that were accidentally appended
         if (qOpts.length > 2) {
           const nonLetterOpts = qOpts.filter(o => !/^[A-F]$/i.test(o));
           if (nonLetterOpts.length >= 2) {
@@ -8068,7 +8127,6 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
         qOpts = [];
       }
 
-      // 2.5 Extract numeric prefix from the question text (e.g. "1. What is...", "Q1:")
       let qNum: string | null = q.questionNumber ? String(q.questionNumber).trim() : null;
       if (!qNum && typeof qText === "string") {
         const numMatch = qText.trim().match(/^q?(\d+)[\.\):\s-]+/i);
@@ -8077,17 +8135,13 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
         }
       }
 
-      // 3. Resolve correct answer for MCQ or SHORT
       let mappedAns = "";
       let foundInKey = false;
-      if (qNum) {
-        if (allAnswersMap.has(qNum)) {
-          mappedAns = allAnswersMap.get(qNum) || "";
-          foundInKey = true;
-        }
+      if (qNum && allAnswersMap.has(qNum)) {
+        mappedAns = allAnswersMap.get(qNum) || "";
+        foundInKey = true;
       }
 
-      // Fall back to sequential global list if not found by question number
       if (!foundInKey && idx >= 0 && allAnswersList[idx] !== undefined) {
         mappedAns = allAnswersList[idx] || "";
         foundInKey = true;
@@ -8095,9 +8149,11 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
 
       const isPlaceholder = !qAns || qAns.trim() === "" || qAns.trim().toLowerCase() === "sample answer";
       if (foundInKey && mappedAns && mappedAns.toLowerCase() !== "sample answer") {
-        qAns = mappedAns;
+        qAns = cleanAnswerText(mappedAns);
       } else if (isPlaceholder && mappedAns) {
-        qAns = mappedAns;
+        qAns = cleanAnswerText(mappedAns);
+      } else if (qAns) {
+        qAns = cleanAnswerText(qAns);
       }
 
       if (qType === "MCQ") {
@@ -8107,6 +8163,7 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
       const baseId = q.id || `q_${idx + 1}`;
       return {
         id: `${baseId}_${Date.now()}_${idx}_${Math.floor(Math.random() * 1000000)}`,
+        questionNumber: qNum || String(idx + 1),
         question: typeof qText === "string" ? qText.trim() : "",
         type: qType,
         options: qType === "MCQ" ? qOpts : [],
@@ -8116,14 +8173,14 @@ Match questions to the Section 2 Answer Key correctly using question numbers. Re
 
     const newItem = {
       id: "curr_" + Date.now(),
-      title: parsedData.title || filename || "Untitled Curriculum",
-      subject: parsedData.subject || "ENGLISH",
+      title: parsedData.title || filename || "Mathematics Module",
+      subject: parsedData.subject || "MATH",
       gradeLevel: parsedData.gradeLevel || "Grade 2",
       unitTitle: parsedData.unitTitle || "",
       skillFocus: parsedData.skillFocus || "",
       lifeConnection: parsedData.lifeConnection || "",
       content: parsedData.content || "",
-      duration: parsedData.duration || 20,
+      duration: parsedData.duration || 30,
       thumbnailUrl: parsedData.thumbnailUrl || defaultThumb,
       questions: uniqueQuestions,
     };

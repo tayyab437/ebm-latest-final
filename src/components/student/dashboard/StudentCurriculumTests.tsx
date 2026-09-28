@@ -136,6 +136,16 @@ export function StudentCurriculumTests() {
     slides: []
   });
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const autoAdvanceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clear auto-advance timer on math question change
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceTimeoutRef.current) {
+        clearTimeout(autoAdvanceTimeoutRef.current);
+      }
+    };
+  }, [currentMathQuestionIndex]);
 
   // Fetch math test slider settings
   useEffect(() => {
@@ -708,6 +718,11 @@ export function StudentCurriculumTests() {
                                       alert("Please enter or select an answer first.");
                                       return;
                                     }
+
+                                    if (autoAdvanceTimeoutRef.current) {
+                                      clearTimeout(autoAdvanceTimeoutRef.current);
+                                    }
+
                                     const correct = (q.correctAnswer || "").trim();
                                     const isCorrect = correct ? userAns.toLowerCase() === correct.toLowerCase() : true;
                                     setCheckedQuestions(prev => ({
@@ -716,12 +731,19 @@ export function StudentCurriculumTests() {
                                         isChecked: true,
                                         isCorrect: isCorrect,
                                         feedback: isCorrect 
-                                          ? "✓ Correct! Excellent mathematical reasoning." 
+                                          ? "✓ Correct! Excellent mathematical reasoning. Moving to next question..." 
                                           : correct 
                                             ? `✗ Incorrect. The model answer is "${correct}". Try recalculating!`
-                                            : "✓ Answer evaluated and saved!"
+                                            : "✗ Incorrect answer. Try recalculating!"
                                       }
                                     }));
+
+                                    // If correct, auto advance to next question after 1 second
+                                    if (isCorrect) {
+                                      autoAdvanceTimeoutRef.current = setTimeout(() => {
+                                        setCurrentMathQuestionIndex((prev) => (prev + 1) % questionsList.length);
+                                      }, 1000);
+                                    }
                                   }}
                                   className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95"
                                 >
@@ -730,6 +752,9 @@ export function StudentCurriculumTests() {
 
                                 <button
                                   onClick={() => {
+                                    if (autoAdvanceTimeoutRef.current) {
+                                      clearTimeout(autoAdvanceTimeoutRef.current);
+                                    }
                                     setCurrentMathQuestionIndex((prev) => (prev + 1) % questionsList.length);
                                   }}
                                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer border border-slate-200"
