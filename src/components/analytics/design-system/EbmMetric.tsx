@@ -62,8 +62,7 @@ export const EbmMetric: React.FC<EbmMetricProps> = ({
       )}
       <div className="flex items-baseline space-x-1">
         <span 
-          style={{ fontVariantNumeric: "tabular-nums" }}
-          className={`tracking-tight ${getSizeClasses()} ${getVariantClasses()} ${valueClassName}`}
+          className={`tracking-tight tabular-nums ${getSizeClasses()} ${getVariantClasses()} ${valueClassName}`}
         >
           {value}
         </span>

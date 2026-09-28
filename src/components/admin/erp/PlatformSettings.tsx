@@ -990,7 +990,7 @@ export function PlatformSettings() {
                                   : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
                               }`}
                             >
-                              <img src={preset.url} alt="" className="h-3.5 w-3.5 object-contain" referrerPolicy="no-referrer" />
+                              <img src={preset.url} alt={preset.name || "Favicon preset icon"} className="h-3.5 w-3.5 object-contain" referrerPolicy="no-referrer" />
                               <span>{preset.name}</span>
                             </button>
                           ))}
@@ -1106,7 +1106,7 @@ export function PlatformSettings() {
                                   return <IconComponent className="h-3 w-3 text-[#00a3e0]" />;
                                 })()
                               ) : localLogoImageUrl ? (
-                                <img src={localLogoImageUrl} alt="" className="h-full w-full object-contain bg-transparent" referrerPolicy="no-referrer" />
+                                <img src={localLogoImageUrl} alt="EBM Platform Logo Preview" className="h-full w-full object-contain bg-transparent" referrerPolicy="no-referrer" />
                               ) : (
                                 <span className="text-[7px] font-bold text-[#00a3e0]">EBM</span>
                               )}
@@ -1942,7 +1942,7 @@ export function PlatformSettings() {
                         <h4 className="text-lg font-black tracking-tight">{welcomeTitle}</h4>
                         
                         {/* Wavy bottom border accent */}
-                        <div className="absolute bottom-0 left-0 right-0 h-3 bg-white" style={{ borderRadius: '50% 50% 0 0 / 100% 100% 0 0' }} />
+                        <div className="absolute bottom-0 left-0 right-0 h-3 bg-white rounded-t-[50%_100%]" />
                       </div>
 
                       {/* Modal Body */}

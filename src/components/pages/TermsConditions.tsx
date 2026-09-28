@@ -34,8 +34,8 @@ export const TermsConditions: React.FC = () => {
   return (
     <article className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 lg:py-20 text-slate-800 dark:text-slate-200 transition-colors duration-300">
       <SEOHead 
-        title="Terms and Conditions | EBM Digital Learning Platform"
-        description="Review the terms of service, acceptable use policies, and user agreements for the EBM platform."
+        title="Terms and Conditions of Service | EBM Learning Ecosystem"
+        description="Review the terms of service, acceptable use policies, code of conduct, and educational service agreements governing the Ejaz Bukhari Method digital platform."
         canonicalUrl="https://ejazbukharimethod.com/terms"
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

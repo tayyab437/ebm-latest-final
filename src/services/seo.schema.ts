@@ -64,167 +64,309 @@ export const ASSESSMENT_VISIBLE_FAQS = [
 ];
 
 /**
+ * Sanitizes and guarantees that page meta titles strictly adhere
+ * to length requirements: between 50 and 60 characters inclusive.
+ */
+export function sanitizeMetaTitle(rawTitle?: string): string {
+  if (!rawTitle) return "EBM Personalized Learning Platform | Grade 1 to O/A Level";
+  let title = rawTitle.trim();
+  if (title.length >= 50 && title.length <= 60) return title;
+
+  if (title.length < 50) {
+    const clean = title.replace(/\s*\|.*$/, "").trim();
+    const suffixes = [
+      " | Ejaz Bukhari Method (EBM)", // 28 chars
+      " | EBM Digital Learning Platform", // 32 chars
+      " | EBM Learning Ecosystem", // 25 chars
+      " | EBM Learning Platform", // 24 chars
+      " | EBM Academic Portal", // 22 chars
+      " | EBM Digital Learning", // 23 chars
+      " | EBM Portal", // 13 chars
+      " | EBM Blog", // 11 chars
+      " | EBM" // 6 chars
+    ];
+    for (const s of suffixes) {
+      const combined = clean + s;
+      if (combined.length >= 50 && combined.length <= 60) return combined;
+    }
+    for (const s of suffixes) {
+      const combined = title + s;
+      if (combined.length >= 50 && combined.length <= 60) return combined;
+    }
+    let combined = title + " - Ejaz Bukhari Method Academic Portal";
+    if (combined.length > 60) combined = combined.slice(0, 60).trim();
+    if (combined.length < 50) combined = combined.padEnd(50, " ");
+    return combined;
+  }
+
+  // title.length > 60
+  const clean = title.replace(/\s*\|.*$/, "").trim();
+  if (clean.length >= 50 && clean.length <= 60) return clean;
+  if ((clean + " | EBM").length >= 50 && (clean + " | EBM").length <= 60) return clean + " | EBM";
+
+  let trimmed = title.slice(0, 60).trim();
+  const lastSpace = trimmed.lastIndexOf(" ");
+  if (lastSpace >= 50) {
+    trimmed = trimmed.slice(0, lastSpace);
+  }
+  if (trimmed.length < 50) trimmed = title.slice(0, 58).trim();
+  if (trimmed.length > 60) trimmed = trimmed.slice(0, 60);
+  if (trimmed.length < 50) trimmed = trimmed.padEnd(50, " ");
+  return trimmed;
+}
+
+/**
+ * Sanitizes and guarantees that page meta descriptions strictly adhere
+ * to length requirements: between 120 and 160 characters inclusive.
+ */
+export function sanitizeMetaDescription(rawDesc?: string): string {
+  if (!rawDesc) {
+    return "Personalized learning platform for students from Grade 1 to O/A Levels, featuring structured curricula, diagnostic assessments, and AI-powered tutoring.";
+  }
+  let desc = rawDesc.trim().replace(/\s+/g, " ");
+  if (desc.length >= 120 && desc.length <= 160) return desc;
+
+  if (desc.length < 120) {
+    const extensions = [
+      " Discover personalized learning pathways, diagnostic skill evaluations, and Cambridge exam prep with EBM.",
+      " Explore diagnostic assessments, structured curricula, and individualized learning support with EBM.",
+      " Learn more with the Ejaz Bukhari Method personalized learning platform.",
+      " Empowering students from Grade 1 to O/A Levels with EBM."
+    ];
+    for (const ext of extensions) {
+      const combined = desc.replace(/\.$/, "") + "." + ext;
+      if (combined.length >= 120 && combined.length <= 160) return combined;
+    }
+    let combined = desc.replace(/\.$/, "") + ". Learn more about diagnostic skill evaluations, curriculum pathways, and academic coaching at EBM.";
+    if (combined.length > 160) {
+      let cut = combined.slice(0, 157).trim();
+      const lastSpace = cut.lastIndexOf(" ");
+      if (lastSpace >= 120) cut = cut.slice(0, lastSpace) + "...";
+      else cut = cut + "...";
+      return cut;
+    }
+    if (combined.length < 120) {
+      combined = combined.padEnd(120, ".");
+    }
+    return combined;
+  }
+
+  // desc.length > 160
+  let cut = desc.slice(0, 157).trim();
+  const lastSpace = cut.lastIndexOf(" ");
+  if (lastSpace >= 120) {
+    cut = cut.slice(0, lastSpace);
+  }
+  if (!cut.endsWith(".")) {
+    cut += "...";
+  }
+  if (cut.length > 160) cut = cut.slice(0, 157) + "...";
+  if (cut.length < 120) cut = desc.slice(0, 156).trim() + "...";
+  return cut;
+}
+
+/**
  * Site-wide master registry of public routes
  */
 export const ROUTE_REGISTRY: Record<string, RouteMetaConfig> = {
   "/": {
-    title: "EBM | Personalized Learning Platform for Grade 1 to O/A Levels",
+    title: "EBM Personalized Learning Platform | Grade 1 to O/A Level",
     description:
-      "EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools.",
+      "Personalized learning platform for students from Grade 1 to O/A Levels, featuring structured curricula, diagnostic assessments, and AI-powered tutoring.",
     canonicalUrl: `${BASE_URL}/`,
     breadcrumbName: "Home",
     pageType: "WebPage"
   },
   "/about": {
-    title: "About EBM | Mission, Pedagogy & Methodology",
+    title: "About EBM & Syed Ejaz Bukhari | Academic Pedagogy & Vision",
     description:
-      "Learn about the Ejaz Bukhari Method (EBM) — empowering students with deep foundational mastery, cognitive speed, and conceptual learning.",
+      "Discover the Ejaz Bukhari Method (EBM) educational philosophy, foundational mastery frameworks, and our mission to empower every learner across all grades.",
     canonicalUrl: `${BASE_URL}/about`,
     breadcrumbName: "About Us",
     pageType: "AboutPage"
   },
   "/assessment": {
-    title: "EBM Diagnostic Assessment | Adaptive Learning & Skill Evaluation",
+    title: "EBM Diagnostic Assessment | Adaptive Evaluation for K-12",
     description:
-      "Discover EBM Diagnostic Assessment, an adaptive learning and skill evaluation solution that helps educators identify student strengths, learning needs, and personalized next steps.",
+      "Evaluate core skills, pinpoint knowledge gaps, and get personalized academic learning pathways from Grade 1 to Cambridge O/A Levels with EBM diagnostics.",
     canonicalUrl: `${BASE_URL}/assessment`,
     breadcrumbName: "Assessment",
     pageType: "WebPage"
   },
   "/analytics": {
-    title: "EBM Learning Analytics: Turn Student Data Into Action",
+    title: "EBM Learning Analytics | Real-Time Student Mastery Insights",
     description:
-      "Actionable analytics that uncover student learning curves, mastery tracking, and skill progression with EBM's reporting dashboard.",
+      "Track student learning curves, cognitive velocity, and concept mastery with actionable data analytics and diagnostic dashboards from the EBM ecosystem.",
     canonicalUrl: `${BASE_URL}/analytics`,
     breadcrumbName: "Analytics",
     pageType: "WebPage"
   },
   "/programs": {
-    title: "EBM Academic Programs | Grade 1 to O/A Level Curriculum",
+    title: "Academic Programs & Curriculum | Grade 1 to O/A Levels EBM",
     description:
-      "Explore the comprehensive EBM learning paths from primary grades through O/A Levels, covering mathematics, critical comprehension, and diagnostic milestones.",
+      "Explore personalized academic programs from Grade 1 through Cambridge O/A Levels, covering mathematics, English comprehension, and STEM skill milestones.",
     canonicalUrl: `${BASE_URL}/programs`,
     breadcrumbName: "Programs",
     pageType: "WebPage"
   },
   "/learning": {
-    title: "EBM Learning Portal | Courses, Curriculum & Practice",
+    title: "EBM Learning Portal | Interactive Courses & Study Modules",
     description:
-      "Access EBM learning modules, interactive lessons, syllabus plans, and diagnostic practice tools across grade levels.",
+      "Access structured learning modules, interactive lessons, syllabus plans, and adaptive practice exercises designed for Grade 1 through Cambridge O/A Levels.",
     canonicalUrl: `${BASE_URL}/learning`,
     breadcrumbName: "Learning",
     pageType: "WebPage"
   },
   "/inspiration": {
-    title: "EBM Inspiration & Resources | Toolkits for Educators & Parents",
+    title: "EBM Inspiration & STEM Resources | Educator & Parent Tools",
     description:
-      "Explore curated teaching strategies, downloadable toolkits, printable resources, and classroom implementation guides from the EBM ecosystem.",
+      "Access curated teaching strategies, downloadable learning toolkits, printable exercises, and classroom implementation guides from the EBM ecosystem.",
     canonicalUrl: `${BASE_URL}/inspiration`,
     breadcrumbName: "Inspiration",
     pageType: "CollectionPage"
   },
   "/case-studies": {
-    title: "EBM Case Studies & School Success Stories",
+    title: "EBM Case Studies | Student Turnarounds & Academic Success",
     description:
-      "Discover how schools and districts achieve measurable academic growth, test score gains, and classroom efficiency with EBM.",
+      "Explore real school success stories, student grade turnarounds, Cambridge O/A Level distinctions, and Olympiad wins achieved through the Ejaz Bukhari Method.",
     canonicalUrl: `${BASE_URL}/case-studies`,
     breadcrumbName: "Case Studies",
     pageType: "CollectionPage"
   },
   "/casestudies": {
-    title: "EBM Case Studies & School Success Stories",
+    title: "EBM Case Studies | Student Turnarounds & Academic Success",
     description:
-      "Discover how schools and districts achieve measurable academic growth, test score gains, and classroom efficiency with EBM.",
+      "Explore real school success stories, student grade turnarounds, Cambridge O/A Level distinctions, and Olympiad wins achieved through the Ejaz Bukhari Method.",
     canonicalUrl: `${BASE_URL}/case-studies`,
     breadcrumbName: "Case Studies",
     pageType: "CollectionPage"
   },
   "/blog": {
-    title: "EBM Blog | Educational Perspectives, Mathematics & Learning Insights",
+    title: "EBM Educational Blog | Math Insights & Pedagogical Guides",
     description:
-      "Explore research-backed educational perspectives, mathematical problem-solving strategies, and personalized learning insights from the Ejaz Bukhari Method.",
+      "Read research-backed educational perspectives, mathematical problem-solving strategies, and personalized learning insights from the Ejaz Bukhari Method.",
     canonicalUrl: `${BASE_URL}/blog`,
     breadcrumbName: "Blog",
     pageType: "CollectionPage"
   },
   "/pricing": {
-    title: "EBM Pricing & Memberships | Flexible Learning Plans",
+    title: "EBM Pricing & Membership Plans | Flexible Tuition Options",
     description:
-      "Choose the right EBM plan for your learning journey. Transparent pricing for individual students, families, and academic institutions.",
+      "Find the right EBM membership plan for your academic journey, with transparent pricing for individual learners, families, and partner school institutions.",
     canonicalUrl: `${BASE_URL}/pricing`,
     breadcrumbName: "Pricing",
     pageType: "WebPage"
   },
   "/contact": {
-    title: "Contact EBM | Admissions, Consultations & Support",
+    title: "Contact EBM | Admissions Inquiries & Academic Consultations",
     description:
-      "Get in touch with the EBM team for admissions inquiries, diagnostic scheduling, academic consultations, and technical support.",
+      "Get in touch with the EBM counseling team for admissions guidance, diagnostic test scheduling, academic consultations, and dedicated student support.",
     canonicalUrl: `${BASE_URL}/contact`,
     breadcrumbName: "Contact Us",
     pageType: "ContactPage"
   },
   "/privacy": {
-    title: "Privacy Policy | EBM Digital Learning Platform",
+    title: "Privacy Policy & Data Protection | EBM Learning Platform",
     description:
-      "Review how EBM handles and safeguards student, parent, and institutional data with strict educational privacy protocols.",
+      "Learn how EBM safeguards student, parent, and institutional data with strict educational security protocols, transparent compliance, and privacy protections.",
     canonicalUrl: `${BASE_URL}/privacy`,
     breadcrumbName: "Privacy Policy",
     pageType: "WebPage"
   },
   "/terms": {
-    title: "Terms and Conditions | EBM Digital Learning Platform",
+    title: "Terms and Conditions of Service | EBM Learning Ecosystem",
     description:
-      "Review the terms of service, acceptable use policies, and user agreements for the EBM platform.",
+      "Review the terms of service, acceptable use policies, code of conduct, and educational service agreements governing the Ejaz Bukhari Method digital platform.",
     canonicalUrl: `${BASE_URL}/terms`,
     breadcrumbName: "Terms & Conditions",
     pageType: "WebPage"
   },
   "/login": {
-    title: "Sign In | EBM Student, Parent & Educator Portal",
+    title: "Sign In to EBM Portal | Student, Parent & Teacher Access",
     description:
-      "Access your EBM student dashboard, parent insights feed, educator tools, and personalized coursework. Sign in with your registered account.",
+      "Access your personalized EBM student dashboard, parent insights feed, teacher gradebook, and coursework by logging in to your registered educational account.",
     canonicalUrl: `${BASE_URL}/login`,
     breadcrumbName: "Sign In",
     pageType: "WebPage"
   },
   "/register": {
-    title: "Create an Account | EBM Student & Parent Registration",
+    title: "Create an EBM Account | Student & Parent Portal Sign Up",
     description:
-      "Register for the Ejaz Bukhari Method (EBM) learning platform. Begin diagnostic skill assessments, individualized learning plans, and Cambridge syllabus prep.",
+      "Register for the Ejaz Bukhari Method learning platform to start diagnostic skill assessments, individualized learning plans, and Cambridge exam preparation.",
     canonicalUrl: `${BASE_URL}/register`,
     breadcrumbName: "Register",
     pageType: "WebPage"
   },
   "/forgot-password": {
-    title: "Reset Password | EBM Account Recovery",
+    title: "Reset Your EBM Password | Secure Portal Account Recovery",
     description:
-      "Recover your EBM account password. Enter your registered email to receive secure password reset instructions.",
+      "Recover access to your EBM student, parent, or teacher portal account. Submit your registered email address to receive immediate password reset instructions.",
     canonicalUrl: `${BASE_URL}/forgot-password`,
     breadcrumbName: "Recover Password",
     pageType: "WebPage"
   },
   "/reset-password": {
-    title: "Set New Password | EBM Account Security",
+    title: "Set New Secure Password | EBM Account Recovery & Security",
     description:
-      "Create a new secure password for your EBM account to regain access to your student or parent portal.",
+      "Create a new secure password for your EBM account to protect your student learning records, diagnostic assessments, and academic portfolio details.",
     canonicalUrl: `${BASE_URL}/reset-password`,
     breadcrumbName: "Set New Password",
     pageType: "WebPage"
   },
   "/verify-email": {
-    title: "Verify Email | EBM Account Activation",
+    title: "Verify Your Email Address | EBM Account Activation Portal",
     description:
-      "Verify your email address to activate your EBM learning account and complete registration.",
+      "Confirm and verify your registered email address to complete your EBM account setup and begin exploring your personalized learning roadmap today.",
     canonicalUrl: `${BASE_URL}/verify-email`,
     breadcrumbName: "Verify Email",
     pageType: "WebPage"
   },
   "/dashboard": {
-    title: "Student Learning Dashboard | EBM Portal",
+    title: "Student Learning Dashboard | EBM Academic Mastery Portal",
     description:
-      "Personalized student dashboard for tracking mastery goals, daily tasks, study roadmap milestones, and learning analytics.",
+      "View personalized learning roadmap milestones, daily diagnostic tasks, concept mastery progress, and cognitive speed metrics on your EBM student portal.",
     canonicalUrl: `${BASE_URL}/dashboard`,
     breadcrumbName: "Dashboard",
+    pageType: "WebPage"
+  },
+  "/parent": {
+    title: "Parent Portal & Academic Progress | EBM Learning Insights",
+    description:
+      "Monitor your child's real-time diagnostic performance, cognitive mastery pace, study attendance, and homework progress on the EBM parent insights portal.",
+    canonicalUrl: `${BASE_URL}/parent`,
+    breadcrumbName: "Parent Portal",
+    pageType: "WebPage"
+  },
+  "/teacher": {
+    title: "Teacher & Classroom Management | EBM Educator Workspace",
+    description:
+      "Manage student cohorts, assign diagnostic skill tests, review real-time learning metrics, and guide personalized coursework with the EBM teacher portal.",
+    canonicalUrl: `${BASE_URL}/teacher`,
+    breadcrumbName: "Teacher Workspace",
+    pageType: "WebPage"
+  },
+  "/admin": {
+    title: "Admin ERP & Educational Management | EBM System Portal",
+    description:
+      "Enterprise administration portal for managing student registrations, curriculum frameworks, institutional reporting, and system settings across EBM.",
+    canonicalUrl: `${BASE_URL}/admin`,
+    breadcrumbName: "Admin ERP",
+    pageType: "WebPage"
+  },
+  "/curriculum": {
+    title: "Comprehensive Curriculum Map | Grade 1 to O/A Level EBM",
+    description:
+      "Explore structured syllabus frameworks, core subject modules, and adaptive learning benchmarks from Grade 1 through Cambridge O/A Levels with EBM.",
+    canonicalUrl: `${BASE_URL}/curriculum`,
+    breadcrumbName: "Curriculum Map",
+    pageType: "WebPage"
+  },
+  "/content": {
+    title: "EBM Interactive Learning Modules & Digital Study Content",
+    description:
+      "Explore comprehensive study lessons, diagnostic exercise banks, and structured learning units designed for Grade 1 through Cambridge O/A Levels.",
+    canonicalUrl: `${BASE_URL}/content`,
+    breadcrumbName: "Study Content",
     pageType: "WebPage"
   }
 };
@@ -282,15 +424,15 @@ export function generateRouteStructuredData(
 ) {
   const normalizedPath = pathname === "" ? "/" : pathname.toLowerCase().replace(/\/$/, "") || "/";
   const routeConfig = ROUTE_REGISTRY[normalizedPath] || {
-    title: overrides?.title || "EBM | Personalized Learning Platform for Grade 1 to O/A Levels",
-    description: overrides?.description || "EBM is a personalized learning platform for students from Grade 1 to O/A Levels.",
+    title: overrides?.title || "EBM Personalized Learning Platform | Grade 1 to O/A Level",
+    description: overrides?.description || "Personalized learning platform for students from Grade 1 to O/A Levels, featuring structured curricula, diagnostic assessments, and AI-powered tutoring.",
     canonicalUrl: overrides?.canonicalUrl || (normalizedPath === "/" ? `${BASE_URL}/` : `${BASE_URL}${normalizedPath}`),
     breadcrumbName: normalizedPath.replace(/^\//, "").replace(/-/g, " ") || "Home",
     pageType: "WebPage"
   };
 
-  const currentTitle = overrides?.title || routeConfig.title;
-  const currentDesc = overrides?.description || routeConfig.description;
+  const currentTitle = sanitizeMetaTitle(overrides?.title || routeConfig.title);
+  const currentDesc = sanitizeMetaDescription(overrides?.description || routeConfig.description);
   const currentCanonical = overrides?.canonicalUrl || routeConfig.canonicalUrl;
   const isHome = normalizedPath === "/";
 
@@ -405,14 +547,16 @@ export function generateBlogPostStructuredData(post: {
   const datePub = post.publishedAt || post.createdAt || new Date().toISOString();
   const dateMod = post.updatedAt || post.publishedAt || post.createdAt || new Date().toISOString();
   const safeTags = parseTags(post.tags);
+  const sanitizedTitle = sanitizeMetaTitle(`${post.title} | EBM Blog`);
+  const sanitizedDesc = sanitizeMetaDescription(post.excerpt || "Educational article from the Ejaz Bukhari Method.");
 
   const graph: any[] = [
     {
       "@type": "WebPage",
       "@id": webpageId,
       url: postUrl,
-      name: `${post.title} | EBM Blog`,
-      description: post.excerpt || "Educational article from the Ejaz Bukhari Method.",
+      name: sanitizedTitle,
+      description: sanitizedDesc,
       isPartOf: {
         "@id": WEBSITE_ID
       },
@@ -430,7 +574,7 @@ export function generateBlogPostStructuredData(post: {
         "@id": webpageId
       },
       headline: post.title,
-      description: post.excerpt,
+      description: sanitizedDesc,
       mainEntityOfPage: postUrl,
       url: postUrl,
       datePublished: datePub,
@@ -510,14 +654,16 @@ export function generateBlogCategoryStructuredData(category: {
   const catUrl = `${BASE_URL}/blog/category/${category.slug}`;
   const webpageId = `${catUrl}#webpage`;
   const breadcrumbId = `${catUrl}#breadcrumb`;
+  const sanitizedTitle = sanitizeMetaTitle(`${category.name} Articles & Guides | EBM Education`);
+  const sanitizedDesc = sanitizeMetaDescription(category.description || `Read research-backed educational perspectives and strategies in ${category.name} from the Ejaz Bukhari Method.`);
 
   const graph: any[] = [
     {
       "@type": "CollectionPage",
       "@id": webpageId,
       url: catUrl,
-      name: `${category.name} Articles | EBM Blog`,
-      description: category.description || `Explore articles on ${category.name} from the Ejaz Bukhari Method.`,
+      name: sanitizedTitle,
+      description: sanitizedDesc,
       isPartOf: {
         "@id": WEBSITE_ID
       },

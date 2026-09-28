@@ -121,7 +121,7 @@ export function LiveSidebar({ currentView, setCurrentView }: LiveSidebarProps) {
             <div className="px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
               <div className="w-6 h-6 rounded-full overflow-hidden bg-emerald-500 flex items-center justify-center">
                 {workspaceUser.photoURL ? (
-                  <img src={workspaceUser.photoURL} alt="" className="w-full h-full object-cover" />
+                  <img src={workspaceUser.photoURL} alt={workspaceUser.displayName || "Workspace user avatar"} className="w-full h-full object-cover" />
                 ) : (
                   <Users className="h-3 w-3 text-white" />
                 )}

@@ -1939,7 +1939,7 @@ export function CurriculumManager() {
                             <div key={q.id} className="p-4 rounded-xl border border-amber-200 bg-amber-50/15 space-y-3 shadow-xs">
                               <div className="flex items-center justify-between border-b border-amber-100 pb-1.5 mb-1">
                                 <span className="text-[10px] font-bold text-amber-800 uppercase flex items-center gap-1">
-                                  <Sparkle className="h-3.5 w-3.5 text-amber-500 animate-spin" style={{ animationDuration: '3s' }} />
+                                  <Sparkle className="h-3.5 w-3.5 text-amber-500 animate-spin [animation-duration:3s]" />
                                   Editing Question {qIdx + 1}
                                 </span>
                                 <span className="text-[10px] font-medium text-amber-600/80">Inline Editor</span>
@@ -2131,7 +2131,7 @@ export function CurriculumManager() {
                   {/* Sub-Editor Panel */}
                   {editingQuestionId ? (
                     <div className="p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center text-xs text-slate-500 font-medium py-6">
-                      <Sparkle className="h-5 w-5 text-amber-500 animate-spin mx-auto mb-1" style={{ animationDuration: '3s' }} />
+                      <Sparkle className="h-5 w-5 text-amber-500 animate-spin [animation-duration:3s] mx-auto mb-1" />
                       Currently editing Question <span className="font-bold text-slate-700">#{formQuestions.findIndex(q => q.id === editingQuestionId) + 1}</span> above.
                       <p className="text-[11px] text-slate-400 mt-0.5">Please save or cancel your inline edits to add a new question.</p>
                     </div>

@@ -1,0 +1,17 @@
+{
+  "name": "EBM Cognitive Velocity & Analytics Engine",
+  "identifier": "urn:air:ejazbukharimethod.com:analytics:learning-velocity",
+  "description": "Predictive learning analytics agent calculating student cognitive velocity, retention decay, and personalized study pacing recommendations.",
+  "version": "1.0.0",
+  "homepage": "https://ejazbukharimethod.com/analytics",
+  "capabilities": [
+    "CognitiveVelocityTracking",
+    "RetentionModeling",
+    "PacingRecommendations"
+  ],
+  "contact": {
+    "organization": "Ejaz Bukhari Method (EBM)",
+    "email": "admin@ebm.edu",
+    "url": "https://ejazbukharimethod.com/contact"
+  }
+}

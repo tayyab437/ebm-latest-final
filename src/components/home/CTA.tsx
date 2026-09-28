@@ -23,7 +23,7 @@ export default function CTA({ onStartToday, onContactUs }: CTAProps) {
       <div className="absolute inset-0 z-0 opacity-20 select-none pointer-events-none mix-blend-lighten">
         <img 
           src={satinBg} 
-          alt="" 
+          alt="EBM Personalized Learning Platform decorative visual background" 
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />

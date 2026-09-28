@@ -147,8 +147,8 @@ export function InspirationPage() {
   return (
     <div className="bg-[#f8fafc] dark:bg-slate-950 min-h-screen font-sans pb-16 transition-colors duration-200">
       <SEOHead 
-        title="EBM Inspiration & Resources | Toolkits for Educators & Parents"
-        description="Explore curated teaching strategies, downloadable toolkits, printable resources, and classroom implementation guides from the EBM ecosystem."
+        title="EBM Inspiration & STEM Resources | Educator & Parent Tools"
+        description="Access curated teaching strategies, downloadable learning toolkits, printable exercises, and classroom implementation guides from the EBM ecosystem."
         canonicalUrl="https://ejazbukharimethod.com/inspiration"
       />
       {/* ================= HEADER SECTION ================= */}

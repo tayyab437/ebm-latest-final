@@ -4,9 +4,17 @@ Allow: /llms.txt
 Allow: /llms-full.txt
 Allow: /*/llms.txt
 Allow: /*/llms-full.txt
+Allow: /ai-catalog.json
+Allow: /.well-known/ai-catalog.json
+Allow: /ard.json
+Allow: /.well-known/ard.json
+Allow: /api/ai/
 Disallow: /dashboard/
 Disallow: /admin/
 Disallow: /teacher/
 Disallow: /parent/
 
 Sitemap: https://ejazbukharimethod.com/sitemap.xml
+Agentmap: https://ejazbukharimethod.com/.well-known/ai-catalog.json
+Agentmap: https://ejazbukharimethod.com/.well-known/ard.json
+

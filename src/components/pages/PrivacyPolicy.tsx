@@ -34,8 +34,8 @@ export const PrivacyPolicy: React.FC = () => {
   return (
     <article className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 lg:py-20 text-slate-800 dark:text-slate-200 transition-colors duration-300">
       <SEOHead 
-        title="Privacy Policy | EBM Digital Learning Platform"
-        description="Review how EBM handles and safeguards student, parent, and institutional data with strict educational privacy protocols."
+        title="Privacy Policy & Data Protection | EBM Learning Platform"
+        description="Learn how EBM safeguards student, parent, and institutional data with strict educational security protocols, transparent compliance, and privacy protections."
         canonicalUrl="https://ejazbukharimethod.com/privacy"
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

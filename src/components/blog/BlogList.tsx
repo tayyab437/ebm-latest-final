@@ -69,8 +69,8 @@ export function BlogList() {
       
       {/* Route-Aware SEO & Structured Data */}
       <SEOHead
-        title="EBM Blog | Educational Perspectives, Mathematics & Learning Insights"
-        description="Explore research-backed educational perspectives, mathematical problem-solving strategies, and personalized learning insights from the Ejaz Bukhari Method."
+        title="EBM Educational Blog | Math Insights & Pedagogical Guides"
+        description="Read research-backed educational perspectives, mathematical problem-solving strategies, and personalized learning insights from the Ejaz Bukhari Method."
         canonicalUrl="https://ejazbukharimethod.com/blog"
       />
 

@@ -20,8 +20,8 @@ export function LearningLayout() {
   return (
     <div className="h-screen w-full flex bg-slate-50 overflow-hidden font-sans selection:bg-indigo-100 selection:text-indigo-900">
       <SEOHead 
-        title="EBM Learning Portal | Courses, Curriculum & Practice"
-        description="Access EBM interactive learning modules, curriculum syllabi, guided practice lessons, and diagnostic exercises from Grade 1 to O/A Levels."
+        title="EBM Learning Portal | Interactive Courses & Study Modules"
+        description="Access structured learning modules, interactive lessons, syllabus plans, and adaptive practice exercises designed for Grade 1 through Cambridge O/A Levels."
         canonicalUrl="https://ejazbukharimethod.com/learning"
       />
       <DashboardSidebar activeContext="learning" />

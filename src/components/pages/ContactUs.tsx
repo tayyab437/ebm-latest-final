@@ -60,8 +60,8 @@ export const ContactUs: React.FC = () => {
   return (
     <article className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300">
       <SEOHead 
-        title="Contact EBM | Admissions, Consultations & Support"
-        description="Get in touch with the EBM team for admissions inquiries, diagnostic scheduling, academic consultations, and technical support."
+        title="Contact EBM | Admissions Inquiries & Academic Consultations"
+        description="Get in touch with the EBM counseling team for admissions guidance, diagnostic test scheduling, academic consultations, and dedicated student support."
         canonicalUrl="https://ejazbukharimethod.com/contact"
       />
       {/* Header with Background Image & Light Overlay */}

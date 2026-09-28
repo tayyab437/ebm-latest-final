@@ -171,7 +171,7 @@ export function TeacherSidebar({
             </div>
           ) : logoImageUrl ? (
             <div className="w-10 h-10 flex items-center justify-center bg-transparent shrink-0 group-hover:scale-105 transition-transform">
-              <img src={logoImageUrl} alt="Logo" className="w-full h-full object-contain bg-transparent" style={{ backgroundColor: 'transparent' }} referrerPolicy="no-referrer" />
+              <img src={logoImageUrl} alt="Logo" className="w-full h-full object-contain bg-transparent" referrerPolicy="no-referrer" />
             </div>
           ) : (
             <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 shrink-0 group-hover:scale-105 transition-transform">

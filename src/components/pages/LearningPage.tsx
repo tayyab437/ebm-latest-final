@@ -231,8 +231,8 @@ export function LearningPage({ onSignIn, onNavigateToTab, userRole, token }: Lea
   return (
     <div id="learning-page-container" className="w-full min-h-screen bg-slate-50 text-slate-800 pb-16">
       <SEOHead 
-        title="EBM Learning Portal | Courses, Curriculum & Practice"
-        description="Access EBM learning modules, interactive lessons, syllabus plans, and diagnostic practice tools across grade levels."
+        title="EBM Learning Portal | Interactive Courses & Study Modules"
+        description="Access structured learning modules, interactive lessons, syllabus plans, and adaptive practice exercises designed for Grade 1 through Cambridge O/A Levels."
         canonicalUrl="https://ejazbukharimethod.com/learning"
       />
       {/* Top Banner Header with Background Image & Light Overlay */}

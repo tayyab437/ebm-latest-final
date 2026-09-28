@@ -9,8 +9,8 @@ export const NotFoundPage: React.FC = () => {
   return (
     <div className="min-h-[75vh] flex flex-col items-center justify-center px-4 py-16 bg-slate-50 text-slate-800 font-sans">
       <SEOHead 
-        title="404 - Page Not Found | Ejaz Bukhari Method (EBM)"
-        description="The page you are looking for could not be found. Return to the EBM homepage to explore Mathematics, English Comprehension, and Diagnostic tools."
+        title="404 Page Not Found | Ejaz Bukhari Method Learning Portal"
+        description="The page you are looking for could not be found. Return to the EBM homepage to explore Mathematics, English Comprehension, and diagnostic learning tools."
       />
 
       <div className="max-w-lg w-full text-center space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl relative overflow-hidden">

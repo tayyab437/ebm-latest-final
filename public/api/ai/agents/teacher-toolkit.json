@@ -1,0 +1,17 @@
+{
+  "name": "EBM Inspiration & Teacher Toolkit Agent",
+  "identifier": "urn:air:ejazbukharimethod.com:pedagogy:teacher-toolkit",
+  "description": "Pedagogical copilot assisting educators with lesson planning, differentiated instructional strategies, and formative assessment design.",
+  "version": "1.0.0",
+  "homepage": "https://ejazbukharimethod.com/inspiration?tab=teacher",
+  "capabilities": [
+    "LessonPlanning",
+    "DifferentiatedPedagogy",
+    "FormativeAssessmentScaffolding"
+  ],
+  "contact": {
+    "organization": "Ejaz Bukhari Method (EBM)",
+    "email": "admin@ebm.edu",
+    "url": "https://ejazbukharimethod.com/contact"
+  }
+}

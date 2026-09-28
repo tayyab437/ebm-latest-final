@@ -269,8 +269,8 @@ export function CaseStudiesPage() {
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
       <SEOHead 
-        title="EBM Case Studies & School Success Stories"
-        description="Discover how schools and districts achieve measurable academic growth, test score gains, and classroom efficiency with EBM."
+        title="EBM Case Studies | Student Turnarounds & Academic Success"
+        description="Explore real school success stories, student grade turnarounds, Cambridge O/A Level distinctions, and Olympiad wins achieved through the Ejaz Bukhari Method."
         canonicalUrl="https://ejazbukharimethod.com/case-studies"
       />
       {/* Hero Header */}

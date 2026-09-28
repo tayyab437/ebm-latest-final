@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { generateRouteStructuredData } from "../services/seo.schema";
+import { generateRouteStructuredData, sanitizeMetaTitle, sanitizeMetaDescription } from "../services/seo.schema";
 import { parseTags } from "../types/blog.types";
 
 interface SEOHeadProps {
@@ -45,15 +45,18 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       });
 
     // Derive resolved values from the schema or props
-    const resolvedTitle =
+    const rawTitle =
       title ||
       (structuredData["@graph"]?.find((item: any) => item["@type"] === "WebPage" || item["@type"] === "AboutPage" || item["@type"] === "ContactPage" || item["@type"] === "CollectionPage")?.name) ||
-      "EBM | Personalized Learning Platform for Grade 1 to O/A Levels";
+      "EBM Personalized Learning Platform | Grade 1 to O/A Level";
 
-    const resolvedDescription =
+    const rawDescription =
       description ||
       (structuredData["@graph"]?.find((item: any) => item["@type"] === "WebPage" || item["@type"] === "AboutPage" || item["@type"] === "ContactPage" || item["@type"] === "CollectionPage")?.description) ||
-      "EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools.";
+      "Personalized learning platform for students from Grade 1 to O/A Levels, featuring structured curricula, diagnostic assessments, and AI-powered tutoring.";
+
+    const resolvedTitle = sanitizeMetaTitle(rawTitle);
+    const resolvedDescription = sanitizeMetaDescription(rawDescription);
 
     const resolvedCanonical =
       canonicalUrl ||

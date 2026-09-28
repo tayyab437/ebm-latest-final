@@ -821,7 +821,6 @@ export default function App() {
                   height="38"
                   decoding="async"
                   className="h-9 md:h-10 max-h-12 max-w-[180px] object-contain bg-transparent border-none outline-none shadow-none" 
-                  style={{ backgroundColor: 'transparent' }}
                   referrerPolicy="no-referrer" 
                 />
               ) : logoType === "icon" && logoIcon && BRANDING_ICONS[logoIcon] ? (
@@ -957,6 +956,9 @@ export default function App() {
 
 
 
+      {/* Master Route-Aware SEO & Structured Data */}
+      <SEOHead />
+
       {/* ================== MAIN CONTENT ROUTER ================== */}
       <main id="main-content" tabIndex={-1} className={`flex-grow flex flex-col focus:outline-none ${isPortalPage ? "h-screen w-full overflow-hidden" : "min-h-screen"}`}>
         <React.Suspense fallback={
@@ -987,8 +989,8 @@ export default function App() {
             <Route path="/login" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
                 <SEOHead
-                  title="Sign In | EBM Student, Parent & Educator Portal"
-                  description="Access your EBM student dashboard, parent insights feed, educator tools, and personalized coursework. Sign in with your registered account."
+                  title="Sign In to EBM Portal | Student, Parent & Teacher Access"
+                  description="Access your personalized EBM student dashboard, parent insights feed, teacher gradebook, and coursework by logging in to your registered educational account."
                   canonicalUrl="https://ejazbukharimethod.com/login"
                   noindex={true}
                 />
@@ -1024,8 +1026,8 @@ export default function App() {
             <Route path="/register" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
                 <SEOHead
-                  title="Create an Account | EBM Student & Parent Registration"
-                  description="Register for the Ejaz Bukhari Method (EBM) learning platform. Begin diagnostic skill assessments, individualized learning plans, and Cambridge syllabus prep."
+                  title="Create an EBM Account | Student & Parent Portal Sign Up"
+                  description="Register for the Ejaz Bukhari Method learning platform to start diagnostic skill assessments, individualized learning plans, and Cambridge exam preparation."
                   canonicalUrl="https://ejazbukharimethod.com/register"
                   noindex={true}
                 />
@@ -1052,8 +1054,8 @@ export default function App() {
             <Route path="/forgot-password" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
                 <SEOHead
-                  title="Reset Password | EBM Account Recovery"
-                  description="Recover your EBM account password. Enter your registered email to receive secure password reset instructions."
+                  title="Reset Your EBM Password | Secure Portal Account Recovery"
+                  description="Recover access to your EBM student, parent, or teacher portal account. Submit your registered email address to receive immediate password reset instructions."
                   canonicalUrl="https://ejazbukharimethod.com/forgot-password"
                   noindex={true}
                 />
@@ -1080,8 +1082,8 @@ export default function App() {
             <Route path="/reset-password" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
                 <SEOHead
-                  title="Set New Password | EBM Account Security"
-                  description="Create a new secure password for your EBM account to regain access to your student or parent portal."
+                  title="Set New Secure Password | EBM Account Recovery & Security"
+                  description="Create a new secure password for your EBM account to protect your student learning records, diagnostic assessments, and academic portfolio details."
                   canonicalUrl="https://ejazbukharimethod.com/reset-password"
                   noindex={true}
                 />
@@ -1106,8 +1108,8 @@ export default function App() {
             <Route path="/verify-email" element={
               <div id="ebm-auth-page" className="flex-grow animate-fade-in">
                 <SEOHead
-                  title="Verify Email | EBM Account Activation"
-                  description="Verify your email address to activate your EBM learning account and complete registration."
+                  title="Verify Your Email Address | EBM Account Activation Portal"
+                  description="Confirm and verify your registered email address to complete your EBM account setup and begin exploring your personalized learning roadmap today."
                   canonicalUrl="https://ejazbukharimethod.com/verify-email"
                   noindex={true}
                 />
@@ -1162,8 +1164,8 @@ export default function App() {
             <Route path="/dashboard" element={
               <div className="w-full h-screen overflow-hidden animate-fade-in">
                 <SEOHead
-                  title="Student Learning Dashboard | EBM Portal"
-                  description="Personalized student dashboard for tracking mastery goals, daily tasks, study roadmap milestones, and learning analytics."
+                  title="Student Learning Dashboard | EBM Academic Mastery Portal"
+                  description="View personalized learning roadmap milestones, daily diagnostic tasks, concept mastery progress, and cognitive speed metrics on your EBM student portal."
                   canonicalUrl="https://ejazbukharimethod.com/dashboard"
                   noindex={true}
                 />
@@ -1173,8 +1175,8 @@ export default function App() {
             <Route path="/learning" element={
               <div className="w-full h-screen overflow-hidden animate-fade-in">
                 <SEOHead
-                  title="EBM Learning Portal | Courses, Curriculum & Practice"
-                  description="Access EBM interactive learning modules, curriculum syllabi, guided practice lessons, and diagnostic exercises from Grade 1 to O/A Levels."
+                  title="EBM Learning Portal | Interactive Courses & Study Modules"
+                  description="Access structured learning modules, interactive lessons, syllabus plans, and adaptive practice exercises designed for Grade 1 through Cambridge O/A Levels."
                   canonicalUrl="https://ejazbukharimethod.com/learning"
                 />
                 <LearningLayout />

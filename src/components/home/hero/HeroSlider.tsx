@@ -202,7 +202,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ onStartLearning, onNavig
               <div className="absolute inset-8 rounded-full overflow-hidden border-[6px] border-blue-500/40 shadow-2xl bg-[#0d1222]">
                 <img 
                   src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800" 
-                  alt="Classroom Library Background" 
+                  alt="Interactive modern classroom and learning environment" 
                   className="w-full h-full object-cover opacity-25 filter blur-[0.5px]"
                 />
                 {/* Radial deep blue gradient to make student pop out */}
@@ -214,7 +214,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ onStartLearning, onNavig
               <div className="absolute inset-x-0 bottom-0 h-[120%] z-20 overflow-visible flex justify-center pointer-events-none">
                 <img 
                   src={activeSlide?.imageUrl || "https://images.unsplash.com/photo-1525921429624-479b6c294548?q=80&w=800"} 
-                  alt="Student Mascot" 
+                  alt={activeSlide?.title ? `${activeSlide.title} - EBM Learning Student` : "EBM Student achieving academic excellence"} 
                   className="h-[105%] object-contain object-bottom filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.7)] select-none hover:scale-[1.03] transition-transform duration-500"
                   referrerPolicy="no-referrer"
                 />

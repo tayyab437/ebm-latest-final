@@ -680,7 +680,16 @@ export function StudentCurriculumTests() {
                                       Your Math Answer:
                                     </label>
                                     <input
+                                      key={`math-input-${q.id}`}
                                       type="text"
+                                      autoFocus
+                                      ref={(el) => {
+                                        if (el) {
+                                          el.focus();
+                                          const len = el.value.length;
+                                          el.setSelectionRange(len, len);
+                                        }
+                                      }}
                                       value={currentVal}
                                       onChange={(e) => handleAnswerChange(q.id, e.target.value)}
                                       placeholder="Type your answer or numerical value here..."
@@ -784,11 +793,11 @@ export function StudentCurriculumTests() {
                         {/* Right Panel: Reference Slide (Only for Math and if slides configured) */}
                         {sliderSettings.slides && sliderSettings.slides.length > 0 && (
                           <div 
-                            className="flex flex-col overflow-hidden h-[calc(100%+3rem)] -my-6 -mr-6 items-center justify-center shrink-0 relative group bg-white"
+                            className="flex flex-col overflow-hidden h-full items-center justify-center shrink-0 relative z-20 group bg-slate-50/50 rounded-2xl border border-slate-200/80 p-2 shadow-xs"
                             style={{ flexBasis: `${sliderSettings.splitPercentage}%` }}
                           >
-                            <div className="w-full h-full flex items-center justify-center relative overflow-hidden">
-                              <div className="w-full h-full flex items-center justify-center overflow-hidden relative">
+                            <div className="w-full h-full flex items-center justify-center relative z-20 overflow-hidden">
+                              <div className="w-full h-full flex items-center justify-center overflow-hidden relative z-20">
                                 <AnimatePresence mode="wait">
                                   {sliderSettings.slides.map((slide, sIdx) => {
                                     if (sIdx !== currentSlideIndex) return null;
@@ -799,12 +808,12 @@ export function StudentCurriculumTests() {
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.98 }}
                                         transition={{ duration: 0.3 }}
-                                        className="absolute inset-0 flex items-center justify-center"
+                                        className="w-full h-full flex items-center justify-center p-1 z-20"
                                       >
                                         <img
                                           src={slide.imageUrl}
                                           alt={slide.title || "Mathematics Reference"}
-                                          className="w-full h-full object-contain"
+                                          className="max-w-full max-h-full w-auto h-auto object-contain relative z-20 rounded-lg shadow-xs"
                                           referrerPolicy="no-referrer"
                                           onError={(e) => {
                                             (e.target as any).src = "https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800";
@@ -823,14 +832,14 @@ export function StudentCurriculumTests() {
                                 <button
                                   type="button"
                                   onClick={() => setCurrentSlideIndex((prev) => (prev - 1 + sliderSettings.slides.length) % sliderSettings.slides.length)}
-                                  className="absolute left-4 p-2.5 rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-slate-900 transition-all hover:scale-105 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100 z-10"
+                                  className="absolute left-4 p-2.5 rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-slate-900 transition-all hover:scale-105 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100 z-30"
                                 >
                                   <ChevronLeft className="w-5 h-5" />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => setCurrentSlideIndex((prev) => (prev + 1) % sliderSettings.slides.length)}
-                                  className="absolute right-4 p-2.5 rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-slate-900 transition-all hover:scale-105 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100 z-10"
+                                  className="absolute right-4 p-2.5 rounded-full bg-white border border-slate-200 shadow-md text-slate-600 hover:text-slate-900 transition-all hover:scale-105 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100 z-30"
                                 >
                                   <ChevronRight className="w-5 h-5" />
                                 </button>

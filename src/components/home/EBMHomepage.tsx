@@ -150,8 +150,8 @@ export default function EBMHomepage({
   return (
     <div className="bg-[#f2f4f5] text-[#4a4a4a] font-sans antialiased min-h-screen">
       <SEOHead 
-        title="EBM | Personalized Learning Platform for Grade 1 to O/A Levels"
-        description="EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools."
+        title="EBM Personalized Learning Platform | Grade 1 to O/A Level"
+        description="Personalized learning platform for students from Grade 1 to O/A Levels, featuring structured curricula, diagnostic assessments, and AI-powered tutoring."
         canonicalUrl="https://ejazbukharimethod.com/"
       />
       {/* ================= HERO BANNER ================= */}
@@ -975,7 +975,7 @@ export default function EBMHomepage({
               <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[4px] border-[#33c3f0] mb-5 bg-white/10 flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-300">
                 <img 
                   src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=50&fm=webp&w=150&h=150" 
-                  alt="Proven effective students" 
+                  alt="Proven effective student learning outcomes at EBM" 
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover"
@@ -1000,7 +1000,7 @@ export default function EBMHomepage({
                 <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[4px] border-[#33c3f0] bg-white/10 flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-300">
                   <img 
                     src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=50&fm=webp&w=150&h=150" 
-                    alt="Flexible for any classroom teacher" 
+                    alt="Flexible personalized learning tools for any classroom teacher" 
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover"
@@ -1029,7 +1029,7 @@ export default function EBMHomepage({
               <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[4px] border-[#33c3f0] mb-5 bg-white/10 grid grid-cols-2 gap-0 shadow-lg transform hover:scale-105 transition-all duration-300">
                 <img 
                   src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=50&fm=webp&w=80&h=80" 
-                  alt="Teacher profile 1" 
+                  alt="EBM certified STEM educator reviewing student progress" 
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover border-b border-r border-[#33c3f0]/30"
@@ -1037,7 +1037,7 @@ export default function EBMHomepage({
                 />
                 <img 
                   src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=50&fm=webp&w=80&h=80" 
-                  alt="Teacher profile 2" 
+                  alt="EBM primary education lead guiding young learners" 
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover border-b border-[#33c3f0]/30"
@@ -1045,7 +1045,7 @@ export default function EBMHomepage({
                 />
                 <img 
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=50&fm=webp&w=80&h=80" 
-                  alt="Teacher profile 3" 
+                  alt="EBM senior secondary mentor specializing in O and A Levels" 
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover border-r border-[#33c3f0]/30"
@@ -1053,7 +1053,7 @@ export default function EBMHomepage({
                 />
                 <img 
                   src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=50&fm=webp&w=80&h=80" 
-                  alt="Teacher profile 4" 
+                  alt="EBM science curriculum specialist coaching students" 
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover"
@@ -1081,7 +1081,7 @@ export default function EBMHomepage({
         <div className="absolute inset-0 grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-9 gap-1.5 opacity-60 pointer-events-none z-0">
           <img 
             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="High school students collaborating on personalized learning coursework" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1089,7 +1089,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Elementary school student engaged in foundational learning and reading activities" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1097,7 +1097,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="Students in classroom" 
+            alt="Secondary school students participating in interactive classroom learning" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1105,7 +1105,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Students studying curriculum materials in academic learning library" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1113,7 +1113,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Diverse student study group celebrating academic success and progress" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1121,7 +1121,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Online education student accessing digital learning modules and quizzes" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1129,7 +1129,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Modern interactive classroom prepared for personalized instruction" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1137,7 +1137,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Teacher mentoring high school student with personalized academic guidance" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1145,7 +1145,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Collaborative peer learning group discussing mathematics coursework" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1153,7 +1153,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Students using educational technology for interactive STEM studies" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1161,15 +1161,15 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Students and educators reviewing diagnostic test performance results" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
             referrerPolicy="no-referrer" 
           />
           <img 
-            src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            src="https://images.unsplash.com/photo-15090625222463755977927d7?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
+            alt="Experienced teacher providing one-on-one instruction at whiteboard" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1177,7 +1177,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Curriculum textbooks and learning reference materials for exam preparation" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1185,7 +1185,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Educational consultant analyzing student learning pathways and analytics" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1193,7 +1193,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Student taking structured revision notes for O and A level examination prep" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1201,7 +1201,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Dedicated tutor supporting student mastery in foundational subjects" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1209,7 +1209,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Learners actively engaged in structured classroom discussions" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 
@@ -1217,7 +1217,7 @@ export default function EBMHomepage({
           />
           <img 
             src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=45&fm=webp&w=150&h=100" 
-            alt="" 
+            alt="Instructor presenting comprehensive lecture in academic learning session" 
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover" 

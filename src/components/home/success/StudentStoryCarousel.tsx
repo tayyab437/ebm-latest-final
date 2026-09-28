@@ -390,7 +390,7 @@ export const StudentStoryCarousel: React.FC = () => {
             >
               {/* Satin overlay for modal header */}
               <div className="absolute inset-x-0 top-0 h-40 pointer-events-none z-0 overflow-hidden opacity-15">
-                <img src={satinBg} alt="" className="w-full h-full object-cover mix-blend-lighten" referrerPolicy="no-referrer" />
+                <img src={satinBg} alt="Scholar success record background texture" className="w-full h-full object-cover mix-blend-lighten" referrerPolicy="no-referrer" />
               </div>
 
               <div className="p-6 border-b border-[#1e2a58]/40 flex items-center justify-between relative z-10 bg-[#080d28]/95">

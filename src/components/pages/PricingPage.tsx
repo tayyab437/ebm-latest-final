@@ -52,8 +52,8 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigateToTab }) => 
   return (
     <article className="min-h-screen bg-[#03050a] text-slate-100 selection:bg-blue-600 selection:text-white antialiased">
       <SEOHead 
-        title="EBM Pricing & Memberships | Flexible Learning Plans"
-        description="Choose the right EBM plan for your learning journey. Transparent pricing for individual students, families, and academic institutions."
+        title="EBM Pricing & Membership Plans | Flexible Tuition Options"
+        description="Find the right EBM membership plan for your academic journey, with transparent pricing for individual learners, families, and partner school institutions."
         canonicalUrl="https://ejazbukharimethod.com/pricing"
       />
       

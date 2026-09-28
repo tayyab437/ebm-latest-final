@@ -11,7 +11,8 @@ import * as schema from "./src/db/schema.js";
 import { eq, and, desc, ne } from "drizzle-orm";
 import { blogRouter, generateSitemapXml, generateRssXml } from "./src/server/blog-routes.js";
 import { getPostBySlug } from "./src/db/blog-store.js";
-import { getPrerenderedHtml } from "./src/server/prerender-content.js";
+import { ROUTE_REGISTRY, sanitizeMetaTitle, sanitizeMetaDescription } from "./src/services/seo.schema.js";
+import { getPreRenderedHtml } from "./src/server/pre-render.js";
 
 export function extractUserIdFromToken(token: string | undefined): string | null {
   if (!token) return null;
@@ -249,15 +250,6 @@ app.use(
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-
-// Canonical Host Redirection: redirect www to non-www root domain to consolidate SEO authority & prevent duplicate indexing
-app.use((req, res, next) => {
-  const host = (req.headers["x-forwarded-host"] as string) || req.headers.host || "";
-  if (host.startsWith("www.ejazbukharimethod.com")) {
-    return res.redirect(301, `https://ejazbukharimethod.com${req.originalUrl}`);
-  }
-  next();
-});
 
 // SEO 301 Permanent Redirects for legacy/migrated blog post URLs discovered in search engines or older sitemaps
 const LEGACY_URL_REDIRECTS: Record<string, string> = {
@@ -820,6 +812,163 @@ app.get(/\/(?:.+?\/)?llms-full\.txt$/i, (req, res) => {
   return sendLlmsResponse(res, "full");
 });
 
+// Agentic Resource Discovery (ARD) and AI Catalog JSON Manifest Handler
+const sendAiCatalogResponse = (res: any) => {
+  const catalogPath = path.join(process.cwd(), "public", "ai-catalog.json");
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=86400");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+
+  if (fs.existsSync(catalogPath)) {
+    return res.sendFile(catalogPath);
+  }
+
+  // Fallback inline valid ARD manifest conforming strictly to ARD / ai-catalog schema
+  return res.status(200).json({
+    specVersion: "1.0",
+    host: {
+      displayName: "Ejaz Bukhari Method (EBM) Digital Learning Ecosystem",
+      identifier: "did:web:ejazbukharimethod.com",
+      documentationUrl: "https://ejazbukharimethod.com/llms.txt",
+      logoUrl: "https://ejazbukharimethod.com/favicon.svg"
+    },
+    entries: [
+      {
+        identifier: "urn:air:ejazbukharimethod.com:education:ebm-tutor-agent",
+        displayName: "EBM Adaptive Academic Tutor",
+        type: "application/a2a-agent-card+json",
+        url: "https://ejazbukharimethod.com/api/ai/agents/ebm-tutor-agent.json",
+        description: "AI-assisted personalized tutor providing Socratic explanations, syllabus alignment, and homework diagnostics for Grade 1 through O/A Levels.",
+        tags: ["education", "tutoring", "k12", "cambridge", "stem", "pedagogy"],
+        capabilities: ["SocraticTutoring", "CurriculumDiagnostics", "FormativeAssessment", "ConceptExplanation"],
+        representativeQueries: [
+          "Help me solve a Cambridge O Level kinematics physics problem",
+          "Explain quadratic inequalities step by step for Grade 9 math",
+          "Generate adaptive biology practice questions for IGCSE revision"
+        ],
+        version: "1.0.0",
+        updatedAt: "2026-09-28T00:00:00Z"
+      },
+      {
+        identifier: "urn:air:ejazbukharimethod.com:assessment:cambridge-evaluator",
+        displayName: "EBM Cambridge Assessment Evaluator",
+        type: "application/a2a-agent-card+json",
+        url: "https://ejazbukharimethod.com/api/ai/agents/cambridge-evaluator.json",
+        description: "Automated rubric-aligned grading and detailed feedback generator for Cambridge O and A Level past papers and mock examinations.",
+        tags: ["assessment", "grading", "cambridge", "rubrics", "exam-prep"],
+        capabilities: ["PastPaperGrading", "MarkSchemeAlignment", "DetailedFeedback", "WeaknessDiagnostics"],
+        representativeQueries: [
+          "Grade my O Level English narrative writing essay against Cambridge rubrics",
+          "Evaluate my A Level chemistry structured response and suggest improvements",
+          "Analyze mock exam answers and produce a weak-area diagnostic summary"
+        ],
+        version: "1.0.0",
+        updatedAt: "2026-09-28T00:00:00Z"
+      },
+      {
+        identifier: "urn:air:ejazbukharimethod.com:analytics:learning-velocity",
+        displayName: "EBM Cognitive Velocity & Analytics Engine",
+        type: "application/a2a-agent-card+json",
+        url: "https://ejazbukharimethod.com/api/ai/agents/learning-velocity.json",
+        description: "Predictive learning analytics agent calculating student cognitive velocity, retention decay, and personalized study pacing recommendations.",
+        tags: ["analytics", "cognitive-velocity", "study-pacing", "learning-metrics"],
+        capabilities: ["CognitiveVelocityTracking", "RetentionModeling", "PacingRecommendations"],
+        representativeQueries: [
+          "Calculate cognitive velocity metrics and mastery pace for Year 3 student",
+          "Identify retention decay risk areas for upcoming Cambridge examinations",
+          "Recommend personalized weekly study timetable based on diagnostic scores"
+        ],
+        version: "1.0.0",
+        updatedAt: "2026-09-28T00:00:00Z"
+      },
+      {
+        identifier: "urn:air:ejazbukharimethod.com:pedagogy:teacher-toolkit",
+        displayName: "EBM Inspiration & Teacher Toolkit Agent",
+        type: "application/a2a-agent-card+json",
+        url: "https://ejazbukharimethod.com/api/ai/agents/teacher-toolkit.json",
+        description: "Pedagogical copilot assisting educators with lesson planning, differentiated instructional strategies, and formative assessment design.",
+        tags: ["pedagogy", "teacher-toolkit", "lesson-planning", "differentiated-instruction"],
+        capabilities: ["LessonPlanning", "DifferentiatedPedagogy", "FormativeAssessmentScaffolding"],
+        representativeQueries: [
+          "Generate differentiated lesson plan for mixed-ability Grade 7 science class",
+          "Create formative check-for-understanding prompts for photosynthesis unit",
+          "Provide parent-teacher conference talking points with diagnostic metrics"
+        ],
+        version: "1.0.0",
+        updatedAt: "2026-09-28T00:00:00Z"
+      },
+      {
+        identifier: "urn:air:ejazbukharimethod.com:mcp:learning-server",
+        displayName: "EBM Learning & Curriculum MCP Server",
+        type: "application/mcp-server-card+json",
+        url: "https://ejazbukharimethod.com/api/ai/mcp/learning-server.json",
+        description: "Model Context Protocol (MCP) server exposing tools for Cambridge syllabus lookup, student mastery queries, and learning resource discovery.",
+        tags: ["mcp", "tools", "curriculum", "learning-analytics", "api"],
+        capabilities: ["CurriculumLookup", "StudentProgressQuery", "LessonPlanGenerator", "DiagnosticQuery"],
+        representativeQueries: [
+          "Look up Cambridge O Level math syllabus learning objectives and codes",
+          "Query student mastery level and cognitive velocity metrics via MCP tool",
+          "Retrieve curated practice exercises for Cambridge physics electricity unit"
+        ],
+        version: "1.0.0",
+        updatedAt: "2026-09-28T00:00:00Z"
+      }
+    ]
+  });
+};
+
+// Route matching for ai-catalog.json and ard.json
+app.all(
+  [
+    "/ai-catalog.json",
+    "/.well-known/ai-catalog.json",
+    "/ard.json",
+    "/.well-known/ard.json",
+  ],
+  (req, res) => {
+    if (req.method === "OPTIONS") {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "*");
+      return res.status(204).end();
+    }
+    return sendAiCatalogResponse(res);
+  }
+);
+
+// Fallback regex for any other subpath ending with /ai-catalog.json or /ard.json
+app.get(/\/(?:.+?\/)?(ai-catalog\.json|ard\.json)$/i, (req, res) => {
+  return sendAiCatalogResponse(res);
+});
+
+// Serve AI agent cards and MCP cards
+app.get("/api/ai/agents/:card", (req, res) => {
+  const cardName = path.basename(req.params.card);
+  const cardPath = path.join(process.cwd(), "public", "api", "ai", "agents", cardName.endsWith(".json") ? cardName : `${cardName}.json`);
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  if (fs.existsSync(cardPath)) {
+    return res.sendFile(cardPath);
+  }
+  return res.status(404).json({ error: "Agent card not found" });
+});
+
+app.get("/api/ai/mcp/:card", (req, res) => {
+  const cardName = path.basename(req.params.card);
+  const cardPath = path.join(process.cwd(), "public", "api", "ai", "mcp", cardName.endsWith(".json") ? cardName : `${cardName}.json`);
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  if (fs.existsSync(cardPath)) {
+    return res.sendFile(cardPath);
+  }
+  return res.status(404).json({ error: "MCP server card not found" });
+});
+
 // Search Engine Robots.txt
 app.get("/robots.txt", (req, res) => {
   const filePath = path.join(process.cwd(), "public", "robots.txt");
@@ -829,7 +978,7 @@ app.get("/robots.txt", (req, res) => {
   if (fs.existsSync(filePath)) {
     return res.sendFile(filePath);
   }
-  return res.send("User-agent: *\nAllow: /\nAllow: /llms.txt\nAllow: /llms-full.txt\nAllow: /*/llms.txt\nAllow: /*/llms-full.txt\nDisallow: /dashboard/\nDisallow: /admin/\nDisallow: /teacher/\nDisallow: /parent/\n\nSitemap: https://ejazbukharimethod.com/sitemap.xml\n");
+  return res.send("User-agent: *\nAllow: /\nAllow: /llms.txt\nAllow: /llms-full.txt\nAllow: /*/llms.txt\nAllow: /*/llms-full.txt\nAllow: /ai-catalog.json\nAllow: /.well-known/ai-catalog.json\nAllow: /ard.json\nAllow: /.well-known/ard.json\nAllow: /api/ai/\nDisallow: /dashboard/\nDisallow: /admin/\nDisallow: /teacher/\nDisallow: /parent/\n\nSitemap: https://ejazbukharimethod.com/sitemap.xml\nAgentmap: https://ejazbukharimethod.com/.well-known/ai-catalog.json\nAgentmap: https://ejazbukharimethod.com/.well-known/ard.json\n");
 });
 
 // Blog REST API router
@@ -8162,8 +8311,8 @@ function optimizeUnsplashServerUrl(
 
 async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<string> {
   const BASE_URL = "https://ejazbukharimethod.com";
-  let title = "EBM | Personalized Learning Platform for Grade 1 to O/A Levels";
-  let description = "EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools.";
+  let title = "EBM Personalized Learning Platform | Grade 1 to O/A Level";
+  let description = "Personalized learning platform for students from Grade 1 to O/A Levels, featuring structured curricula, diagnostic assessments, and AI-powered tutoring.";
   let ogImage = `${BASE_URL}/og-image.svg`;
   let ogType = "website";
   let canonicalUrl = `${BASE_URL}${reqPath}`;
@@ -8175,28 +8324,44 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
 
   const cleanPath = reqPath.split("?")[0].replace(/\/+$/, "") || "/";
 
+  // Match route from centralized ROUTE_REGISTRY
+  if (ROUTE_REGISTRY[cleanPath]) {
+    title = ROUTE_REGISTRY[cleanPath].title;
+    description = ROUTE_REGISTRY[cleanPath].description;
+    canonicalUrl = ROUTE_REGISTRY[cleanPath].canonicalUrl;
+    if (["/login", "/register", "/forgot-password", "/reset-password", "/verify-email"].includes(cleanPath)) {
+      robots = "noindex, follow";
+    } else if (["/dashboard", "/parent", "/teacher", "/admin"].includes(cleanPath)) {
+      robots = "noindex, nofollow";
+    }
+  } else if (cleanPath === "/casestudies") {
+    title = ROUTE_REGISTRY["/case-studies"]?.title || "EBM Case Studies | Student Turnarounds & Academic Success";
+    description = ROUTE_REGISTRY["/case-studies"]?.description || "Explore real school success stories, student grade turnarounds, Cambridge O/A Level distinctions, and Olympiad wins achieved through the Ejaz Bukhari Method.";
+    canonicalUrl = `${BASE_URL}/case-studies`;
+  }
+
   if (cleanPath.startsWith("/blog/category/")) {
     const categorySlug = cleanPath.replace("/blog/category/", "").replace(/\/+$/, "");
     const CATEGORY_SEO_DATA: Record<string, { title: string; description: string }> = {
       "personalized-learning": {
-        title: "Personalized Learning Articles & Guides | EBM Blog",
-        description: "Pedagogical frameworks and data-driven methods for tailored student academic acceleration from Grade 1 to O/A Levels."
+        title: "Personalized Learning Articles & Guides | EBM Education",
+        description: "Explore research-backed pedagogical frameworks, diagnostic assessments, and data-driven methods for student academic acceleration from Grade 1 to O/A Levels."
       },
       "mathematical-thinking": {
-        title: "Mathematical Thinking & Problem Solving | EBM Blog",
-        description: "Strategies for deep conceptual problem solving, calculus logic, and analytical derivation from Syed Ejaz Bukhari."
+        title: "Mathematical Thinking & Problem Solving | EBM Education",
+        description: "Master core mathematical problem solving, deductive calculus logic, algebraic intuition, and analytical derivation techniques with the Ejaz Bukhari Method."
       },
       "diagnostic-assessment": {
-        title: "Diagnostic Assessment Articles & Guides | EBM Blog",
-        description: "Using adaptive diagnostics and mastery baselines to guide targeted learning interventions and cognitive acceleration."
+        title: "Diagnostic Assessment Articles & Guides | EBM Education",
+        description: "Discover how adaptive diagnostics, skill evaluations, and concept mastery baselines guide targeted learning interventions and cognitive acceleration."
       },
       "cognitive-acceleration": {
-        title: "Cognitive Acceleration & STEM Learning | EBM Blog",
-        description: "Structured pathways connecting primary foundational skills to advanced Cambridge O/A Level STEM mastery."
+        title: "Cognitive Acceleration & STEM Learning | EBM Education",
+        description: "Examine structured curriculum pathways connecting primary foundational reasoning skills to advanced Cambridge O/A Level STEM excellence with EBM."
       },
       "ai-edtech": {
-        title: "AI & Educational Technology in Practice | EBM Blog",
-        description: "The thoughtful integration of Socratic AI co-pilots, diagnostic tools, and modern digital learning."
+        title: "AI & Educational Technology in Practice | EBM Education",
+        description: "Learn about the pedagogical integration of Socratic AI learning assistants, diagnostic tools, and modern adaptive software in real-world student learning."
       }
     };
 
@@ -8208,8 +8373,8 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
         .split("-")
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
-      title = `${formattedName} Articles & Guides | EBM Blog`;
-      description = `Read educational perspectives and research-backed pedagogical strategies in ${formattedName} from the Ejaz Bukhari Method.`;
+      title = sanitizeMetaTitle(`${formattedName} Articles & Guides | EBM Education`);
+      description = sanitizeMetaDescription(`Read educational perspectives and research-backed pedagogical strategies in ${formattedName} from the Ejaz Bukhari Method.`);
     }
     canonicalUrl = `${BASE_URL}/blog/category/${categorySlug}`;
   } else if (cleanPath.startsWith("/blog/")) {
@@ -8220,8 +8385,8 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
         if (result?.post) {
           const post = result.post;
           blogPostPayload = { post, relatedPosts: (result as any).relatedPosts || [] };
-          title = `${post.seoTitle || post.title} | EBM Blog`;
-          description = post.seoDescription || post.excerpt;
+          title = sanitizeMetaTitle(post.seoTitle || `${post.title} | EBM Blog`);
+          description = sanitizeMetaDescription(post.seoDescription || post.excerpt);
           if (post.featuredImage) {
             ogImage = post.featuredImage;
             blogLcpImage = optimizeUnsplashServerUrl(post.featuredImage, 760, 75);
@@ -8272,8 +8437,8 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
             extraJsonLd += `\n    <script>window.__INITIAL_POST__ = ${safePayload};</script>`;
           }
         } else {
-          title = "Article Not Found | EBM Blog";
-          description = "The requested educational article could not be found. Explore our latest pedagogical insights on the EBM blog.";
+          title = "Article Not Found | EBM Educational Insights Portal";
+          description = "The requested educational article could not be found. Explore our latest pedagogical insights, diagnostic tools, and math resources on the EBM blog.";
           canonicalUrl = `${BASE_URL}/blog`;
           robots = "noindex, follow";
         }
@@ -8281,100 +8446,11 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
         console.error("SEO Metadata lookup error for blog post:", err);
       }
     }
-  } else if (cleanPath === "/blog") {
-    title = "Educational Perspectives & Math Insights | EBM Blog";
-    description = "Read latest articles on personalized learning, mathematical problem-solving, cognitive acceleration, and Cambridge O/A Levels pedagogy from Syed Ejaz Bukhari.";
-    canonicalUrl = `${BASE_URL}/blog`;
-  } else if (cleanPath === "/assessment") {
-    title = "Diagnostic Learning Assessment | EBM Diagnostic Baseline";
-    description = "Evaluate academic strengths, identify specific learning gaps, and receive a customized cognitive acceleration roadmap from Grade 1 to O/A Levels.";
-    canonicalUrl = `${BASE_URL}/assessment`;
-  } else if (cleanPath === "/programs") {
-    title = "Personalized Academic Programs | Grade 1 to Cambridge O/A Levels | EBM";
-    description = "Explore foundational, intermediate, and Cambridge O/A Level personalized learning pathways at EBM.";
-    canonicalUrl = `${BASE_URL}/programs`;
-  } else if (cleanPath === "/learning") {
-    title = "EBM Learning Portal | Courses, Curriculum & Practice";
-    description = "Access EBM interactive learning modules, curriculum syllabi, guided practice lessons, and diagnostic exercises from Grade 1 to O/A Levels.";
-    canonicalUrl = `${BASE_URL}/learning`;
-  } else if (cleanPath === "/login") {
-    title = "Sign In | EBM Student, Parent & Educator Portal";
-    description = "Access your EBM student dashboard, parent insights feed, educator tools, and personalized coursework. Sign in with your registered account.";
-    canonicalUrl = `${BASE_URL}/login`;
-    robots = "noindex, follow";
-  } else if (cleanPath === "/register") {
-    title = "Create an Account | EBM Student & Parent Registration";
-    description = "Register for the Ejaz Bukhari Method (EBM) learning platform. Begin diagnostic skill assessments, individualized learning plans, and Cambridge syllabus prep.";
-    canonicalUrl = `${BASE_URL}/register`;
-    robots = "noindex, follow";
-  } else if (cleanPath === "/forgot-password") {
-    title = "Reset Password | EBM Account Recovery";
-    description = "Recover your EBM account password. Enter your registered email to receive secure password reset instructions.";
-    canonicalUrl = `${BASE_URL}/forgot-password`;
-    robots = "noindex, follow";
-  } else if (cleanPath === "/reset-password") {
-    title = "Set New Password | EBM Account Security";
-    description = "Create a new secure password for your EBM account to regain access to your student or parent portal.";
-    canonicalUrl = `${BASE_URL}/reset-password`;
-    robots = "noindex, follow";
-  } else if (cleanPath === "/verify-email") {
-    title = "Verify Email | EBM Account Activation";
-    description = "Verify your email address to activate your EBM learning account and complete registration.";
-    canonicalUrl = `${BASE_URL}/verify-email`;
-    robots = "noindex, follow";
-  } else if (cleanPath === "/analytics") {
-    title = "Cognitive Analytics & Learning Insights | EBM Intelligence";
-    description = "Real-time mastery tracking, cognitive velocity measurement, and pedagogical data visualization.";
-    canonicalUrl = `${BASE_URL}/analytics`;
-  } else if (cleanPath === "/pricing") {
-    title = "Membership & Tuition Plans | EBM Personalized Learning";
-    description = "Transparent tuition plans for individualized academic coaching, diagnostic assessments, and Cambridge syllabus preparation.";
-    canonicalUrl = `${BASE_URL}/pricing`;
-  } else if (cleanPath === "/about") {
-    title = "About EBM & Syed Ejaz Bukhari | Evidence-Based Pedagogy";
-    description = "Learn about the Ejaz Bukhari Method, our pedagogical philosophy, and our mission to personalize academic mastery for every learner.";
-    canonicalUrl = `${BASE_URL}/about`;
-  } else if (cleanPath === "/inspiration") {
-    title = "Mathematical Discoveries & STEM Inspiration | EBM";
-    description = "Inspiring educational stories, conceptual breakthroughs, and student achievements in mathematics and science.";
-    canonicalUrl = `${BASE_URL}/inspiration`;
-  } else if (cleanPath === "/case-studies" || cleanPath === "/casestudies") {
-    title = "Student Success Journeys & Case Studies | EBM";
-    description = "Real stories of academic turnaround, olympiad achievements, and Cambridge O/A Level distinctions through EBM.";
-    canonicalUrl = `${BASE_URL}/case-studies`;
-  } else if (cleanPath === "/contact") {
-    title = "Contact Admissions & Support | EBM Learning Platform";
-    description = "Get in touch with the EBM educational counseling team for diagnostic bookings, admissions, and platform support.";
-    canonicalUrl = `${BASE_URL}/contact`;
-  } else if (cleanPath === "/privacy") {
-    title = "Privacy Policy | EBM Digital Learning Platform";
-    description = "Review how EBM handles and safeguards student, parent, and institutional data with strict educational privacy protocols.";
-    canonicalUrl = `${BASE_URL}/privacy`;
-  } else if (cleanPath === "/terms") {
-    title = "Terms and Conditions | EBM Digital Learning Platform";
-    description = "Review the terms of service, acceptable use policies, and user agreements for the EBM platform.";
-    canonicalUrl = `${BASE_URL}/terms`;
-  } else if (cleanPath === "/dashboard") {
-    title = "Student Learning Dashboard | EBM Portal";
-    description = "Personalized student dashboard for tracking mastery goals, daily tasks, study roadmap milestones, and learning analytics.";
-    canonicalUrl = `${BASE_URL}/dashboard`;
-    robots = "noindex, nofollow";
-  } else if (cleanPath === "/parent") {
-    title = "Parent Insights & Progress Portal | EBM";
-    description = "Monitor your child's academic progress, diagnostic evaluations, learning pace, and attendance in real time.";
-    canonicalUrl = `${BASE_URL}/parent`;
-    robots = "noindex, nofollow";
-  } else if (cleanPath === "/teacher") {
-    title = "Teacher & Classroom Management Portal | EBM";
-    description = "Manage student cohorts, assign diagnostic assessments, evaluate submissions, and monitor class performance metrics.";
-    canonicalUrl = `${BASE_URL}/teacher`;
-    robots = "noindex, nofollow";
-  } else if (cleanPath === "/admin") {
-    title = "Admin ERP & Platform Management | EBM";
-    description = "Comprehensive administration and enterprise resource planning portal for the Ejaz Bukhari Method educational platform.";
-    canonicalUrl = `${BASE_URL}/admin`;
-    robots = "noindex, nofollow";
   }
+
+  // Strictly enforce meta title (50-60 characters) and description (120-160 characters)
+  title = sanitizeMetaTitle(title);
+  description = sanitizeMetaDescription(description);
 
   const escapeAttr = (str: string) =>
     str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -8448,17 +8524,14 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
     return `<link rel="preload" as="style" href="${href}" crossorigin /><link rel="stylesheet" href="${href}" media="print" onload="this.media='all'" crossorigin /><noscript><link rel="stylesheet" href="${href}" crossorigin /></noscript>`;
   });
 
-  // Inject rich semantic HTML into <div id="root"> to achieve high text-to-HTML ratio (>25%),
-  // boost SEO indexation for all search engine bots, and provide instant accessible content.
-  try {
-    const prerenderedBody = getPrerenderedHtml(cleanPath, blogPostPayload?.post);
-    if (html.includes('<div id="root"></div>')) {
-      html = html.replace('<div id="root"></div>', `<div id="root">${prerenderedBody}</div>`);
-    } else {
-      html = html.replace(/<div id="root">[\s\S]*?<\/div>/i, `<div id="root">${prerenderedBody}</div>`);
-    }
-  } catch (err) {
-    console.error("Failed to inject prerendered HTML for path:", cleanPath, err);
+  // Inject route-specific pre-rendered semantic HTML inside <div id="root"> for LLM readability & AI web crawlers
+  const preRenderedHtml = getPreRenderedHtml(cleanPath, blogPostPayload);
+  if (html.includes("<!-- EBM_CONTENT_START -->") && html.includes("<!-- EBM_CONTENT_END -->")) {
+    html = html.replace(/<!-- EBM_CONTENT_START -->[\s\S]*?<!-- EBM_CONTENT_END -->/i, `<!-- EBM_CONTENT_START -->\n${preRenderedHtml}\n    <!-- EBM_CONTENT_END -->`);
+  } else if (html.includes('<div id="root"></div>')) {
+    html = html.replace('<div id="root"></div>', `<div id="root">\n<!-- EBM_CONTENT_START -->\n${preRenderedHtml}\n    <!-- EBM_CONTENT_END -->\n    </div>`);
+  } else {
+    html = html.replace(/<div id="root">([\s\S]*?)<\/div>\s*<script/i, `<div id="root">\n<!-- EBM_CONTENT_START -->\n${preRenderedHtml}\n    <!-- EBM_CONTENT_END -->\n    </div>\n    <script`);
   }
 
   return html;

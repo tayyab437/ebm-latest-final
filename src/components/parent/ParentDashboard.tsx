@@ -1897,9 +1897,9 @@ export function ParentDashboard({ notifications, onReadNotification, onLogout }:
                         AI
                       </div>
                       <div className="bg-white border border-slate-200 p-3 rounded-2xl shadow-3xs flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
-                        <span className="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
-                        <span className="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+                        <span className="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+                        <span className="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]"></span>
+                        <span className="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]"></span>
                       </div>
                     </div>
                   )}

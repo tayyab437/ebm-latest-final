@@ -221,8 +221,8 @@ export function AnalyticsPage() {
     <EbmAtmosphericCanvas className="min-h-screen">
       <div className="text-slate-800 font-sans antialiased">
         <SEOHead 
-          title="EBM Learning Analytics: Turn Student Data Into Action"
-          description="Actionable analytics that uncover student learning curves, mastery tracking, and skill progression with EBM's reporting dashboard."
+          title="EBM Learning Analytics | Real-Time Student Mastery Insights"
+          description="Track student learning curves, cognitive velocity, and concept mastery with actionable data analytics and diagnostic dashboards from the EBM ecosystem."
           canonicalUrl="https://ejazbukharimethod.com/analytics"
         />
         
@@ -640,7 +640,7 @@ export function AnalyticsPage() {
                 {/* Main orbital track */}
                 <circle cx="380" cy="380" r="280" fill="none" stroke="#e2e8f0" strokeWidth="2.5" strokeDasharray="8 8" />
                 {/* Inner active energy ring */}
-                <circle cx="380" cy="380" r="280" fill="none" stroke="url(#loopGradient)" strokeWidth="3" strokeDasharray="20 180" opacity="0.6" className="animate-spin" style={{ animationDuration: "30s" }} />
+                <circle cx="380" cy="380" r="280" fill="none" stroke="url(#loopGradient)" strokeWidth="3" strokeDasharray="20 180" opacity="0.6" className="animate-spin [animation-duration:30s]" />
                 
                 {/* Curved return path indicator from Progress (stage 8) back to Diagnose (stage 0) */}
                 <path

@@ -181,7 +181,7 @@ export function AudiencePerspectiveSection({ onSignIn }: { onSignIn?: () => void
                         <span className="text-sm font-black text-white">Level 780</span>
                       </div>
                       <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-cyan-400 rounded-full" style={{ width: "78%" }} />
+                        <div className="h-full bg-cyan-400 rounded-full w-[78%]" />
                       </div>
                       <div className="space-y-1.5 pt-1 text-xs">
                         <div className="flex justify-between text-slate-300">
@@ -202,7 +202,7 @@ export function AudiencePerspectiveSection({ onSignIn }: { onSignIn?: () => void
                         <span className="text-sm font-black text-white">Level 810</span>
                       </div>
                       <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-purple-400 rounded-full" style={{ width: "81%" }} />
+                        <div className="h-full bg-purple-400 rounded-full w-[81%]" />
                       </div>
                       <div className="space-y-1.5 pt-1 text-xs">
                         <div className="flex justify-between text-slate-300">
@@ -486,7 +486,7 @@ export function AudiencePerspectiveSection({ onSignIn }: { onSignIn?: () => void
                           <span className="text-slate-300">24 Math • 28 English</span>
                         </div>
                         <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-400 rounded-full" style={{ width: "68%" }} />
+                          <div className="h-full bg-emerald-400 rounded-full w-[68%]" />
                         </div>
                       </div>
 
@@ -496,7 +496,7 @@ export function AudiencePerspectiveSection({ onSignIn }: { onSignIn?: () => void
                           <span className="text-slate-300">9 Math • 7 English</span>
                         </div>
                         <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-cyan-400 rounded-full" style={{ width: "24%" }} />
+                          <div className="h-full bg-cyan-400 rounded-full w-[24%]" />
                         </div>
                       </div>
 
@@ -506,7 +506,7 @@ export function AudiencePerspectiveSection({ onSignIn }: { onSignIn?: () => void
                           <span className="text-slate-300">3 Math • 1 English</span>
                         </div>
                         <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-amber-400 rounded-full" style={{ width: "8%" }} />
+                          <div className="h-full bg-amber-400 rounded-full w-[8%]" />
                         </div>
                       </div>
                     </div>
@@ -631,7 +631,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <span className="text-emerald-600">800 (Mastery)</span>
               </div>
               <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: "100%" }} />
+                <div className="h-full bg-emerald-500 rounded-full w-full" />
               </div>
             </div>
             <div>
@@ -640,7 +640,7 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
                 <span className="text-amber-500">760 (Highly Capable)</span>
               </div>
               <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-500 rounded-full" style={{ width: "76%" }} />
+                <div className="h-full bg-amber-500 rounded-full w-[76%]" />
               </div>
             </div>
           </div>
@@ -681,8 +681,8 @@ export function AssessmentPage({ onSignIn, onNavigateToTab }: { onSignIn?: () =>
   return (
     <div className="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen">
       <SEOHead 
-        title="EBM Diagnostic Assessment | Adaptive Learning & Skill Evaluation"
-        description="Discover EBM Diagnostic Assessment, an adaptive learning and skill evaluation solution that helps educators identify student strengths, learning needs, and personalized next steps."
+        title="EBM Diagnostic Assessment | Adaptive Evaluation for K-12"
+        description="Evaluate core skills, pinpoint knowledge gaps, and get personalized academic learning pathways from Grade 1 to Cambridge O/A Levels with EBM diagnostics."
         canonicalUrl="https://ejazbukharimethod.com/assessment"
       />
       

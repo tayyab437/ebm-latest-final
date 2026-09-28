@@ -1,0 +1,25 @@
+{
+  "name": "EBM Cambridge Assessment Evaluator",
+  "identifier": "urn:air:ejazbukharimethod.com:assessment:cambridge-evaluator",
+  "description": "Automated rubric-aligned grading and detailed feedback generator for Cambridge O and A Level past papers and mock examinations.",
+  "version": "1.0.0",
+  "homepage": "https://ejazbukharimethod.com/assessment",
+  "capabilities": [
+    "PastPaperGrading",
+    "MarkSchemeAlignment",
+    "DetailedFeedback",
+    "WeaknessDiagnostics"
+  ],
+  "supportedSubjects": [
+    "Mathematics (0580/4024)",
+    "Physics (0625/5054)",
+    "Chemistry (0620/5070)",
+    "Biology (0610/5090)",
+    "English Language (1123/0500)"
+  ],
+  "contact": {
+    "organization": "Ejaz Bukhari Method (EBM)",
+    "email": "admin@ebm.edu",
+    "url": "https://ejazbukharimethod.com/contact"
+  }
+}

@@ -67,7 +67,7 @@ export function CurriculumDashboard() {
                 <span className="font-bold text-emerald-600">85%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '85%' }}></div>
+                <div className="bg-emerald-500 h-2 rounded-full w-[85%]"></div>
               </div>
             </div>
             
@@ -77,7 +77,7 @@ export function CurriculumDashboard() {
                 <span className="font-bold text-blue-600">62%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '62%' }}></div>
+                <div className="bg-blue-500 h-2 rounded-full w-[62%]"></div>
               </div>
             </div>
             
@@ -87,7 +87,7 @@ export function CurriculumDashboard() {
                 <span className="font-bold text-amber-500">40%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-amber-400 h-2 rounded-full" style={{ width: '40%' }}></div>
+                <div className="bg-amber-400 h-2 rounded-full w-[40%]"></div>
               </div>
             </div>
           </div>

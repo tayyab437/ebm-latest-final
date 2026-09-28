@@ -20,7 +20,7 @@ import {
 import type { BlogPost } from "../../types/blog.types";
 import { parseTags } from "../../types/blog.types";
 import { BlogService } from "../../services/blog.service";
-import { generateBlogPostStructuredData } from "../../services/seo.schema";
+import { generateBlogPostStructuredData, sanitizeMetaTitle, sanitizeMetaDescription } from "../../services/seo.schema";
 import { SEOHead } from "../SEOHead";
 import { BlogCard } from "./BlogCard";
 import {
@@ -228,8 +228,8 @@ export function BlogPostView() {
       
       {/* Route-Aware Dynamic Article SEO */}
       <SEOHead
-        title={post.seoTitle || `${post.title} | EBM Blog`}
-        description={post.seoDescription || post.excerpt}
+        title={sanitizeMetaTitle(post.seoTitle || `${post.title} | EBM Blog`)}
+        description={sanitizeMetaDescription(post.seoDescription || post.excerpt)}
         canonicalUrl={post.canonicalUrl || `https://ejazbukharimethod.com/blog/${post.slug}`}
         ogType="article"
         ogImage={post.featuredImage}

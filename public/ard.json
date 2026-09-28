@@ -1,0 +1,143 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Ejaz Bukhari Method (EBM) Digital Learning Ecosystem",
+    "identifier": "did:web:ejazbukharimethod.com",
+    "documentationUrl": "https://ejazbukharimethod.com/llms.txt",
+    "logoUrl": "https://ejazbukharimethod.com/favicon.svg"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:ejazbukharimethod.com:education:ebm-tutor-agent",
+      "displayName": "EBM Adaptive Academic Tutor",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://ejazbukharimethod.com/api/ai/agents/ebm-tutor-agent.json",
+      "description": "AI-assisted personalized tutor providing Socratic explanations, syllabus alignment, and homework diagnostics for Grade 1 through O/A Levels.",
+      "tags": [
+        "education",
+        "tutoring",
+        "k12",
+        "cambridge",
+        "stem",
+        "pedagogy"
+      ],
+      "capabilities": [
+        "SocraticTutoring",
+        "CurriculumDiagnostics",
+        "FormativeAssessment",
+        "ConceptExplanation"
+      ],
+      "representativeQueries": [
+        "Help me solve a Cambridge O Level kinematics physics problem",
+        "Explain quadratic inequalities step by step for Grade 9 math",
+        "Generate adaptive biology practice questions for IGCSE revision"
+      ],
+      "version": "1.0.0",
+      "updatedAt": "2026-09-28T00:00:00Z"
+    },
+    {
+      "identifier": "urn:air:ejazbukharimethod.com:assessment:cambridge-evaluator",
+      "displayName": "EBM Cambridge Assessment Evaluator",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://ejazbukharimethod.com/api/ai/agents/cambridge-evaluator.json",
+      "description": "Automated rubric-aligned grading and detailed feedback generator for Cambridge O and A Level past papers and mock examinations.",
+      "tags": [
+        "assessment",
+        "grading",
+        "cambridge",
+        "rubrics",
+        "exam-prep"
+      ],
+      "capabilities": [
+        "PastPaperGrading",
+        "MarkSchemeAlignment",
+        "DetailedFeedback",
+        "WeaknessDiagnostics"
+      ],
+      "representativeQueries": [
+        "Grade my O Level English narrative writing essay against Cambridge rubrics",
+        "Evaluate my A Level chemistry structured response and suggest improvements",
+        "Analyze mock exam answers and produce a weak-area diagnostic summary"
+      ],
+      "version": "1.0.0",
+      "updatedAt": "2026-09-28T00:00:00Z"
+    },
+    {
+      "identifier": "urn:air:ejazbukharimethod.com:analytics:learning-velocity",
+      "displayName": "EBM Cognitive Velocity & Analytics Engine",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://ejazbukharimethod.com/api/ai/agents/learning-velocity.json",
+      "description": "Predictive learning analytics agent calculating student cognitive velocity, retention decay, and personalized study pacing recommendations.",
+      "tags": [
+        "analytics",
+        "cognitive-velocity",
+        "study-pacing",
+        "learning-metrics"
+      ],
+      "capabilities": [
+        "CognitiveVelocityTracking",
+        "RetentionModeling",
+        "PacingRecommendations"
+      ],
+      "representativeQueries": [
+        "Calculate cognitive velocity metrics and mastery pace for Year 3 student",
+        "Identify retention decay risk areas for upcoming Cambridge examinations",
+        "Recommend personalized weekly study timetable based on diagnostic scores"
+      ],
+      "version": "1.0.0",
+      "updatedAt": "2026-09-28T00:00:00Z"
+    },
+    {
+      "identifier": "urn:air:ejazbukharimethod.com:pedagogy:teacher-toolkit",
+      "displayName": "EBM Inspiration & Teacher Toolkit Agent",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://ejazbukharimethod.com/api/ai/agents/teacher-toolkit.json",
+      "description": "Pedagogical copilot assisting educators with lesson planning, differentiated instructional strategies, and formative assessment design.",
+      "tags": [
+        "pedagogy",
+        "teacher-toolkit",
+        "lesson-planning",
+        "differentiated-instruction"
+      ],
+      "capabilities": [
+        "LessonPlanning",
+        "DifferentiatedPedagogy",
+        "FormativeAssessmentScaffolding"
+      ],
+      "representativeQueries": [
+        "Generate differentiated lesson plan for mixed-ability Grade 7 science class",
+        "Create formative check-for-understanding prompts for photosynthesis unit",
+        "Provide parent-teacher conference talking points with diagnostic metrics"
+      ],
+      "version": "1.0.0",
+      "updatedAt": "2026-09-28T00:00:00Z"
+    },
+    {
+      "identifier": "urn:air:ejazbukharimethod.com:mcp:learning-server",
+      "displayName": "EBM Learning & Curriculum MCP Server",
+      "type": "application/mcp-server-card+json",
+      "url": "https://ejazbukharimethod.com/api/ai/mcp/learning-server.json",
+      "description": "Model Context Protocol (MCP) server exposing tools for Cambridge syllabus lookup, student mastery queries, and learning resource discovery.",
+      "tags": [
+        "mcp",
+        "tools",
+        "curriculum",
+        "learning-analytics",
+        "api"
+      ],
+      "capabilities": [
+        "CurriculumLookup",
+        "StudentProgressQuery",
+        "LessonPlanGenerator",
+        "DiagnosticQuery"
+      ],
+      "representativeQueries": [
+        "Look up Cambridge O Level math syllabus learning objectives and codes",
+        "Query student mastery level and cognitive velocity metrics via MCP tool",
+        "Retrieve curated practice exercises for Cambridge physics electricity unit"
+      ],
+      "version": "1.0.0",
+      "updatedAt": "2026-09-28T00:00:00Z"
+    }
+  ]
+}

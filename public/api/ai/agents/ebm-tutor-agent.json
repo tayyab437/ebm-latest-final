@@ -1,0 +1,24 @@
+{
+  "name": "EBM Adaptive Academic Tutor",
+  "identifier": "urn:air:ejazbukharimethod.com:education:ebm-tutor-agent",
+  "description": "AI-assisted personalized tutor providing Socratic explanations, syllabus alignment, and homework diagnostics for Grade 1 through O/A Levels.",
+  "version": "1.0.0",
+  "homepage": "https://ejazbukharimethod.com/learning",
+  "capabilities": [
+    "SocraticTutoring",
+    "CurriculumDiagnostics",
+    "FormativeAssessment",
+    "ConceptExplanation"
+  ],
+  "supportedCurricula": [
+    "Grade 1 to 8 Foundation",
+    "Cambridge IGCSE",
+    "Cambridge O Level",
+    "Cambridge International A Level"
+  ],
+  "contact": {
+    "organization": "Ejaz Bukhari Method (EBM)",
+    "email": "admin@ebm.edu",
+    "url": "https://ejazbukharimethod.com/contact"
+  }
+}

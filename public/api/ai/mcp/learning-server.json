@@ -1,0 +1,32 @@
+{
+  "name": "EBM Learning & Curriculum MCP Server",
+  "identifier": "urn:air:ejazbukharimethod.com:mcp:learning-server",
+  "description": "Model Context Protocol server exposing tools for Cambridge syllabus lookup, student mastery queries, and learning resource discovery.",
+  "version": "1.0.0",
+  "homepage": "https://ejazbukharimethod.com/learning",
+  "transport": {
+    "type": "sse",
+    "url": "https://ejazbukharimethod.com/api/ai/mcp/sse"
+  },
+  "capabilities": {
+    "tools": [
+      {
+        "name": "lookup_syllabus",
+        "description": "Lookup Cambridge O/A Level learning objectives and curriculum codes"
+      },
+      {
+        "name": "query_student_mastery",
+        "description": "Retrieve student mastery metrics and cognitive velocity benchmarks"
+      },
+      {
+        "name": "generate_diagnostic_quiz",
+        "description": "Generate diagnostic quiz questions aligned with target subject competencies"
+      }
+    ]
+  },
+  "contact": {
+    "organization": "Ejaz Bukhari Method (EBM)",
+    "email": "admin@ebm.edu",
+    "url": "https://ejazbukharimethod.com/contact"
+  }
+}

@@ -149,8 +149,8 @@ export function ProgramsPage({ selectedYear, setSelectedYear, onEnterWorkspace }
   return (
     <div id="view-programs-redesign" className="space-y-16 animate-fade-in text-slate-100 font-sans selection:bg-blue-600 selection:text-white antialiased">
       <SEOHead 
-        title="EBM Academic Programs | Grade 1 to O/A Level Curriculum"
-        description="Explore the comprehensive EBM learning paths from primary grades through O/A Levels, covering mathematics, critical comprehension, and diagnostic milestones."
+        title="Academic Programs & Curriculum | Grade 1 to O/A Levels EBM"
+        description="Explore personalized academic programs from Grade 1 through Cambridge O/A Levels, covering mathematics, English comprehension, and STEM skill milestones."
         canonicalUrl="https://ejazbukharimethod.com/programs"
       />
       
