@@ -238,6 +238,18 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const answerTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Auto-focus and select ONE time when entering a question or moving to a new question
+  useEffect(() => {
+    const el = answerTextareaRef.current;
+    if (el) {
+      el.focus();
+      const len = el.value.length;
+      el.setSelectionRange(len, len);
+    }
+  }, [activeQuestionIndex]);
+
   const questions: Question[] = React.useMemo(() => {
     try {
       if (!lesson.questions) return [];
@@ -1055,15 +1067,7 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
                                 </label>
                                 <textarea
                                   key={`answer-textarea-${qIdx}`}
-                                  autoFocus
-                                  ref={(el) => {
-                                    if (el) {
-                                      el.focus();
-                                      // Move cursor to the end of existing text if any
-                                      const len = el.value.length;
-                                      el.setSelectionRange(len, len);
-                                    }
-                                  }}
+                                  ref={answerTextareaRef}
                                   value={currentAnswer}
                                   onChange={(e) => setAnswers(prev => ({ ...prev, [qIdx]: e.target.value }))}
                                   placeholder="Type your answer here..."

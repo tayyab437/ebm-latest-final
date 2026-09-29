@@ -147,6 +147,18 @@ export function StudentCurriculumTests() {
     };
   }, [currentMathQuestionIndex]);
 
+  const mathInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Auto-focus and select ONE time when entering a question or moving to a new question
+  useEffect(() => {
+    const el = mathInputRef.current;
+    if (el) {
+      el.focus();
+      const len = el.value.length;
+      el.setSelectionRange(len, len);
+    }
+  }, [currentMathQuestionIndex]);
+
   // Fetch math test slider settings
   useEffect(() => {
     const fetchSettings = async () => {
@@ -712,14 +724,7 @@ export function StudentCurriculumTests() {
                                     <input
                                       key={`math-input-${q.id}`}
                                       type="text"
-                                      autoFocus
-                                      ref={(el) => {
-                                        if (el) {
-                                          el.focus();
-                                          const len = el.value.length;
-                                          el.setSelectionRange(len, len);
-                                        }
-                                      }}
+                                      ref={mathInputRef}
                                       value={currentVal}
                                       onChange={(e) => handleAnswerChange(q.id, e.target.value)}
                                       placeholder="Type your answer or numerical value here..."
