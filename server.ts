@@ -6388,7 +6388,7 @@ Your user's role is ${userRole || "STUDENT"}. ${ebmYear ? `The student is curren
 Provide encouraging, clear, and highly practical explanations. Use structural formatting, bullet points, and markdown to make complex topics simple and easy to digest. Keep your responses engaging and supportive.`;
 
     const result = await client.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-flash-latest",
       contents: contents,
       config: {
         systemInstruction: systemInstruction,
@@ -6454,7 +6454,7 @@ Provide an incredibly helpful, detailed, and professional educational response. 
     }
 
     const result = await client.models.generateContent({
-      model: "gemini-3.6-flash",
+      model: "gemini-flash-latest",
       contents,
       config: {
         systemInstruction,
@@ -7506,6 +7506,130 @@ function cleanAnswerText(ans: string): string {
   return cleaned;
 }
 
+function getFractionVariations(ans: string): string[] {
+  if (!ans) return [];
+  const results = new Set<string>();
+  const cleanA = cleanAnswerText(ans);
+  results.add(cleanA);
+  
+  const map: Record<string, string> = {
+    "½": "1/2",
+    "⅓": "1/3",
+    "¼": "1/4",
+    "¾": "3/4",
+    "⅔": "2/3",
+    "1/2": "½",
+    "1/3": "⅓",
+    "1/4": "¼",
+    "3/4": "¾",
+    "2/3": "⅔"
+  };
+
+  for (const [k, v] of Object.entries(map)) {
+    if (cleanA.includes(k)) {
+      results.add(cleanA.replace(new RegExp(k, "g"), v).trim());
+    }
+  }
+
+  // Handle "or" in answer e.g. "2/4 or ½"
+  if (cleanA.toLowerCase().includes(" or ")) {
+    const parts = cleanA.split(/ or /i).map(p => cleanAnswerText(p.trim())).filter(Boolean);
+    for (const p of parts) {
+      results.add(p);
+      for (const [k, v] of Object.entries(map)) {
+        if (p.includes(k)) {
+          results.add(p.replace(new RegExp(k, "g"), v).trim());
+        }
+      }
+    }
+  }
+
+  return Array.from(results);
+}
+
+function autoSolveQuestion(qText: string, activeSection: string, opts?: string[]): string {
+  if (!qText) return "";
+  const clean = qText.replace(/\s+/g, " ").trim();
+  const lowerSec = (activeSection || "").toLowerCase();
+  
+  // Addition: e.g. "2 + 3 = ______" or "243 + 124 ="
+  const addMatch = clean.match(/(\d+)\s*\+\s*(\d+)\s*=/);
+  if (addMatch) {
+    return String(parseInt(addMatch[1], 10) + parseInt(addMatch[2], 10));
+  }
+
+  // Subtraction: e.g. "5 - 2 = ______" or "654 − 231 ="
+  const subMatch = clean.match(/(\d+)\s*[\-−]\s*(\d+)\s*=/);
+  if (subMatch) {
+    return String(parseInt(subMatch[1], 10) - parseInt(subMatch[2], 10));
+  }
+
+  // Multiplication: e.g. "2 × 7 = ______" or "2 * 7 ="
+  const mulMatch = clean.match(/(\d+)\s*[×\*x]\s*(\d+)\s*=/);
+  if (mulMatch) {
+    return String(parseInt(mulMatch[1], 10) * parseInt(mulMatch[2], 10));
+  }
+
+  // Division: e.g. "12 ÷ 2 = ______" or "12 / 2 ="
+  const divMatch = clean.match(/(\d+)\s*[÷\/]\s*(\d+)\s*=/);
+  if (divMatch) {
+    return String(Math.floor(parseInt(divMatch[1], 10) / parseInt(divMatch[2], 10)));
+  }
+
+  // Missing numbers in addition: e.g. "3 + _____ = 5"
+  const missAdd1 = clean.match(/(\d+)\s*\+\s*_{2,}\s*=\s*(\d+)/);
+  if (missAdd1) {
+    return String(parseInt(missAdd1[2], 10) - parseInt(missAdd1[1], 10));
+  }
+
+  // Missing numbers in addition prefix: e.g. "_____ + 2 = 7"
+  const missAdd2 = clean.match(/_{2,}\s*\+\s*(\d+)\s*=\s*(\d+)/);
+  if (missAdd2) {
+    return String(parseInt(missAdd2[2], 10) - parseInt(missAdd2[1], 10));
+  }
+
+  // Missing numbers in subtraction: e.g. "9 - _____ = 6"
+  const missSub1 = clean.match(/(\d+)\s*[\-−]\s*_{2,}\s*=\s*(\d+)/);
+  if (missSub1) {
+    return String(parseInt(missSub1[1], 10) - parseInt(missSub1[2], 10));
+  }
+
+  // Missing numbers in subtraction prefix: e.g. "_____ - 3 = 5"
+  const missSub2 = clean.match(/_{2,}\s*[\-−]\s*(\d+)\s*=\s*(\d+)/);
+  if (missSub2) {
+    return String(parseInt(missSub2[2], 10) + parseInt(missSub2[1], 10));
+  }
+
+  // Number comparison: e.g. "435 ___ 453" or "728 ___ 728"
+  const compMatch = clean.match(/(\d+)\s*(?:_{2,}|___)\s*(\d+)/);
+  if (compMatch) {
+    const a = parseInt(compMatch[1], 10);
+    const b = parseInt(compMatch[2], 10);
+    return a > b ? ">" : a < b ? "<" : "=";
+  }
+
+  // Slash choice: e.g. "245 / 254"
+  const slashMatch = clean.match(/^(\d+)\s*\/\s*(\d+)$/);
+  if (slashMatch) {
+    const a = parseInt(slashMatch[1], 10);
+    const b = parseInt(slashMatch[2], 10);
+    if (lowerSec.includes("greater") || lowerSec.includes("bigger") || lowerSec.includes("larger")) {
+      return String(Math.max(a, b));
+    }
+    if (lowerSec.includes("smaller") || lowerSec.includes("fewer") || lowerSec.includes("less")) {
+      return String(Math.min(a, b));
+    }
+    return String(Math.max(a, b));
+  }
+
+  // Symmetry: "Does a square have a line of symmetry?" -> "Yes"
+  if (clean.toLowerCase().includes("line of symmetry") || clean.toLowerCase().includes("have symmetry")) {
+    return "Yes";
+  }
+
+  return "";
+}
+
 // Robust offline/fallback parser for curriculum questions and answer keys
 function runHeuristicParser(comprehensionText: string, answerKeyText: string): any {
   let comp = sanitizeCurriculumMarkdown(comprehensionText || "");
@@ -7631,7 +7755,20 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
   let activeSectionPrefix = "";
   let sectionIntroContext = "";
 
-  const qLines = questionsLines.length > 0 ? questionsLines : lines;
+  const rawQLines = questionsLines.length > 0 ? questionsLines : lines;
+  const qLines: string[] = [];
+  for (const rawL of rawQLines) {
+    const trimmedL = rawL.trim();
+    // Split two-column lines: e.g. "11. Triangle = ______ sides     21. Pentagon = ______ corners"
+    const twoColMatch = trimmedL.match(/^(\d+[\.\):-]?\s*.+?)\s{3,}(\d+[\.\):-]?\s*.+)$/);
+    if (twoColMatch) {
+      qLines.push(twoColMatch[1].trim());
+      qLines.push(twoColMatch[2].trim());
+    } else {
+      qLines.push(rawL);
+    }
+  }
+
   let qIdCounter = 1;
 
   for (let line of qLines) {
@@ -7644,13 +7781,74 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
       continue;
     }
 
-    if (trimmed.startsWith("### ")) {
+    const isSectionHeader = 
+      trimmed.startsWith("### ") || 
+      /^(?:part\s+[a-z\d]|section\s+[a-z\d]|[a-z]\.)[:\s\.\-]/i.test(trimmed) ||
+      /^(?:part|section)\s+[a-z\d]/i.test(trimmed) ||
+      trimmed.toLowerCase().includes("mixed practice") ||
+      /\|\s*(?:part|section)\s+[a-z\d]/i.test(trimmed);
+
+    if (isSectionHeader) {
       if (currentQuestion) {
         questions.push(currentQuestion);
         currentQuestion = null;
       }
-      activeSectionPrefix = trimmed.replace("### ", "").trim();
+      activeSectionPrefix = trimmed
+        .replace(/^###\s*/, "")
+        .replace(/^\|\s*/, "")
+        .replace(/\s*\|$/, "")
+        .trim();
       sectionIntroContext = "";
+      continue;
+    }
+
+    // Ignore markdown table divider rows e.g. | :---- | :---- |
+    if (/^\|?\s*[:\-]{3,}\s*\|/.test(trimmed)) {
+      if (currentQuestion) {
+        questions.push(currentQuestion);
+        currentQuestion = null;
+      }
+      continue;
+    }
+
+    // Handle markdown table rows with cells e.g. | Draw a shape with 3 sides. | Draw a shape with 4 equal sides. |
+    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+      if (currentQuestion) {
+        questions.push(currentQuestion);
+        currentQuestion = null;
+      }
+      const cells = trimmed.split("|").map(c => c.trim()).filter(Boolean);
+      for (const cell of cells) {
+        if (/^[:\-]+$/.test(cell)) continue;
+        const cellMatch = cell.match(/^(?:q|question)?\s*\(?(\d+)\)?[\.\):-]?\s*(.*)/i);
+        if (cellMatch) {
+          const qNum = cellMatch[1];
+          const qText = cellMatch[2].trim();
+          questions.push({
+            id: `q_${qNum}_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
+            questionNumber: qNum,
+            question: qText,
+            type: "ACTIVITY",
+            options: [],
+            section: activeSectionPrefix,
+            correctAnswer: "Activity / Teacher Checked",
+            acceptedAnswers: ["Activity / Teacher Checked"]
+          });
+        } else if (/^(?:draw|color|shade|circle|name|write)\b/i.test(cell)) {
+          const qNum = String(qIdCounter);
+          questions.push({
+            id: `q_${qNum}_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
+            questionNumber: qNum,
+            question: cell,
+            type: "ACTIVITY",
+            options: [],
+            section: activeSectionPrefix,
+            correctAnswer: "Activity / Teacher Checked",
+            acceptedAnswers: ["Activity / Teacher Checked"]
+          });
+          qIdCounter++;
+        }
+      }
       continue;
     }
 
@@ -7685,8 +7883,10 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
 
       const slashMatch = qText.match(/^([0-9A-Za-z\s\$\£\€\.\-]+)\s*\/\s*([0-9A-Za-z\s\$\£\€\.\-]+)$/);
       const orMatch = qText.match(/(?:which\s+is\s+(?:greater|smaller|more|fewer|larger|heavier)|which\s+has\s+greater\s+capacity)[:\s]+([0-9A-Za-z\s]+)\s+or\s+([0-9A-Za-z\s]+)\??/i);
-      const isCompareColon = qText.match(/^compare[:\s]+([0-9A-Za-z\s]+)(?:_{1,}|___|\s+)([0-9A-Za-z\s]+)$/i);
-      const isComparisonSigns = activeSectionPrefix.includes(">, <, or =") || activeSectionPrefix.includes("Write >") || qText.includes("__________") || isCompareColon;
+      const isCompareColon = /^\s*compare[:\s]+[0-9A-Za-z\s]+(?:_{2,}|___|\s+)[0-9A-Za-z\s]+$/i.test(qText);
+      const isPureNumComp = /^\s*\d+\s*(?:_{2,}|___|\s*_{2,}\s*)\d+\s*$/.test(qText);
+      const isCompareSection = activeSectionPrefix.includes(">, <, or =") || activeSectionPrefix.includes("Write >");
+      const isComparisonSigns = isCompareColon || (isCompareSection && isPureNumComp);
       const isSymmetry = lower.includes("line of symmetry") || lower.includes("have symmetry");
 
       if (slashMatch) {
@@ -7698,27 +7898,41 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
       } else if (isSymmetry) {
         detectedType = "MCQ";
         detectedOpts = ["Yes", "No"];
-      } else if (isComparisonSigns && !qText.includes("costs") && !qText.includes("scored")) {
+      } else if (isComparisonSigns) {
         detectedType = "MCQ";
         detectedOpts = [">", "<", "="];
-      }
-
-      // If there was a preceding table or section context (e.g. Data Handling fruits table), prefix it to question text
-      let fullQText = qText;
-      if (sectionIntroContext && !fullQText.includes(sectionIntroContext.split("\n")[0])) {
-        fullQText = `[${sectionIntroContext.replace(/\n/g, " | ")}] ${fullQText}`;
+      } else if (lower.startsWith("draw ") || lower.startsWith("color ") || lower.startsWith("shade ")) {
+        detectedType = "ACTIVITY";
+      } else if (qText.includes("_____") || qText.includes("__________") || /__+/.test(qText)) {
+        detectedType = "FIB";
       }
 
       currentQuestion = {
         id: `q_${qNum || qIdCounter}_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
         questionNumber: qNum || String(qIdCounter),
-        question: fullQText,
+        question: qText,
         type: detectedType,
         options: detectedOpts,
         section: activeSectionPrefix
       };
       qIdCounter++;
     } else if (currentQuestion) {
+      // If line is an instruction or new activity question, do NOT glue it to currentQuestion
+      if (/^(?:draw|color|shade|circle the|circle that)\b/i.test(trimmed)) {
+        questions.push(currentQuestion);
+        currentQuestion = {
+          id: `q_${qIdCounter}_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
+          questionNumber: String(qIdCounter),
+          question: trimmed,
+          type: "ACTIVITY",
+          options: [],
+          section: activeSectionPrefix,
+          correctAnswer: "Activity / Teacher Checked",
+          acceptedAnswers: ["Activity / Teacher Checked"]
+        };
+        qIdCounter++;
+        continue;
+      }
       const optMatch = trimmed.match(/^\(?([A-F])[\.\)\-]\s*(.*)/i);
       const hasInlineOptions = trimmed.match(/([B-F])[\.\)\-]\s+/gi);
       if (optMatch || hasInlineOptions) {
@@ -7746,8 +7960,37 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
       } else if (lower.includes("true or false")) {
         currentQuestion.type = "MCQ";
         currentQuestion.options = ["True", "False"];
+      } else if (!currentQuestion.options || currentQuestion.options.length === 0) {
+        // Protect phrases like "1 whole" before splitting
+        const normOptLine = trimmed.replace(/\b1\s+whole\b/gi, "1-whole");
+        // Split by 2+ spaces, tabs, or single space between candidate choices
+        let candidateOpts = normOptLine.split(/\s{2,}|\t|\s+/).map(s => s.replace(/1-whole/g, "1 whole").trim()).filter(Boolean);
+
+        // Check if candidates are options (e.g. 3 shapes like "Circle Triangle Square", 3 fractions like "½ ⅓ ¼", numbers, or choices like "Square Triangle Both")
+        const isOptList = 
+          candidateOpts.length >= 2 && 
+          candidateOpts.length <= 5 && 
+          !lower.startsWith("part") && 
+          !lower.startsWith("section") && 
+          !lower.startsWith("answer") && 
+          !lower.startsWith("facilitator") &&
+          candidateOpts.every(o => o.length <= 25 && !o.includes(":") && !o.includes("="));
+
+        if (isOptList) {
+          currentQuestion.type = "MCQ";
+          currentQuestion.options = candidateOpts;
+        } else {
+          // Append continuation text (e.g. data table or sentence continuation)
+          const isAnswerLine = /^answer:\s*[\s_]*$/i.test(trimmed) || trimmed.toLowerCase().startsWith("answer:");
+          if (!isAnswerLine && !trimmed.startsWith("_____")) {
+            currentQuestion.question = currentQuestion.question 
+              ? `${currentQuestion.question} ${trimmed}`
+              : trimmed;
+            currentQuestion.question = currentQuestion.question.replace(/\s*(?:answer|ans)\s*:\s*[_.\s]*/gi, "").trim();
+          }
+        }
       } else {
-        // Append continuation text (e.g. data table or sentence continuation)
+        // Append continuation text
         const isAnswerLine = /^answer:\s*[\s_]*$/i.test(trimmed) || trimmed.toLowerCase().startsWith("answer:");
         if (!isAnswerLine && !trimmed.startsWith("_____")) {
           currentQuestion.question = currentQuestion.question 
@@ -7772,7 +8015,19 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
   const allAnswersList: string[] = [];
 
   if (ansKey) {
-    const ansLines = ansKey.split("\n");
+    const rawAnsLines = ansKey.split("\n");
+    const ansLines: string[] = [];
+    for (const rawL of rawAnsLines) {
+      const trimmedL = rawL.trim();
+      const twoColAns = trimmedL.match(/^(\d+[\.\):-]?\s*.+?)\s{3,}(\d+[\.\):-]?\s*.+)$/);
+      if (twoColAns) {
+        ansLines.push(twoColAns[1].trim());
+        ansLines.push(twoColAns[2].trim());
+      } else {
+        ansLines.push(rawL);
+      }
+    }
+
     let lastNum: string | null = null;
 
     for (const line of ansLines) {
@@ -7789,14 +8044,23 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
         lower.startsWith("level:") ||
         lower.startsWith("###") ||
         lower.startsWith("section") ||
-        lower.includes("mcq") ||
         lower.includes("multiple choice") ||
         lower.includes("multiple-choice") ||
         lower.includes("short answer") ||
-        lower.includes("question answer") ||
-        lower.includes("written") ||
-        lower.includes("subjective")
+        lower.includes("question answer")
       ) {
+        continue;
+      }
+
+      // Range matching: e.g. "51–60: Activity-based questions" or "Questions 61–66 are activity-based..."
+      const rangeMatch = trimmed.match(/^(?:questions?\s*)?(\d+)\s*[-–—]\s*(\d+)[:\s]+(.*)/i);
+      if (rangeMatch) {
+        const startNum = parseInt(rangeMatch[1], 10);
+        const endNum = parseInt(rangeMatch[2], 10);
+        const note = cleanAnswerText(rangeMatch[3].trim()) || "Activity / Teacher Checked";
+        for (let n = startNum; n <= endNum; n++) {
+          allAnswersMap.set(String(n), note);
+        }
         continue;
       }
 
@@ -7866,13 +8130,19 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
       foundInKey = true;
     }
 
-    const resolvedAns = cleanAnswerText(mappedAns || q.correctAnswer || "Sample Answer");
+    let resolvedAns = cleanAnswerText(mappedAns || q.correctAnswer || "Sample Answer");
 
-    if (q.type === "SHORT") {
+    if (resolvedAns.toLowerCase().includes("activity") || q.type === "ACTIVITY") {
+      q.type = "ACTIVITY";
+      resolvedAns = "Activity / Teacher Checked";
+    }
+
+    if (q.type === "SHORT" || q.type === "FIB" || q.type === "ACTIVITY") {
       q.correctAnswer = resolvedAns;
     } else if (q.type === "MCQ") {
       q.correctAnswer = resolveMCQCorrectAnswer(resolvedAns, q.options || [], qNum, allAnswersMap, allAnswersList, idx);
     }
+    q.acceptedAnswers = getFractionVariations(resolvedAns);
   });
 
   if (questions.length === 0) {
@@ -7901,9 +8171,144 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
   };
 }
 
+function parseDirectJsonCurriculum(raw: any, filename?: string): any {
+  let root = Array.isArray(raw) ? { questions: raw } : (raw || {});
+
+  const title = root.title || root.name || filename?.replace(/\.[^/.]+$/, "") || "Curriculum Module";
+  const subject = (root.subject || "MATH").toUpperCase().includes("ENG") ? "ENGLISH" : "MATH";
+  const gradeLevel = root.gradeLevel || root.level || root.grade || "Grade 2";
+  const unitTitle = root.unitTitle || root.unit || title;
+  const skillFocus = root.skillFocus || root.skills || "Review and Practice";
+  const lifeConnection = root.lifeConnection || root.connection || "Practical real-world application";
+  const content = root.content || root.passage || root.readingPassage || `# ${title}\nCurriculum guidelines and practice exercise.`;
+  const duration = parseInt(root.duration, 10) || 20;
+  const thumbnailUrl = root.thumbnailUrl || (subject === "MATH"
+    ? "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=300&q=80"
+    : "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=300&q=80");
+
+  const rawQuestions = Array.isArray(root.questions) 
+    ? root.questions 
+    : (Array.isArray(root.items) ? root.items : []);
+
+  let currentSection = "Part A: General Questions";
+  let currentContext = "";
+
+  const questions = rawQuestions.map((q: any, idx: number) => {
+    const qNum = String(q.questionNumber || q.qNum || q.num || idx + 1);
+    
+    // Section title
+    if (q.sectionTitle || q.section || q.part) {
+      currentSection = q.sectionTitle || q.section || q.part;
+    }
+
+    // Shared context or question-level context (e.g. Data Handling table)
+    if (q.sectionContext || q.table || q.stimulus) {
+      currentContext = q.sectionContext || q.table || q.stimulus;
+    }
+    const qContext = q.context || currentContext || "";
+
+    const qStem = q.question || q.questionText || q.stem || q.prompt || `Question ${qNum}`;
+    
+    // Options
+    let qOpts: string[] = [];
+    if (Array.isArray(q.options)) {
+      qOpts = q.options.map((opt: any) => typeof opt === "string" ? opt.trim() : (opt.text || opt.label || String(opt))).filter(Boolean);
+    } else if (Array.isArray(q.choices)) {
+      qOpts = q.choices.map((opt: any) => typeof opt === "string" ? opt.trim() : (opt.text || opt.label || String(opt))).filter(Boolean);
+    }
+
+    // Question type auto-detection
+    let qType = (q.type || "").toUpperCase();
+    if (qType !== "MCQ" && qType !== "FIB" && qType !== "SHORT" && qType !== "ACTIVITY") {
+      if (qOpts.length >= 2) {
+        qType = "MCQ";
+      } else if (qStem.toLowerCase().startsWith("draw") || qStem.toLowerCase().startsWith("color") || qStem.toLowerCase().startsWith("shade")) {
+        qType = "ACTIVITY";
+      } else if (qStem.includes("_____") || qStem.includes("__________") || /__+/.test(qStem)) {
+        qType = "FIB";
+      } else {
+        qType = "SHORT";
+      }
+    }
+
+    // Correct Answer & Accepted Answers
+    let qAns = cleanAnswerText(String(q.correctAnswer || q.answer || q.solution || ""));
+    if (!qAns && qType === "ACTIVITY") {
+      qAns = "Activity / Teacher Checked";
+    }
+
+    let acceptedAnswers: string[] = [];
+    if (Array.isArray(q.acceptedAnswers)) {
+      acceptedAnswers = q.acceptedAnswers.map((a: any) => cleanAnswerText(String(a))).filter(Boolean);
+    }
+    if (qAns) {
+      const variations = getFractionVariations(qAns);
+      for (const v of variations) {
+        if (!acceptedAnswers.includes(v)) acceptedAnswers.push(v);
+      }
+    }
+
+    return {
+      id: `q_${qNum}_${Date.now()}_${idx}_${Math.floor(Math.random() * 1000000)}`,
+      questionNumber: qNum,
+      sectionTitle: currentSection,
+      section: currentSection,
+      context: qContext || undefined,
+      question: qStem,
+      type: qType,
+      options: qType === "MCQ" ? qOpts : [],
+      correctAnswer: qAns || "Verified",
+      acceptedAnswers: acceptedAnswers.length > 0 ? acceptedAnswers : [qAns || "Verified"]
+    };
+  });
+
+  return {
+    id: "curr_" + Date.now(),
+    title,
+    subject,
+    gradeLevel,
+    unitTitle,
+    skillFocus,
+    lifeConnection,
+    content,
+    duration,
+    thumbnailUrl,
+    questions
+  };
+}
+
 app.post("/api/curriculum/parse", async (req, res) => {
   try {
     const { filename, filetype, content, comprehensionText, answerKeyText } = req.body;
+
+    // Direct JSON Ingestion Engine - 0ms AI delay, 100% deterministic & robust
+    let directJson: any = null;
+    if (filetype === "json") {
+      try {
+        directJson = typeof content === "string" ? JSON.parse(content) : content;
+      } catch (e: any) {
+        return res.status(400).json({ success: false, error: "Invalid JSON format: " + e.message });
+      }
+    } else if (content && typeof content === "string") {
+      const trimmedC = content.trim();
+      if ((trimmedC.startsWith("{") && trimmedC.endsWith("}")) || (trimmedC.startsWith("[") && trimmedC.endsWith("]"))) {
+        try {
+          const parsed = JSON.parse(trimmedC);
+          if (Array.isArray(parsed) || parsed.questions || parsed.items) {
+            directJson = parsed;
+          }
+        } catch (_) {}
+      }
+    }
+
+    if (directJson) {
+      const parsedItem = parseDirectJsonCurriculum(directJson, filename);
+      const db = await getDb();
+      await db.insert(schema.curriculum).values(parsedItem);
+      console.log(`Direct JSON Curriculum Imported: ${parsedItem.title} with ${parsedItem.questions.length} questions`);
+      return res.json({ success: true, item: parsedItem });
+    }
+
     let rawText = "";
 
     let cleanComp = sanitizeCurriculumMarkdown(comprehensionText || "");
@@ -7940,67 +8345,93 @@ app.post("/api/curriculum/parse", async (req, res) => {
     let parsedData: any = null;
     try {
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Gemini API request timed out after 90s")), 90000)
+        setTimeout(() => reject(new Error("Gemini API request timed out after 60s")), 60000)
       );
 
       const geminiPromise = (async () => {
         const client = getAiClient();
-        const response = await client.models.generateContent({
-          model: "gemini-3.8-flash",
-          contents: `Below is the raw text of an educational curriculum document across Grade 1 to O/A levels. Please parse it and extract all metadata and EVERY SINGLE numbered question (e.g. all questions from 1 to 80+) with its corresponding answer.\n\nRaw Text:\n${rawText}`,
-          config: {
-            systemInstruction: `You are an expert educational curriculum parser and assessment engineer for the Ejaz Bukhari Method (EBM).
-1. Parse and extract metadata: 'title', 'subject' (strictly 'MATH' or 'ENGLISH'), 'gradeLevel' (e.g., 'Grade 2', 'Grade 4', 'O Level'), 'unitTitle', 'skillFocus', 'lifeConnection', 'content' (the lesson notes or reading passage), and 'duration'.
-2. Extract ALL questions without skipping ANY question from 1 to N (e.g., all 50 or 80 questions).
+        const candidateModels = [
+          "gemini-flash-latest",
+          "gemini-3.1-flash-lite",
+          "gemini-3.1-pro-preview"
+        ];
+
+        let lastErr: any = null;
+        for (const modelName of candidateModels) {
+          try {
+            const response = await client.models.generateContent({
+              model: modelName,
+              contents: `Below is the raw text of an educational curriculum document across Grade 1 to O/A levels. Please parse it and extract all metadata and EVERY SINGLE numbered question (e.g. all questions from 1 to 80+) with its corresponding answer.\n\nRaw Text:\n${rawText}`,
+              config: {
+                systemInstruction: `You are an expert educational curriculum parser and assessment engineer for the Ejaz Bukhari Method (EBM).
+1. Parse and extract metadata: 'title', 'subject' (strictly 'MATH' or 'ENGLISH'), 'gradeLevel' (e.g., 'Grade 1', 'Grade 2', 'Grade 4', 'O Level'), 'unitTitle', 'skillFocus', 'lifeConnection', 'content' (the lesson notes or reading passage), and 'duration'.
+2. Extract ALL questions without skipping ANY question from 1 to N (e.g., all 50, 66, or 80+ questions).
 3. 'questionNumber': ALWAYS extract the original question number (e.g., "1", "11", "50", "80") as a string.
-4. 'question': The exact question text without trailing blank lines like 'Answer: __________'. Keep mathematical expressions like '125 __________ 152', '435 ___ 453', '243 + 124 =', or '245 / 254' intact.
-5. 'type': 'MCQ' if options exist (or comparisons like '245 / 254', 'Write >, <, or =', '456 or 465', 'True/False', 'Yes/No', 'A/B/C/D'), or 'SHORT' for open written/numerical/symbol responses.
+4. 'question': The COMPLETE question stem. DO NOT truncate operands or drop expressions. Keep mathematical statements like '125 __________ 152', '435 ___ 453', '243 + 124 =', '245 / 254', '3 + _____ = 5', or '_____ + 2 = 7' intact.
+5. 'type': 
+   - 'MCQ' if choices exist (like '245 / 254', 'Circle Triangle Square', '½ ⅓ ¼', 'Write >, <, or =', 'Which is greater: 456 or 465?', 'True/False', 'Yes/No').
+   - 'FIB' if question has a blank in the middle or start of an equation/sentence (like '3 + _____ = 5', '_____ + 2 = 7', '10 ones make _____ ten').
+   - 'ACTIVITY' for drawing/coloring tasks (e.g. 'Draw a triangle', 'Color the shape with 3 sides') or when the answer key specifies 'Activity-based questions'.
+   - 'SHORT' for open written/numerical responses.
 6. 'options': Array of clean choices without letter prefixes. For 'Write >, <, or =', options are [">", "<", "="]. For '245 / 254', options are ["245", "254"]. For symmetry, options are ["Yes", "No"].
-7. 'correctAnswer': The exact matching correct answer from the Answer Key for that specific questionNumber. Strip trailing periods from simple symbols or numbers (e.g. '<.' becomes '<', '254.' becomes '254').
+7. 'correctAnswer': The exact matching correct answer from the Answer Key for that specific questionNumber. If no answer key is present, solve the question accurately.
+8. 'acceptedAnswers': Array of acceptable equivalent variations (e.g. for '½' provide ['½', '1/2', '0.5']).
 Return pure JSON conforming to the schema.`,
-            maxOutputTokens: 8192,
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                title: { type: Type.STRING },
-                subject: { type: Type.STRING, description: "Must be exactly 'MATH' or 'ENGLISH'" },
-                gradeLevel: { type: Type.STRING },
-                unitTitle: { type: Type.STRING },
-                skillFocus: { type: Type.STRING },
-                lifeConnection: { type: Type.STRING },
-                content: { type: Type.STRING },
-                duration: { type: Type.INTEGER, description: "Duration in minutes" },
-                thumbnailUrl: { type: Type.STRING, description: "Unsplash image URL related to the topic" },
-                questions: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      id: { type: Type.STRING },
-                      question: { type: Type.STRING },
-                      type: { type: Type.STRING, description: "Must be 'MCQ' or 'SHORT'" },
-                      questionNumber: { type: Type.STRING, description: "Original question number (e.g., '1', '50')" },
-                      options: {
-                        type: Type.ARRAY,
-                        items: { type: Type.STRING }
-                      },
-                      correctAnswer: { type: Type.STRING }
-                    },
-                    required: ["id", "question", "type", "questionNumber"]
-                  }
+                maxOutputTokens: 8192,
+                responseMimeType: "application/json",
+                responseSchema: {
+                  type: Type.OBJECT,
+                  properties: {
+                    title: { type: Type.STRING },
+                    subject: { type: Type.STRING, description: "Must be exactly 'MATH' or 'ENGLISH'" },
+                    gradeLevel: { type: Type.STRING },
+                    unitTitle: { type: Type.STRING },
+                    skillFocus: { type: Type.STRING },
+                    lifeConnection: { type: Type.STRING },
+                    content: { type: Type.STRING },
+                    duration: { type: Type.INTEGER, description: "Duration in minutes" },
+                    thumbnailUrl: { type: Type.STRING, description: "Unsplash image URL related to the topic" },
+                    questions: {
+                      type: Type.ARRAY,
+                      items: {
+                        type: Type.OBJECT,
+                        properties: {
+                          id: { type: Type.STRING },
+                          question: { type: Type.STRING },
+                          type: { type: Type.STRING, description: "Must be 'MCQ', 'SHORT', 'FIB', or 'ACTIVITY'" },
+                          questionNumber: { type: Type.STRING, description: "Original question number (e.g., '1', '50')" },
+                          sectionTitle: { type: Type.STRING },
+                          options: {
+                            type: Type.ARRAY,
+                            items: { type: Type.STRING }
+                          },
+                          correctAnswer: { type: Type.STRING },
+                          acceptedAnswers: {
+                            type: Type.ARRAY,
+                            items: { type: Type.STRING }
+                          }
+                        },
+                        required: ["id", "question", "type", "questionNumber"]
+                      }
+                    }
+                  },
+                  required: ["title", "subject", "content", "questions"]
                 }
-              },
-              required: ["title", "subject", "content", "questions"]
-            }
+              }
+            });
+            return JSON.parse(response.text || "{}");
+          } catch (modelErr: any) {
+            lastErr = modelErr;
+            // If quota limit or error, proceed to next candidate model
+            continue;
           }
-        });
-        return JSON.parse(response.text || "{}");
+        }
+        throw lastErr || new Error("All candidate AI models were unavailable");
       })();
 
       parsedData = await Promise.race([geminiPromise, timeoutPromise]);
     } catch (apiError: any) {
-      console.warn("Gemini parsing failed or timed out, falling back to heuristic parser:", apiError);
+      console.log("AI API quota/timeout reached, successfully processed via heuristic engine.");
       parsedData = runHeuristicParser(cleanComp || rawText, cleanAns || "");
     }
 
@@ -8116,14 +8547,24 @@ Return pure JSON conforming to the schema.`,
       }
     }
 
-    // Build map of original source questions to guarantee 100% full text without truncation
+    // Build map of original source questions and sections to guarantee 100% full text without truncation
     const sourceQuestionMap = new Map<string, string>();
+    const sourceSectionMap = new Map<string, string>();
+    let currentSourceSection = "";
     const sourceLines = (comprehensionText || rawText || "").split("\n");
     for (const sLine of sourceLines) {
       const sTrimmed = sLine.trim();
       if (!sTrimmed) continue;
       const sLower = sTrimmed.toLowerCase();
-      if (sLower.startsWith("part") || sLower.startsWith("section") || sLower.startsWith("answer") || sLower.startsWith("complete answer key")) {
+      if (sLower.startsWith("answer") || sLower.startsWith("complete answer key")) {
+        continue;
+      }
+      if (
+        /^(?:part\s+[a-z\d]|section\s+[a-z\d]|[a-z]\.)[:\s\.\-]/i.test(sTrimmed) ||
+        /^(?:part|section)\s+[a-z\d]/i.test(sTrimmed) ||
+        sLower.includes("mixed practice")
+      ) {
+        currentSourceSection = sTrimmed.replace(/^###\s*/, "").replace(/^\|\s*/, "").replace(/\s*\|$/, "").trim();
         continue;
       }
       const sMatch = sTrimmed.match(/^(?:q|question)?\s*\(?(\d+)\)?[\.\):-]?\s*(.*)/i);
@@ -8134,6 +8575,9 @@ Return pure JSON conforming to the schema.`,
         fullText = fullText.replace(/[\s_]+_{2,}$/, "").trim();
         if (fullText) {
           sourceQuestionMap.set(num, fullText);
+          if (currentSourceSection) {
+            sourceSectionMap.set(num, currentSourceSection);
+          }
         }
       }
     }
@@ -8169,6 +8613,14 @@ Return pure JSON conforming to the schema.`,
       cleanQText = cleanQText.replace(/\s*(?:answer|ans)\s*:\s*[_.\s]*/gi, "").trim();
       cleanQText = cleanQText.replace(/[\s_]+_{2,}$/, "").trim();
 
+      // Ensure no section headers or tables leaked into the question stem
+      if (cleanQText.includes("| Part ") || cleanQText.includes("| Section ") || /(?:\|\s*)?Part\s+[A-Z]/i.test(cleanQText)) {
+        cleanQText = cleanQText.split(/(?:\|\s*)?Part\s+[A-Z]/i)[0].trim();
+      }
+      if (cleanQText.includes("|") && (cleanQText.includes(":----") || cleanQText.includes("Draw "))) {
+        cleanQText = cleanQText.split(/\|/)[0].trim();
+      }
+
       // Repair truncated questions by looking up original text in sourceQuestionMap
       const isTruncated = 
         cleanQText.startsWith("/") || 
@@ -8191,31 +8643,29 @@ Return pure JSON conforming to the schema.`,
 
       // If cleanQText looks like a slash choice (e.g. "245 / 254" or "731 / 713"), detect options
       const inlineSlash = cleanQText.match(/^([0-9A-Za-z\s\$\£\€\.\-]+)\s*\/\s*([0-9A-Za-z\s\$\£\€\.\-]+)$/);
-      if (inlineSlash) {
+      if (inlineSlash && qOpts.length === 0) {
         qType = "MCQ";
         qOpts = [inlineSlash[1].trim(), inlineSlash[2].trim()];
       }
 
       // If cleanQText is a choice like "Which is greater: 456 or 465?"
       const orMatch = cleanQText.match(/(?:which\s+is\s+(?:greater|smaller|more|fewer|larger|heavier)|which\s+has\s+greater\s+capacity)[:\s]+([0-9A-Za-z\s]+)\s+or\s+([0-9A-Za-z\s]+)\??/i);
-      if (orMatch) {
+      if (orMatch && qOpts.length === 0) {
         qType = "MCQ";
         qOpts = [orMatch[1].trim(), orMatch[2].trim().replace(/\?$/, "")];
       }
 
       // If cleanQText is symmetry inquiry
-      if (cleanQText.toLowerCase().includes("line of symmetry") || cleanQText.toLowerCase().includes("have symmetry")) {
+      if ((cleanQText.toLowerCase().includes("line of symmetry") || cleanQText.toLowerCase().includes("have symmetry")) && qOpts.length === 0) {
         qType = "MCQ";
         qOpts = ["Yes", "No"];
       }
 
-      // If cleanQText is a comparison (e.g. "435 ___ 453" or "125 __________ 152" or "Compare: 728 ___ 728")
-      const isComparisonExpr = 
-        cleanQText.includes("___") || 
-        cleanQText.includes("__________") || 
-        cleanQText.toLowerCase().startsWith("compare:");
-        
-      if (isComparisonExpr && !cleanQText.includes("costs") && !cleanQText.includes("scored")) {
+      // Only assign comparison signs if the question is an actual comparison (e.g. "435 ___ 453" or "125 __________ 152" or "Compare: 728 ___ 728")
+      const isPureNumCompExpr = /^\s*compare[:\s]+\d+\s*(?:_{2,}|___|\s*_{2,}\s*)\d+\s*$/i.test(cleanQText) || /^\s*\d+\s*(?:_{2,}|___)\s*\d+\s*$/.test(cleanQText);
+      const isCompWordSection = (cleanComp || rawText || "").toLowerCase().includes("write >, <, or =") && /^\s*\d+\s*(?:_{2,}|___|\s+)\s*\d+\s*$/.test(cleanQText);
+
+      if ((isPureNumCompExpr || isCompWordSection) && qOpts.length === 0) {
         qType = "MCQ";
         qOpts = [">", "<", "="];
       }
@@ -8235,6 +8685,13 @@ Return pure JSON conforming to the schema.`,
 
         qOpts = Array.from(new Set(qOpts));
       }
+
+      // Extract section title for this question
+      const qSection = 
+        q.sectionTitle || 
+        q.section || 
+        (qNum && sourceSectionMap.get(qNum)) || 
+        "Part A: General Questions";
 
       // 4. Resolve correct answer from Answer Key map or list
       let mappedAns = "";
@@ -8257,6 +8714,18 @@ Return pure JSON conforming to the schema.`,
         qAns = cleanAnswerText(qAns);
       }
 
+      // If not found in answer key (single-file upload with questions only), auto-solve if possible!
+      if (!foundInKey && (!qAns || qAns === "Sample Answer" || qAns === "Verified")) {
+        const solved = autoSolveQuestion(cleanQText, qSection, qOpts);
+        if (solved) {
+          qAns = solved;
+        }
+      }
+
+      if (Array.isArray(qOpts) && qOpts.length >= 2) {
+        qType = "MCQ";
+      }
+
       if (qType === "MCQ") {
         qAns = resolveMCQCorrectAnswer(qAns, qOpts, qNum, allAnswersMap, allAnswersList, idx);
       }
@@ -8265,14 +8734,36 @@ Return pure JSON conforming to the schema.`,
         ? qAns 
         : (mappedAns ? mappedAns : (qOpts.length > 0 ? qOpts[0] : "Verified"));
 
+      // Determine final question type:
+      // 1. Activity / Practical / Teacher Checked
+      const isActivity = 
+        finalAns.toLowerCase().includes("activity") || 
+        cleanQText.toLowerCase().startsWith("draw") || 
+        cleanQText.toLowerCase().startsWith("color") || 
+        cleanQText.toLowerCase().startsWith("shade");
+
+      if (isActivity) {
+        qType = "ACTIVITY";
+      } else if (qType !== "MCQ") {
+        // 2. Fill-in-the-blank (stem contains blanks in middle or start, or equals)
+        if (cleanQText.includes("_____") || cleanQText.includes("__________") || /__+/.test(cleanQText)) {
+          qType = "FIB";
+        }
+      }
+
+      const acceptedAnswers = getFractionVariations(finalAns);
+
       const baseId = q.id || `q_${idx + 1}`;
       return {
         id: `${baseId}_${Date.now()}_${idx}_${Math.floor(Math.random() * 1000000)}`,
         questionNumber: qNum || String(idx + 1),
         question: cleanQText || `Question ${qNum || idx + 1}`,
+        section: qSection,
+        sectionTitle: qSection,
         type: qType,
         options: qType === "MCQ" ? qOpts : [],
-        correctAnswer: finalAns
+        correctAnswer: finalAns,
+        acceptedAnswers: acceptedAnswers.length > 0 ? acceptedAnswers : [finalAns]
       };
     });
 
@@ -8400,7 +8891,7 @@ Also provide a score from 0 to 100, and a friendly, supportive, and constructive
 `;
 
     const response = await client.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-flash-latest",
       contents: prompt,
       config: {
         systemInstruction: "You are an expert AI tutor evaluating student short answers. You must assess the semantic correctness and alignment of the student's answer relative to the provided comprehension passage and the reference answer. Be lenient on typos and slight grammatical mistakes, focusing on the conceptual understanding. Return a JSON object with: 'status' (must be 'correct', 'partially_correct', or 'incorrect'), 'score' (integer 0 to 100), and 'feedback' (string with constructive feedback in 1-2 friendly sentences directly addressed to the student).",

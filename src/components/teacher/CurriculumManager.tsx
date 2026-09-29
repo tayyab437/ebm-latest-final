@@ -25,16 +25,23 @@ import {
   Save,
   Book,
   FilePlus,
-  Sparkle
+  Sparkle,
+  Zap,
+  Copy
 } from "lucide-react";
 import { useTeacherStore } from "./teacher.store";
 
 export interface Question {
   id: string;
+  questionNumber?: string;
+  sectionTitle?: string;
+  section?: string;
+  context?: string;
   question: string;
-  type: "MCQ" | "SHORT" | "FIB";
+  type: "MCQ" | "SHORT" | "FIB" | "ACTIVITY";
   options?: string[];
   correctAnswer?: string;
+  acceptedAnswers?: string[];
 }
 
 export interface CurriculumItem {
@@ -143,6 +150,12 @@ export function CurriculumManager() {
   const [dualParseError, setDualParseError] = useState<string | null>(null);
   const [isUploadingComp, setIsUploadingComp] = useState(false);
   const [isUploadingAns, setIsUploadingAns] = useState(false);
+
+  // Direct JSON importer states
+  const [isJsonModalOpen, setIsJsonModalOpen] = useState(false);
+  const [jsonInput, setJsonInput] = useState("");
+  const [isJsonParsing, setIsJsonParsing] = useState(false);
+  const [jsonParseError, setJsonParseError] = useState<string | null>(null);
 
   // Form Fields
   const [formTitle, setFormTitle] = useState("");
@@ -695,6 +708,143 @@ export function CurriculumManager() {
     );
   };
 
+  const loadSampleJsonData = () => {
+    const sample = {
+      title: "Mental Maths & Data Handling Drill 58",
+      subject: "MATH",
+      gradeLevel: "Grade 1",
+      unitTitle: "Review & Data Interpretation",
+      skillFocus: "Quick Calculation, Missing Numbers, Fractions, Data Handling",
+      lifeConnection: "Students solve calculations and read tables from everyday life.",
+      duration: 20,
+      content: "# Data Handling & Mental Maths\nStudy the tables and answer all sections.",
+      questions: [
+        {
+          questionNumber: "1",
+          sectionTitle: "Part A: Quick Addition",
+          question: "2 + 3 = ______",
+          type: "FIB",
+          correctAnswer: "5",
+          acceptedAnswers: ["5"]
+        },
+        {
+          questionNumber: "11",
+          sectionTitle: "Part B: Quick Subtraction",
+          question: "5 - 2 = ______",
+          type: "FIB",
+          correctAnswer: "3",
+          acceptedAnswers: ["3"]
+        },
+        {
+          questionNumber: "21",
+          sectionTitle: "Part C: Choose the Correct Fraction",
+          question: "One part of a shape divided into 2 equal parts:",
+          type: "MCQ",
+          options: ["½", "⅓", "¼"],
+          correctAnswer: "½",
+          acceptedAnswers: ["½", "1/2", "0.5"]
+        },
+        {
+          questionNumber: "31",
+          sectionTitle: "Part D: Circle the Correct Answer",
+          question: "Which shape has 3 sides?",
+          type: "MCQ",
+          options: ["Circle", "Triangle", "Square"],
+          correctAnswer: "Triangle",
+          acceptedAnswers: ["Triangle"]
+        },
+        {
+          questionNumber: "51",
+          sectionTitle: "Part E: Mixed Practice",
+          question: "Draw a shape with 3 sides.",
+          type: "ACTIVITY",
+          correctAnswer: "Activity / Teacher Checked",
+          acceptedAnswers: ["Activity / Teacher Checked"]
+        },
+        {
+          questionNumber: "79",
+          sectionTitle: "Part J: Data Handling",
+          context: "Fruit\tNumber\nApple\t4\nBanana\t3\nMango\t5\nOrange\t2",
+          question: "Which fruit has the highest number? ______",
+          type: "FIB",
+          correctAnswer: "Mango",
+          acceptedAnswers: ["Mango", "mango"]
+        },
+        {
+          questionNumber: "80",
+          sectionTitle: "Part J: Data Handling",
+          context: "Fruit\tNumber\nApple\t4\nBanana\t3\nMango\t5\nOrange\t2",
+          question: "How many fruits are there altogether? ______",
+          type: "FIB",
+          correctAnswer: "14",
+          acceptedAnswers: ["14"]
+        }
+      ]
+    };
+    setJsonInput(JSON.stringify(sample, null, 2));
+    setJsonParseError(null);
+  };
+
+  const handleJsonFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const content = event.target?.result as string;
+          const parsed = JSON.parse(content);
+          setJsonInput(JSON.stringify(parsed, null, 2));
+          setJsonParseError(null);
+        } catch (err: any) {
+          setJsonParseError("Failed to parse JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleDirectJsonImport = async () => {
+    if (!jsonInput.trim()) {
+      setJsonParseError("Please paste or upload a JSON curriculum schema first.");
+      return;
+    }
+
+    let parsedJson: any;
+    try {
+      parsedJson = JSON.parse(jsonInput.trim());
+    } catch (e: any) {
+      setJsonParseError("JSON Syntax Error: " + e.message);
+      return;
+    }
+
+    setIsJsonParsing(true);
+    setJsonParseError(null);
+    try {
+      const response = await fetch("/api/curriculum/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filetype: "json", content: JSON.stringify(parsedJson) })
+      });
+      const data = await response.json();
+      if (data.success && data.item) {
+        setCurriculums(prev => [data.item, ...prev]);
+        setSelectedItem(data.item);
+        setIsJsonModalOpen(false);
+        setJsonInput("");
+        setUserAnswers({});
+        setShowResults(false);
+        setSaveStatus({ type: "success", message: `Successfully imported "${data.item.title}" with ${getQuestionsArray(data.item.questions).length} questions!` });
+        setTimeout(() => setSaveStatus(null), 4000);
+      } else {
+        setJsonParseError(data.error || "Failed to process JSON curriculum.");
+      }
+    } catch (err: any) {
+      setJsonParseError(err.message || "An unexpected error occurred while importing JSON.");
+    } finally {
+      setIsJsonParsing(false);
+    }
+  };
+
   // Delete Curriculum Module
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -1046,7 +1196,7 @@ export function CurriculumManager() {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {/* Channel 1: Single File Drop */}
               <div
                 className={`p-2.5 rounded-xl border border-dashed transition-all duration-200 flex flex-col items-center justify-center cursor-pointer ${
@@ -1070,7 +1220,7 @@ export function CurriculumManager() {
                     <p className="text-[10px] font-semibold text-slate-700 leading-tight">
                       Drop file or <label className="text-blue-600 hover:underline cursor-pointer">browse<input type="file" className="hidden" accept=".docx,.json,.md,.txt" onChange={handleFileChange} /></label>
                     </p>
-                    <p className="text-[8px] text-slate-400">.docx, .md, .json</p>
+                    <p className="text-[8px] text-slate-400">.docx, .md, .txt</p>
                   </div>
                 )}
               </div>
@@ -1090,6 +1240,26 @@ export function CurriculumManager() {
                   <div>
                     <h5 className="text-[10px] font-bold text-slate-800 leading-tight">Dual AI Creator</h5>
                     <p className="text-[8px] text-slate-400">Passage + Answers</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+              </button>
+
+              {/* Channel 3: Direct JSON Importer */}
+              <button
+                onClick={() => {
+                  setJsonParseError(null);
+                  setIsJsonModalOpen(true);
+                }}
+                className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/30 transition-all text-left bg-white cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 shrink-0">
+                    <FileJson className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <h5 className="text-[10px] font-bold text-slate-800 leading-tight">JSON Importer</h5>
+                    <p className="text-[8px] text-slate-400">Instant • 100% Exact</p>
                   </div>
                 </div>
                 <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -1269,7 +1439,7 @@ export function CurriculumManager() {
                       </button>
                     </div>
                   ) : (
-                    getQuestionsArray(selectedItem.questions).map((q, idx) => {
+                    getQuestionsArray(selectedItem.questions).map((q, idx, arr) => {
                       const currentVal = userAnswers[q.id] || "";
                       
                       // Robust check function for correctness
@@ -1310,33 +1480,55 @@ export function CurriculumManager() {
                       };
 
                       const isCorrect = checkCorrectness();
+                      const currentSection = q.sectionTitle || q.section || "";
+                      const prevSection = idx > 0 ? (arr[idx - 1].sectionTitle || arr[idx - 1].section || "") : null;
+                      const showSectionHeader = currentSection && currentSection !== prevSection;
 
                       return (
-                        <div
-                          key={q.id}
-                          className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs space-y-3 relative group"
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-start gap-2 flex-1 min-w-0">
-                              <span className="h-6 w-6 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-black shrink-0 mt-0.5 border border-blue-100">
-                                {idx + 1}
-                              </span>
-                              <div className="flex-1 space-y-1">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="text-[9px] font-black text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded uppercase">
-                                    {q.type === "FIB" ? "Fill in Blank" : q.type}
-                                  </span>
-                                  {q.section && (
-                                    <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
-                                      {q.section}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-xs font-bold text-slate-900 leading-snug">
-                                  {q.question}
-                                </p>
+                        <React.Fragment key={q.id}>
+                          {showSectionHeader && (
+                            <div className="pt-2 pb-1">
+                              <div className="flex items-center gap-2 bg-gradient-to-r from-blue-50 via-indigo-50 to-slate-50 border border-blue-100/90 px-3.5 py-2 rounded-xl shadow-2xs">
+                                <BookOpen className="h-4 w-4 text-blue-600 shrink-0" />
+                                <span className="text-xs font-black text-slate-800 tracking-wide uppercase">
+                                  {currentSection}
+                                </span>
                               </div>
                             </div>
+                          )}
+                          {q.context && (idx === 0 || arr[idx - 1]?.context !== q.context) && (
+                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 my-2 shadow-2xs space-y-1.5">
+                              <div className="flex items-center gap-1.5 text-xs font-black text-slate-700 uppercase tracking-wider">
+                                <FileText className="h-3.5 w-3.5 text-indigo-600" />
+                                <span>Reference Data / Context</span>
+                              </div>
+                              <div className="font-mono text-xs whitespace-pre-wrap bg-white p-3 rounded-lg border border-slate-200/80 leading-relaxed text-slate-800">
+                                {q.context}
+                              </div>
+                            </div>
+                          )}
+                          <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs space-y-3 relative group">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex items-start gap-2 flex-1 min-w-0">
+                                <span className="h-6 w-6 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-black shrink-0 mt-0.5 border border-blue-100">
+                                  {idx + 1}
+                                </span>
+                                <div className="flex-1 space-y-1">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-[9px] font-black text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded uppercase">
+                                      {q.type === "FIB" ? "Fill in Blank" : q.type}
+                                    </span>
+                                    {(q.sectionTitle || q.section) && (
+                                      <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                        {q.sectionTitle || q.section}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-xs font-bold text-slate-900 leading-snug">
+                                    {q.question}
+                                  </p>
+                                </div>
+                              </div>
                             
                             <button
                               onClick={() => {
@@ -1352,11 +1544,15 @@ export function CurriculumManager() {
 
                           {/* Options if MCQ */}
                           {q.type === "MCQ" && q.options && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-8">
-                              {q.options.map((option) => {
+                            <div className={`grid gap-2 pl-8 ${q.options.length === 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"}`}>
+                              {q.options.map((option, oIdx) => {
+                                const letter = String.fromCharCode(65 + oIdx);
                                 const isSelected = currentVal === option;
                                 const isThisCorrect = q.correctAnswer && (
                                   option.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase() ||
+                                  q.correctAnswer.trim().toLowerCase() === letter.toLowerCase() ||
+                                  q.correctAnswer.trim().toLowerCase().startsWith(`${letter.toLowerCase()}.`) ||
+                                  q.correctAnswer.trim().toLowerCase().startsWith(`${letter.toLowerCase()})`) ||
                                   q.correctAnswer.trim().toLowerCase().includes(option.trim().toLowerCase())
                                 );
                                 return (
@@ -1366,16 +1562,27 @@ export function CurriculumManager() {
                                     className={`text-left text-xs p-2.5 rounded-xl border transition-all flex items-center justify-between cursor-pointer ${
                                       isSelected
                                         ? isThisCorrect
-                                          ? "bg-emerald-50 border-emerald-300 text-emerald-800 font-black ring-1 ring-emerald-200"
-                                          : "bg-blue-50 border-blue-300 text-blue-700 font-bold"
+                                          ? "bg-emerald-50 border-emerald-300 text-emerald-800 font-black ring-1 ring-emerald-200 shadow-2xs"
+                                          : "bg-blue-50 border-blue-300 text-blue-700 font-bold shadow-2xs"
                                         : "border-slate-200/80 hover:bg-slate-50 hover:border-slate-300 text-slate-700 bg-white"
                                     }`}
                                   >
-                                    <span className="font-semibold">{option}</span>
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      <span className={`w-5 h-5 rounded-md text-[10px] font-black flex items-center justify-center shrink-0 border ${
+                                        isSelected
+                                          ? isThisCorrect
+                                            ? "bg-emerald-600 text-white border-emerald-600"
+                                            : "bg-blue-600 text-white border-blue-600"
+                                          : "bg-slate-100 text-slate-600 border-slate-200"
+                                      }`}>
+                                        {letter}
+                                      </span>
+                                      <span className="font-semibold truncate">{option}</span>
+                                    </div>
                                     {isSelected ? (
-                                      <Check className="h-4 w-4 text-blue-600" />
+                                      <Check className="h-4 w-4 text-blue-600 shrink-0 ml-1" />
                                     ) : isThisCorrect && showResults ? (
-                                      <span className="text-[9px] font-black text-emerald-600 uppercase">Correct</span>
+                                      <span className="text-[9px] font-black text-emerald-600 uppercase shrink-0 ml-1">Correct</span>
                                     ) : null}
                                   </button>
                                 );
@@ -1496,8 +1703,9 @@ export function CurriculumManager() {
                             )}
                           </div>
                         </div>
-                      );
-                    })
+                      </React.Fragment>
+                    );
+                  })
                   )) : (
                     /* Student Progress Results Layout */
                     (() => {
@@ -2087,71 +2295,89 @@ export function CurriculumManager() {
                           );
                         }
 
+                        const currentSection = q.sectionTitle || q.section || "";
+                        const prevSection = qIdx > 0 ? (formQuestions[qIdx - 1].sectionTitle || formQuestions[qIdx - 1].section || "") : null;
+                        const showSectionHeader = currentSection && currentSection !== prevSection;
+
                         return (
-                          <div key={q.id} className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl flex items-start gap-3 justify-between">
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5 mb-1 text-[10px]">
-                                <span className="font-bold text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded text-[9px]">
-                                  Q{qIdx + 1}
+                          <React.Fragment key={q.id}>
+                            {showSectionHeader && (
+                              <div className="pt-2 pb-1">
+                                <span className="text-[10px] font-black text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded uppercase tracking-wide">
+                                  {currentSection}
                                 </span>
-                                <span className="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[9px]">
-                                  {q.type}
-                                </span>
-                                {q.correctAnswer && (
-                                  <span className="text-emerald-700 font-semibold">
-                                    Correct Answer: {q.correctAnswer}
+                              </div>
+                            )}
+                            <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl flex items-start gap-3 justify-between">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5 mb-1 text-[10px]">
+                                  <span className="font-bold text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded text-[9px]">
+                                    Q{qIdx + 1}
                                   </span>
+                                  <span className="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[9px]">
+                                    {q.type}
+                                  </span>
+                                  {(q.sectionTitle || q.section) && (
+                                    <span className="font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded text-[9px]">
+                                      {q.sectionTitle || q.section}
+                                    </span>
+                                  )}
+                                  {q.correctAnswer && (
+                                    <span className="text-emerald-700 font-semibold">
+                                      Correct Answer: {q.correctAnswer}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs font-bold text-slate-700">{q.question}</p>
+                                {q.type === "MCQ" && q.options && (
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    {q.options.map((opt, oIdx) => {
+                                      const cleanOpt = opt.trim().toLowerCase();
+                                      const cleanAns = (q.correctAnswer || "").trim().toLowerCase();
+                                      const letter = String.fromCharCode(65 + oIdx);
+                                      const isOptionCorrect =
+                                        cleanOpt === cleanAns ||
+                                        cleanAns === letter.toLowerCase() ||
+                                        cleanAns.startsWith(`${letter.toLowerCase()}.`) ||
+                                        cleanAns.startsWith(`${letter.toLowerCase()})`);
+
+                                      return (
+                                        <span
+                                          key={oIdx}
+                                          className={`text-[10px] border px-2 py-0.5 rounded font-medium flex items-center gap-1.5 transition-colors ${
+                                            isOptionCorrect
+                                              ? "bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-2xs"
+                                              : "bg-white border-slate-200 text-slate-600"
+                                          }`}
+                                        >
+                                          <span>{letter}. {opt}</span>
+                                          {isOptionCorrect && <Check className="h-3 w-3 text-emerald-600 font-bold" />}
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
                                 )}
                               </div>
-                              <p className="text-xs font-bold text-slate-700">{q.question}</p>
-                              {q.type === "MCQ" && q.options && (
-                                <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                  {q.options.map((opt, oIdx) => {
-                                    const cleanOpt = opt.trim().toLowerCase();
-                                    const cleanAns = (q.correctAnswer || "").trim().toLowerCase();
-                                    const letter = String.fromCharCode(65 + oIdx);
-                                    const isOptionCorrect =
-                                      cleanOpt === cleanAns ||
-                                      cleanAns === letter.toLowerCase() ||
-                                      cleanAns.startsWith(`${letter.toLowerCase()}.`) ||
-                                      cleanAns.startsWith(`${letter.toLowerCase()})`);
-
-                                    return (
-                                      <span
-                                        key={oIdx}
-                                        className={`text-[10px] border px-2 py-0.5 rounded font-medium flex items-center gap-1.5 transition-colors ${
-                                          isOptionCorrect
-                                            ? "bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-2xs"
-                                            : "bg-white border-slate-200 text-slate-600"
-                                        }`}
-                                      >
-                                        <span>{letter}. {opt}</span>
-                                        {isOptionCorrect && <Check className="h-3 w-3 text-emerald-600 font-bold" />}
-                                      </span>
-                                    );
-                                  })}
-                                </div>
-                              )}
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleEditQuestionInForm(q)}
+                                  className="p-1.5 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                  title="Edit Question"
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveQuestionFromForm(q.id)}
+                                  className="p-1.5 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                  title="Delete Question"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1 shrink-0">
-                              <button
-                                type="button"
-                                onClick={() => handleEditQuestionInForm(q)}
-                                className="p-1.5 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                                title="Edit Question"
-                              >
-                                <Edit2 className="h-4 w-4" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveQuestionFromForm(q.id)}
-                                className="p-1.5 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                                title="Delete Question"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            </div>
-                          </div>
+                          </React.Fragment>
                         );
                       })}
                     </div>
@@ -2458,6 +2684,159 @@ export function CurriculumManager() {
                 </div>
               </div>
 
+            </motion.div>
+          </div>
+        )}
+
+        {/* MODAL: DIRECT JSON CURRICULUM IMPORTER */}
+        {isJsonModalOpen && (
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-4xl w-full flex flex-col max-h-[92vh] overflow-hidden"
+            >
+              {/* Header */}
+              <div className="p-5 md:p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-amber-50/60 via-slate-50 to-white">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-2xl bg-amber-100 text-amber-800 shrink-0">
+                    <FileJson className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-base md:text-lg font-black text-slate-900">
+                      Direct JSON Curriculum Importer
+                    </h3>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Instant, 100% deterministic schema ingestion • Zero AI delay or quota limits
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsJsonModalOpen(false)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Actions & Format Toolbar */}
+              <div className="px-6 py-3 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={loadSampleJsonData}
+                    className="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-amber-700" />
+                    Load Sample Template (with Part J Table)
+                  </button>
+
+                  <label className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                    <Upload className="h-3.5 w-3.5 text-slate-500" />
+                    Upload .json File
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={handleJsonFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                {jsonInput.trim() && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setJsonInput("");
+                      setJsonParseError(null);
+                    }}
+                    className="text-xs text-slate-400 hover:text-rose-600 font-bold transition-colors cursor-pointer"
+                  >
+                    Clear Input
+                  </button>
+                )}
+              </div>
+
+              {/* Error banner */}
+              {jsonParseError && (
+                <div className="mx-6 mt-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2 text-xs text-rose-700 font-semibold">
+                  <AlertCircle className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
+                  <span className="leading-snug">{jsonParseError}</span>
+                </div>
+              )}
+
+              {/* Textarea Editor Area */}
+              <div className="p-6 flex-1 flex flex-col min-h-0 space-y-3">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-600">
+                  <span>Paste JSON Curriculum Schema:</span>
+                  {(() => {
+                    if (!jsonInput.trim()) return <span className="text-slate-400 font-normal">Waiting for input...</span>;
+                    try {
+                      const p = JSON.parse(jsonInput.trim());
+                      const qCount = Array.isArray(p.questions) ? p.questions.length : (Array.isArray(p) ? p.length : 0);
+                      const secCount = new Set((p.questions || p || []).map((x: any) => x.sectionTitle || x.section).filter(Boolean)).size;
+                      return (
+                        <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-bold flex items-center gap-1">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                          Valid JSON: {qCount} Questions • {secCount || 1} Sections
+                        </span>
+                      );
+                    } catch (e: any) {
+                      return (
+                        <span className="text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-semibold">
+                          Syntax Incomplete...
+                        </span>
+                      );
+                    }
+                  })()}
+                </div>
+
+                <textarea
+                  value={jsonInput}
+                  onChange={(e) => {
+                    setJsonInput(e.target.value);
+                    setJsonParseError(null);
+                  }}
+                  placeholder='{\n  "title": "Mental Maths Drill 58",\n  "subject": "MATH",\n  "gradeLevel": "Grade 1",\n  "questions": [\n    {\n      "questionNumber": "1",\n      "sectionTitle": "Part A: Quick Addition",\n      "question": "2 + 3 = ______",\n      "type": "FIB",\n      "correctAnswer": "5"\n    }\n  ]\n}'
+                  className="w-full flex-1 min-h-[320px] p-4 bg-slate-900 text-emerald-400 font-mono text-xs rounded-2xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400/50 resize-none leading-relaxed"
+                  spellCheck={false}
+                />
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-3 shrink-0">
+                <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
+                  Supports FIB, MCQ (with A, B, C options), Comparisons, Activities, and Data Handling tables.
+                </span>
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    type="button"
+                    onClick={() => setIsJsonModalOpen(false)}
+                    className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 hover:bg-slate-200 rounded-xl transition-all cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDirectJsonImport}
+                    disabled={isJsonParsing || !jsonInput.trim()}
+                    className="px-5 py-2.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 disabled:bg-slate-300 rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    {isJsonParsing ? (
+                      <>
+                        <Sparkle className="h-4 w-4 animate-spin" />
+                        Importing Schema...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="h-4 w-4" />
+                        Import & Save Curriculum
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         )}

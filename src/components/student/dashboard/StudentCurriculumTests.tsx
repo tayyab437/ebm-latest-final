@@ -616,14 +616,34 @@ export function StudentCurriculumTests() {
                           <div className="flex-1 overflow-y-auto scrollbar-hide p-4 md:p-6 flex flex-col justify-between space-y-4">
                             <div className="space-y-4 max-w-3xl mx-auto w-full">
                               {/* Question Badge */}
-                              <div className="flex items-center justify-between">
-                                <span className="px-3 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-full text-[9px] font-black uppercase tracking-widest">
-                                  Question #{currentMathQuestionIndex + 1} ({q.type})
-                                </span>
+                              <div className="flex items-center justify-between flex-wrap gap-2">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="px-3 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-full text-[9px] font-black uppercase tracking-widest">
+                                    Question #{currentMathQuestionIndex + 1} ({q.type})
+                                  </span>
+                                  {((q as any).sectionTitle || (q as any).section) && (
+                                    <span className="px-2.5 py-0.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-full text-[9px] font-black uppercase tracking-wider">
+                                      {(q as any).sectionTitle || (q as any).section}
+                                    </span>
+                                  )}
+                                </div>
                                 <span className="text-[11px] font-bold text-slate-400">
                                   Answered: {Object.keys(userAnswers).length} / {questionsList.length}
                                 </span>
                               </div>
+
+                              {/* Context Data Table / Stimulus if present */}
+                              {(q as any).context && (
+                                <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5 shadow-2xs space-y-1.5">
+                                  <div className="flex items-center gap-1.5 text-[11px] font-black text-indigo-700 uppercase tracking-wider">
+                                    <FileText className="h-3.5 w-3.5 text-indigo-600" />
+                                    <span>Reference Table / Data</span>
+                                  </div>
+                                  <div className="font-mono text-xs whitespace-pre-wrap bg-white p-3 rounded-xl border border-slate-200 leading-relaxed text-slate-900 font-semibold shadow-inner">
+                                    {(q as any).context}
+                                  </div>
+                                </div>
+                              )}
 
                               {/* Math Question Text / Prompt */}
                               <div className="p-4 sm:p-5 bg-slate-50 border border-slate-200/90 rounded-2xl shadow-inner space-y-2">
@@ -723,8 +743,17 @@ export function StudentCurriculumTests() {
                                       clearTimeout(autoAdvanceTimeoutRef.current);
                                     }
 
+                                    const normalizeFrac = (str: string) => str.replace(/½/g, "1/2").replace(/⅓/g, "1/3").replace(/¼/g, "1/4").replace(/¾/g, "3/4").replace(/⅔/g, "2/3").replace(/1 whole/gi, "1").trim();
                                     const correct = (q.correctAnswer || "").trim();
-                                    const isCorrect = correct ? userAns.toLowerCase() === correct.toLowerCase() : true;
+                                    const normUser = normalizeFrac(userAns.toLowerCase());
+                                    const normCorrect = normalizeFrac(correct.toLowerCase());
+                                    const accepted = (q as any).acceptedAnswers;
+                                    
+                                    const isCorrect = 
+                                      q.type === "ACTIVITY" ||
+                                      correct.toLowerCase().includes("activity") ||
+                                      (correct ? normUser === normCorrect : true) ||
+                                      (Array.isArray(accepted) && accepted.some((a: string) => normalizeFrac(String(a).toLowerCase()) === normUser));
                                     setCheckedQuestions(prev => ({
                                       ...prev,
                                       [q.id]: {

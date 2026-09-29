@@ -1,0 +1,1090 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ejaz Bukhari Method (EBM) Curriculum & Assessment JSON Schema Specification",
+  "version": "1.0.0",
+  "description": "The authoritative JSON specification and comprehensive scenario repository for all curriculum modules, drills, diagnostic tests, and interactive assessments.",
+  "instructions": {
+    "overview": "Curriculum JSON files represent structured courses containing reading material, metadata, and ordered question items categorized into sections.",
+    "rootProperties": {
+      "title": "Required string. Name of the curriculum unit or assessment.",
+      "subject": "Required string. Must be 'MATH', 'ENGLISH', 'SCIENCE', or a custom subject string.",
+      "gradeLevel": "Optional string. Target education level (e.g. 'Grade 1', 'Grade 2', 'Grade 5', 'O Level'). Default: 'Grade 2'.",
+      "unitTitle": "Optional string. Sub-topic or chapter title.",
+      "skillFocus": "Optional string. Summary of skills practiced (e.g. 'Quick Addition, Fractions, Data Handling').",
+      "lifeConnection": "Optional string. Real-world application of the material.",
+      "duration": "Optional number. Recommended completion duration in minutes.",
+      "content": "Optional string (Markdown). Notes, instructions, or reading comprehension passage.",
+      "thumbnailUrl": "Optional string. Image URL for the course card.",
+      "questions": "Required array of Question objects (1 to 100+ items)."
+    },
+    "questionProperties": {
+      "id": "Optional string. Unique ID (auto-generated if omitted).",
+      "questionNumber": "Required string. The sequential or original number (e.g. '1', '21', '79', '80').",
+      "sectionTitle": "Optional string. Category or part heading (e.g. 'Part A: Quick Addition', 'Part J: Data Handling'). Creates distinct visual dividers in the app.",
+      "context": "Optional string. Reference data table, chart, or passage linked to this question or group of questions.",
+      "question": "Required string. The problem stem, prompt, equation, or instruction.",
+      "type": "Required string. Must be 'FIB', 'MCQ', 'SHORT', or 'ACTIVITY'.",
+      "options": "Array of strings. Required if type is 'MCQ'. Contains clean choices without letter prefixes (e.g. ['Circle', 'Triangle', 'Square'] or ['½', '⅓', '¼']).",
+      "correctAnswer": "Required string. The canonical correct answer.",
+      "acceptedAnswers": "Optional array of strings. List of valid variations (e.g. ['½', '1/2', '0.5'] or ['14', '14 fruits'])."
+    }
+  },
+  "rules": {
+    "dos": [
+      "DO group questions logically using 'sectionTitle' (e.g., 'Part A: Quick Addition', 'Part B: Quick Subtraction').",
+      "DO use 'context' for data handling tables or stimuli shared across multiple questions so the table appears cleanly above them.",
+      "DO provide clean options in 'options' without prepending letters like 'A.' or 'B.' (the application renders badge letters automatically).",
+      "DO use 'acceptedAnswers' for equivalent forms of numbers, units, and unicode fractions (e.g. ['½', '1/2', '0.5']).",
+      "DO use type 'ACTIVITY' for drawing, coloring, and practical exercises where teacher grading is intended.",
+      "DO ensure all question numbers are strings and match worksheet numbering 1-to-1."
+    ],
+    "donts": [
+      "DON'T put letter prefixes inside the 'options' strings (e.g. DO NOT write ['A. Red', 'B. Blue']; write ['Red', 'Blue']).",
+      "DON'T leave the 'options' array empty when type is 'MCQ'.",
+      "DON'T put multi-sentence reasoning in 'correctAnswer'; keep it concise and use accepted variations.",
+      "DON'T embed raw HTML tags like <div> or <font> inside question strings; use plain text or markdown.",
+      "DON'T leave unclosed quotes or trailing commas that invalidate JSON syntax."
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "sc_01",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Quick Addition FIB",
+      "data": {
+        "questionNumber": "1",
+        "sectionTitle": "Part A: Quick Addition",
+        "question": "4 + 5 = ______",
+        "type": "FIB",
+        "correctAnswer": "9",
+        "acceptedAnswers": ["9"]
+      }
+    },
+    {
+      "id": "sc_02",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Quick Subtraction FIB",
+      "data": {
+        "questionNumber": "2",
+        "sectionTitle": "Part B: Quick Subtraction",
+        "question": "10 - 4 = ______",
+        "type": "FIB",
+        "correctAnswer": "6",
+        "acceptedAnswers": ["6"]
+      }
+    },
+    {
+      "id": "sc_03",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Missing Addend FIB",
+      "data": {
+        "questionNumber": "3",
+        "sectionTitle": "Part C: Missing Numbers",
+        "question": "7 + ______ = 15",
+        "type": "FIB",
+        "correctAnswer": "8",
+        "acceptedAnswers": ["8"]
+      }
+    },
+    {
+      "id": "sc_04",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Missing Subtrahend FIB",
+      "data": {
+        "questionNumber": "4",
+        "sectionTitle": "Part C: Missing Numbers",
+        "question": "18 - ______ = 11",
+        "type": "FIB",
+        "correctAnswer": "7",
+        "acceptedAnswers": ["7"]
+      }
+    },
+    {
+      "id": "sc_05",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Multiplication Table FIB",
+      "data": {
+        "questionNumber": "5",
+        "sectionTitle": "Part D: Multiplication Drills",
+        "question": "6 × 7 = ______",
+        "type": "FIB",
+        "correctAnswer": "42",
+        "acceptedAnswers": ["42"]
+      }
+    },
+    {
+      "id": "sc_06",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Division Drill FIB",
+      "data": {
+        "questionNumber": "6",
+        "sectionTitle": "Part E: Division Drills",
+        "question": "36 ÷ 4 = ______",
+        "type": "FIB",
+        "correctAnswer": "9",
+        "acceptedAnswers": ["9"]
+      }
+    },
+    {
+      "id": "sc_07",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Addition Word Problem (SHORT)",
+      "data": {
+        "questionNumber": "7",
+        "sectionTitle": "Part F: Word Problems",
+        "question": "Sara has 8 red apples and 6 green apples. How many apples does she have in total?",
+        "type": "SHORT",
+        "correctAnswer": "14",
+        "acceptedAnswers": ["14", "14 apples"]
+      }
+    },
+    {
+      "id": "sc_08",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Subtraction Word Problem (SHORT)",
+      "data": {
+        "questionNumber": "8",
+        "sectionTitle": "Part F: Word Problems",
+        "question": "A baker made 24 cupcakes. He sold 17 of them. How many cupcakes are left?",
+        "type": "SHORT",
+        "correctAnswer": "7",
+        "acceptedAnswers": ["7", "7 cupcakes"]
+      }
+    },
+    {
+      "id": "sc_09",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Double of Number FIB",
+      "data": {
+        "questionNumber": "9",
+        "sectionTitle": "Part G: Doubles and Halves",
+        "question": "Double of 16 is ______",
+        "type": "FIB",
+        "correctAnswer": "32",
+        "acceptedAnswers": ["32"]
+      }
+    },
+    {
+      "id": "sc_10",
+      "category": "Elementary Math / Arithmetic",
+      "name": "Half of Number FIB",
+      "data": {
+        "questionNumber": "10",
+        "sectionTitle": "Part G: Doubles and Halves",
+        "question": "Half of 50 is ______",
+        "type": "FIB",
+        "correctAnswer": "25",
+        "acceptedAnswers": ["25"]
+      }
+    },
+    {
+      "id": "sc_11",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "3-Choice Fraction Half (MCQ)",
+      "data": {
+        "questionNumber": "21",
+        "sectionTitle": "Part C: Choose the Correct Fraction",
+        "question": "One part of a shape divided into 2 equal parts:",
+        "type": "MCQ",
+        "options": ["½", "⅓", "¼"],
+        "correctAnswer": "½",
+        "acceptedAnswers": ["½", "1/2", "0.5"]
+      }
+    },
+    {
+      "id": "sc_12",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "3-Choice Fraction Third (MCQ)",
+      "data": {
+        "questionNumber": "22",
+        "sectionTitle": "Part C: Choose the Correct Fraction",
+        "question": "One part out of 3 equal parts:",
+        "type": "MCQ",
+        "options": ["½", "⅓", "¼"],
+        "correctAnswer": "⅓",
+        "acceptedAnswers": ["⅓", "1/3"]
+      }
+    },
+    {
+      "id": "sc_13",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "3-Choice Fraction Quarter (MCQ)",
+      "data": {
+        "questionNumber": "23",
+        "sectionTitle": "Part C: Choose the Correct Fraction",
+        "question": "One part out of 4 equal parts:",
+        "type": "MCQ",
+        "options": ["½", "⅓", "¼"],
+        "correctAnswer": "¼",
+        "acceptedAnswers": ["¼", "1/4", "0.25"]
+      }
+    },
+    {
+      "id": "sc_14",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "3-Choice Three Quarters (MCQ)",
+      "data": {
+        "questionNumber": "24",
+        "sectionTitle": "Part C: Choose the Correct Fraction",
+        "question": "Three parts out of 4 equal parts:",
+        "type": "MCQ",
+        "options": ["¾", "⅓", "½"],
+        "correctAnswer": "¾",
+        "acceptedAnswers": ["¾", "3/4", "0.75"]
+      }
+    },
+    {
+      "id": "sc_15",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "3-Choice Whole Fraction (MCQ)",
+      "data": {
+        "questionNumber": "25",
+        "sectionTitle": "Part C: Choose the Correct Fraction",
+        "question": "Four equal parts make:",
+        "type": "MCQ",
+        "options": ["1 whole", "½", "⅓"],
+        "correctAnswer": "1 whole",
+        "acceptedAnswers": ["1 whole", "1"]
+      }
+    },
+    {
+      "id": "sc_16",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "Fraction Addition FIB",
+      "data": {
+        "questionNumber": "26",
+        "sectionTitle": "Part D: Fraction Arithmetic",
+        "question": "¼ + 2/4 = ______",
+        "type": "FIB",
+        "correctAnswer": "¾",
+        "acceptedAnswers": ["¾", "3/4", "0.75"]
+      }
+    },
+    {
+      "id": "sc_17",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "Equivalent Fraction FIB",
+      "data": {
+        "questionNumber": "27",
+        "sectionTitle": "Part D: Equivalent Fractions",
+        "question": "2/4 is equivalent to ______ in simplest form.",
+        "type": "FIB",
+        "correctAnswer": "½",
+        "acceptedAnswers": ["½", "1/2", "0.5"]
+      }
+    },
+    {
+      "id": "sc_18",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "Decimal to Fraction MCQ",
+      "data": {
+        "questionNumber": "28",
+        "sectionTitle": "Part E: Decimals and Fractions",
+        "question": "0.5 is written in fraction form as:",
+        "type": "MCQ",
+        "options": ["½", "¼", "¾", "1/10"],
+        "correctAnswer": "½",
+        "acceptedAnswers": ["½", "1/2"]
+      }
+    },
+    {
+      "id": "sc_19",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "Percentage Calculation FIB",
+      "data": {
+        "questionNumber": "29",
+        "sectionTitle": "Part F: Percentages",
+        "question": "50% of 80 = ______",
+        "type": "FIB",
+        "correctAnswer": "40",
+        "acceptedAnswers": ["40"]
+      }
+    },
+    {
+      "id": "sc_20",
+      "category": "Fractions, Decimals & Percentages",
+      "name": "Shading Fraction (ACTIVITY)",
+      "data": {
+        "questionNumber": "30",
+        "sectionTitle": "Part G: Fraction Drawing",
+        "question": "Draw a rectangle, divide it into 4 equal sections, and shade ¾ of it.",
+        "type": "ACTIVITY",
+        "correctAnswer": "Activity / Teacher Checked",
+        "acceptedAnswers": ["Activity / Teacher Checked"]
+      }
+    },
+    {
+      "id": "sc_21",
+      "category": "Geometry & Shapes",
+      "name": "3-Choice Shape Triangle (MCQ)",
+      "data": {
+        "questionNumber": "31",
+        "sectionTitle": "Part D: 2D Shapes",
+        "question": "Which shape has 3 sides?",
+        "type": "MCQ",
+        "options": ["Circle", "Triangle", "Square"],
+        "correctAnswer": "Triangle",
+        "acceptedAnswers": ["Triangle", "triangle"]
+      }
+    },
+    {
+      "id": "sc_22",
+      "category": "Geometry & Shapes",
+      "name": "3-Choice Shape Square (MCQ)",
+      "data": {
+        "questionNumber": "32",
+        "sectionTitle": "Part D: 2D Shapes",
+        "question": "Which shape has 4 equal sides?",
+        "type": "MCQ",
+        "options": ["Rectangle", "Square", "Circle"],
+        "correctAnswer": "Square",
+        "acceptedAnswers": ["Square", "square"]
+      }
+    },
+    {
+      "id": "sc_23",
+      "category": "Geometry & Shapes",
+      "name": "3-Choice Shape Circle (MCQ)",
+      "data": {
+        "questionNumber": "33",
+        "sectionTitle": "Part D: 2D Shapes",
+        "question": "Which shape has no straight sides?",
+        "type": "MCQ",
+        "options": ["Circle", "Triangle", "Pentagon"],
+        "correctAnswer": "Circle",
+        "acceptedAnswers": ["Circle", "circle"]
+      }
+    },
+    {
+      "id": "sc_24",
+      "category": "Geometry & Shapes",
+      "name": "3-Choice Shape Pentagon (MCQ)",
+      "data": {
+        "questionNumber": "34",
+        "sectionTitle": "Part D: 2D Shapes",
+        "question": "Which shape has 5 sides?",
+        "type": "MCQ",
+        "options": ["Hexagon", "Pentagon", "Octagon"],
+        "correctAnswer": "Pentagon",
+        "acceptedAnswers": ["Pentagon", "pentagon"]
+      }
+    },
+    {
+      "id": "sc_25",
+      "category": "Geometry & Shapes",
+      "name": "Real-world Object Shape (MCQ)",
+      "data": {
+        "questionNumber": "35",
+        "sectionTitle": "Part D: Real-world Shapes",
+        "question": "Which shape looks like a wall clock?",
+        "type": "MCQ",
+        "options": ["Circle", "Rectangle", "Triangle"],
+        "correctAnswer": "Circle",
+        "acceptedAnswers": ["Circle"]
+      }
+    },
+    {
+      "id": "sc_26",
+      "category": "Geometry & Shapes",
+      "name": "3D Solid Cube (MCQ)",
+      "data": {
+        "questionNumber": "36",
+        "sectionTitle": "Part E: 3D Shapes",
+        "question": "Which 3D shape has 6 flat square faces?",
+        "type": "MCQ",
+        "options": ["Cube", "Sphere", "Cylinder", "Cone"],
+        "correctAnswer": "Cube",
+        "acceptedAnswers": ["Cube"]
+      }
+    },
+    {
+      "id": "sc_27",
+      "category": "Geometry & Shapes",
+      "name": "Line of Symmetry Yes/No (MCQ)",
+      "data": {
+        "questionNumber": "37",
+        "sectionTitle": "Part F: Symmetry",
+        "question": "Does a standard heart shape have a vertical line of symmetry?",
+        "type": "MCQ",
+        "options": ["Yes", "No"],
+        "correctAnswer": "Yes",
+        "acceptedAnswers": ["Yes", "yes"]
+      }
+    },
+    {
+      "id": "sc_28",
+      "category": "Geometry & Shapes",
+      "name": "Number Comparison Symbols (MCQ)",
+      "data": {
+        "questionNumber": "38",
+        "sectionTitle": "Part G: Number Comparisons",
+        "question": "Compare: 485 ______ 458",
+        "type": "MCQ",
+        "options": [">", "<", "="],
+        "correctAnswer": ">",
+        "acceptedAnswers": [">"]
+      }
+    },
+    {
+      "id": "sc_29",
+      "category": "Geometry & Shapes",
+      "name": "Telling Time FIB",
+      "data": {
+        "questionNumber": "39",
+        "sectionTitle": "Part H: Telling Time",
+        "question": "When the long hand points to 12 and the short hand points to 4, the time is ______ o'clock.",
+        "type": "FIB",
+        "correctAnswer": "4",
+        "acceptedAnswers": ["4", "4:00", "four"]
+      }
+    },
+    {
+      "id": "sc_30",
+      "category": "Geometry & Shapes",
+      "name": "Geometry Drawing Task (ACTIVITY)",
+      "data": {
+        "questionNumber": "40",
+        "sectionTitle": "Part I: Geometric Drawing",
+        "question": "Draw a triangle and mark all 3 of its corners (vertices).",
+        "type": "ACTIVITY",
+        "correctAnswer": "Activity / Teacher Checked",
+        "acceptedAnswers": ["Activity / Teacher Checked"]
+      }
+    },
+    {
+      "id": "sc_31",
+      "category": "Data Handling & Tables",
+      "name": "Data Table Highest Count (FIB)",
+      "data": {
+        "questionNumber": "79",
+        "sectionTitle": "Part J: Data Handling",
+        "context": "Fruit\tNumber\nApple\t4\nBanana\t3\nMango\t5\nOrange\t2",
+        "question": "Which fruit has the highest count in the table? ______",
+        "type": "FIB",
+        "correctAnswer": "Mango",
+        "acceptedAnswers": ["Mango", "mango"]
+      }
+    },
+    {
+      "id": "sc_32",
+      "category": "Data Handling & Tables",
+      "name": "Data Table Total Count (FIB)",
+      "data": {
+        "questionNumber": "80",
+        "sectionTitle": "Part J: Data Handling",
+        "context": "Fruit\tNumber\nApple\t4\nBanana\t3\nMango\t5\nOrange\t2",
+        "question": "How many fruits are there altogether? ______",
+        "type": "FIB",
+        "correctAnswer": "14",
+        "acceptedAnswers": ["14", "14 fruits"]
+      }
+    },
+    {
+      "id": "sc_33",
+      "category": "Data Handling & Tables",
+      "name": "Data Table Difference (SHORT)",
+      "data": {
+        "questionNumber": "81",
+        "sectionTitle": "Part J: Data Handling",
+        "context": "Fruit\tNumber\nApple\t4\nBanana\t3\nMango\t5\nOrange\t2",
+        "question": "How many more mangoes are there than oranges?",
+        "type": "SHORT",
+        "correctAnswer": "3",
+        "acceptedAnswers": ["3", "3 more", "3 mangoes"]
+      }
+    },
+    {
+      "id": "sc_34",
+      "category": "Data Handling & Tables",
+      "name": "Weather Record Most Frequent (MCQ)",
+      "data": {
+        "questionNumber": "82",
+        "sectionTitle": "Part J: Weather Record",
+        "context": "Day\tWeather\nMonday\tSunny\nTuesday\tRainy\nWednesday\tSunny\nThursday\tCloudy\nFriday\tSunny",
+        "question": "Which weather occurred most frequently during the week?",
+        "type": "MCQ",
+        "options": ["Sunny", "Rainy", "Cloudy", "Snowy"],
+        "correctAnswer": "Sunny",
+        "acceptedAnswers": ["Sunny"]
+      }
+    },
+    {
+      "id": "sc_35",
+      "category": "Data Handling & Tables",
+      "name": "Sports Survey Winner (FIB)",
+      "data": {
+        "questionNumber": "83",
+        "sectionTitle": "Part K: Sports Survey",
+        "context": "Sport\tStudents\nFootball\t12\nCricket\t15\nTennis\t6\nSwimming\t9",
+        "question": "Which sport is preferred by the most students? ______",
+        "type": "FIB",
+        "correctAnswer": "Cricket",
+        "acceptedAnswers": ["Cricket", "cricket"]
+      }
+    },
+    {
+      "id": "sc_36",
+      "category": "Data Handling & Tables",
+      "name": "Sports Survey Total (FIB)",
+      "data": {
+        "questionNumber": "84",
+        "sectionTitle": "Part K: Sports Survey",
+        "context": "Sport\tStudents\nFootball\t12\nCricket\t15\nTennis\t6\nSwimming\t9",
+        "question": "How many students participated in the sports survey altogether? ______",
+        "type": "FIB",
+        "correctAnswer": "42",
+        "acceptedAnswers": ["42", "42 students"]
+      }
+    },
+    {
+      "id": "sc_37",
+      "category": "Data Handling & Tables",
+      "name": "Library Non-Fiction Tally (SHORT)",
+      "data": {
+        "questionNumber": "85",
+        "sectionTitle": "Part L: Library Tally",
+        "context": "Genre\tBooks Borrowed\nAdventure\t20\nScience\t14\nHistory\t8\nPoetry\t5",
+        "question": "Calculate the total number of non-fiction (Science + History) books borrowed.",
+        "type": "SHORT",
+        "correctAnswer": "22",
+        "acceptedAnswers": ["22", "22 books"]
+      }
+    },
+    {
+      "id": "sc_38",
+      "category": "Data Handling & Tables",
+      "name": "Pictograph Highest Team (MCQ)",
+      "data": {
+        "questionNumber": "86",
+        "sectionTitle": "Part M: Pictograph Reading",
+        "context": "Key: 🌟 = 2 Stars\nTeam Alpha: 🌟🌟🌟 (6)\nTeam Beta: 🌟🌟 (4)\nTeam Gamma: 🌟🌟🌟🌟 (8)",
+        "question": "Which team won the highest score?",
+        "type": "MCQ",
+        "options": ["Team Alpha", "Team Beta", "Team Gamma"],
+        "correctAnswer": "Team Gamma",
+        "acceptedAnswers": ["Team Gamma"]
+      }
+    },
+    {
+      "id": "sc_39",
+      "category": "Data Handling & Tables",
+      "name": "Pictograph Difference (FIB)",
+      "data": {
+        "questionNumber": "87",
+        "sectionTitle": "Part M: Pictograph Reading",
+        "context": "Key: 🌟 = 2 Stars\nTeam Alpha: 🌟🌟🌟 (6)\nTeam Beta: 🌟🌟 (4)\nTeam Gamma: 🌟🌟🌟🌟 (8)",
+        "question": "How many more stars did Team Gamma earn compared to Team Beta? ______",
+        "type": "FIB",
+        "correctAnswer": "4",
+        "acceptedAnswers": ["4", "4 stars"]
+      }
+    },
+    {
+      "id": "sc_40",
+      "category": "English & Comprehension",
+      "name": "Passage Detail Retrieval (MCQ)",
+      "data": {
+        "questionNumber": "41",
+        "sectionTitle": "Section 1: Reading Comprehension",
+        "context": "Leo the Lion lived in the golden savannah. Unlike other lions, Leo loved painting colorful murals on canyon walls with berry juice. One sunny morning, a wise elephant named Ella watched him create a majestic sunset painting.",
+        "question": "What did Leo use to paint on the canyon walls?",
+        "type": "MCQ",
+        "options": ["Berry juice", "Oil paints", "Mud and water", "Colored chalk"],
+        "correctAnswer": "Berry juice",
+        "acceptedAnswers": ["Berry juice"]
+      }
+    },
+    {
+      "id": "sc_41",
+      "category": "English & Comprehension",
+      "name": "Character Name Retrieval (FIB)",
+      "data": {
+        "questionNumber": "42",
+        "sectionTitle": "Section 1: Reading Comprehension",
+        "context": "Leo the Lion lived in the golden savannah. Unlike other lions, Leo loved painting colorful murals on canyon walls with berry juice. One sunny morning, a wise elephant named Ella watched him create a majestic sunset painting.",
+        "question": "The wise elephant's name is ______",
+        "type": "FIB",
+        "correctAnswer": "Ella",
+        "acceptedAnswers": ["Ella", "ella"]
+      }
+    },
+    {
+      "id": "sc_42",
+      "category": "English & Comprehension",
+      "name": "Vocabulary Meaning in Context (MCQ)",
+      "data": {
+        "questionNumber": "43",
+        "sectionTitle": "Section 1: Reading Comprehension",
+        "context": "Leo the Lion lived in the golden savannah. Unlike other lions, Leo loved painting colorful murals on canyon walls with berry juice. One sunny morning, a wise elephant named Ella watched him create a majestic sunset painting.",
+        "question": "In the passage, the word 'majestic' most closely means:",
+        "type": "MCQ",
+        "options": ["Grand and beautiful", "Small and quiet", "Frightening", "Messy"],
+        "correctAnswer": "Grand and beautiful",
+        "acceptedAnswers": ["Grand and beautiful"]
+      }
+    },
+    {
+      "id": "sc_43",
+      "category": "English & Comprehension",
+      "name": "Noun Identification (MCQ)",
+      "data": {
+        "questionNumber": "44",
+        "sectionTitle": "Section 2: Parts of Speech",
+        "question": "Which word in the sentence is a noun? 'The golden sun rose above the mountains.'",
+        "type": "MCQ",
+        "options": ["mountains", "golden", "above", "rose"],
+        "correctAnswer": "mountains",
+        "acceptedAnswers": ["mountains"]
+      }
+    },
+    {
+      "id": "sc_44",
+      "category": "English & Comprehension",
+      "name": "Action Verb Identification (MCQ)",
+      "data": {
+        "questionNumber": "45",
+        "sectionTitle": "Section 2: Parts of Speech",
+        "question": "Identify the action verb: 'The swift rabbit hopped across the green meadow.'",
+        "type": "MCQ",
+        "options": ["hopped", "swift", "rabbit", "meadow"],
+        "correctAnswer": "hopped",
+        "acceptedAnswers": ["hopped"]
+      }
+    },
+    {
+      "id": "sc_45",
+      "category": "English & Comprehension",
+      "name": "Preposition Insertion (FIB)",
+      "data": {
+        "questionNumber": "46",
+        "sectionTitle": "Section 3: Prepositions",
+        "question": "The curious cat jumped ______ the wooden fence.",
+        "type": "FIB",
+        "correctAnswer": "over",
+        "acceptedAnswers": ["over", "across", "on"]
+      }
+    },
+    {
+      "id": "sc_46",
+      "category": "English & Comprehension",
+      "name": "Antonym Selection (MCQ)",
+      "data": {
+        "questionNumber": "47",
+        "sectionTitle": "Section 4: Vocabulary Skills",
+        "question": "What is the opposite of 'ancient'?",
+        "type": "MCQ",
+        "options": ["Modern", "Old", "Historic", "Dusty"],
+        "correctAnswer": "Modern",
+        "acceptedAnswers": ["Modern", "modern"]
+      }
+    },
+    {
+      "id": "sc_47",
+      "category": "English & Comprehension",
+      "name": "Synonym Selection (MCQ)",
+      "data": {
+        "questionNumber": "48",
+        "sectionTitle": "Section 4: Vocabulary Skills",
+        "question": "Which word is a synonym for 'courageous'?",
+        "type": "MCQ",
+        "options": ["Brave", "Timid", "Quiet", "Careful"],
+        "correctAnswer": "Brave",
+        "acceptedAnswers": ["Brave", "brave"]
+      }
+    },
+    {
+      "id": "sc_48",
+      "category": "English & Comprehension",
+      "name": "Irregular Past Tense (FIB)",
+      "data": {
+        "questionNumber": "49",
+        "sectionTitle": "Section 5: Tenses",
+        "question": "Yesterday, they ______ (swim) across the lake.",
+        "type": "FIB",
+        "correctAnswer": "swam",
+        "acceptedAnswers": ["swam"]
+      }
+    },
+    {
+      "id": "sc_49",
+      "category": "English & Comprehension",
+      "name": "Punctuation Sentence Rewrite (SHORT)",
+      "data": {
+        "questionNumber": "50",
+        "sectionTitle": "Section 6: Punctuation",
+        "question": "Rewrite the sentence with correct capitalization and punctuation: 'where are we going today asked bilal'",
+        "type": "SHORT",
+        "correctAnswer": "\"Where are we going today?\" asked Bilal.",
+        "acceptedAnswers": [
+          "\"Where are we going today?\" asked Bilal.",
+          "\"Where are we going today?\" asked Bilal",
+          "Where are we going today? asked Bilal."
+        ]
+      }
+    },
+    {
+      "id": "sc_50",
+      "category": "Science & Nature",
+      "name": "Solar System Red Planet (MCQ)",
+      "data": {
+        "questionNumber": "51",
+        "sectionTitle": "Unit 1: Earth and Space",
+        "question": "Which planet is known as the Red Planet?",
+        "type": "MCQ",
+        "options": ["Mars", "Venus", "Jupiter", "Saturn"],
+        "correctAnswer": "Mars",
+        "acceptedAnswers": ["Mars", "mars"]
+      }
+    },
+    {
+      "id": "sc_51",
+      "category": "Science & Nature",
+      "name": "Solar Eclipse Object (SHORT)",
+      "data": {
+        "questionNumber": "52",
+        "sectionTitle": "Unit 1: Earth and Space",
+        "question": "What passes between the Earth and the Sun during a solar eclipse?",
+        "type": "SHORT",
+        "correctAnswer": "The Moon",
+        "acceptedAnswers": ["The Moon", "Moon", "the moon"]
+      }
+    },
+    {
+      "id": "sc_52",
+      "category": "Science & Nature",
+      "name": "States of Matter Phase Change (MCQ)",
+      "data": {
+        "questionNumber": "53",
+        "sectionTitle": "Unit 2: States of Matter",
+        "question": "When liquid water freezes into ice, it changes from a liquid to a:",
+        "type": "MCQ",
+        "options": ["Solid", "Gas", "Plasma", "Vapor"],
+        "correctAnswer": "Solid",
+        "acceptedAnswers": ["Solid", "solid"]
+      }
+    },
+    {
+      "id": "sc_53",
+      "category": "Science & Nature",
+      "name": "Photosynthesis Gas (FIB)",
+      "data": {
+        "questionNumber": "54",
+        "sectionTitle": "Unit 3: Plant Life",
+        "question": "Plants absorb ______ dioxide from the air to perform photosynthesis.",
+        "type": "FIB",
+        "correctAnswer": "carbon",
+        "acceptedAnswers": ["carbon", "Carbon"]
+      }
+    },
+    {
+      "id": "sc_54",
+      "category": "Science & Nature",
+      "name": "Animal Adaptation (MCQ)",
+      "data": {
+        "questionNumber": "55",
+        "sectionTitle": "Unit 4: Animal Habitats",
+        "question": "Which adaptation helps polar bears stay warm in the Arctic freezing cold?",
+        "type": "MCQ",
+        "options": ["Thick layer of fat and blubber", "Gills for breathing", "Webbed feet", "Long thin tail"],
+        "correctAnswer": "Thick layer of fat and blubber",
+        "acceptedAnswers": ["Thick layer of fat and blubber"]
+      }
+    },
+    {
+      "id": "sc_55",
+      "category": "Science & Nature",
+      "name": "Living Things Respiration True/False (MCQ)",
+      "data": {
+        "questionNumber": "56",
+        "sectionTitle": "Unit 4: Living Things",
+        "question": "All living organisms need water, nutrition, and respiration to survive. (True or False)",
+        "type": "MCQ",
+        "options": ["True", "False"],
+        "correctAnswer": "True",
+        "acceptedAnswers": ["True", "true"]
+      }
+    },
+    {
+      "id": "sc_56",
+      "category": "Science & Nature",
+      "name": "Water Cycle Evaporation (FIB)",
+      "data": {
+        "questionNumber": "57",
+        "sectionTitle": "Unit 5: The Water Cycle",
+        "question": "The process by which liquid water heats up and turns into water vapor is called ______",
+        "type": "FIB",
+        "correctAnswer": "evaporation",
+        "acceptedAnswers": ["evaporation", "Evaporation"]
+      }
+    },
+    {
+      "id": "sc_57",
+      "category": "Science & Nature",
+      "name": "Human Heart Function (MCQ)",
+      "data": {
+        "questionNumber": "58",
+        "sectionTitle": "Unit 6: Human Body Systems",
+        "question": "The primary function of the human heart is to:",
+        "type": "MCQ",
+        "options": ["Pump blood throughout the body", "Digest food", "Filter air", "Produce hormones"],
+        "correctAnswer": "Pump blood throughout the body",
+        "acceptedAnswers": ["Pump blood throughout the body"]
+      }
+    },
+    {
+      "id": "sc_58",
+      "category": "Science & Nature",
+      "name": "Ecosystem Producer (FIB)",
+      "data": {
+        "questionNumber": "59",
+        "sectionTitle": "Unit 7: Ecosystems",
+        "question": "In a forest food chain, green plants are classified as ______",
+        "type": "FIB",
+        "correctAnswer": "producers",
+        "acceptedAnswers": ["producers", "producer", "Producer"]
+      }
+    },
+    {
+      "id": "sc_59",
+      "category": "Science & Nature",
+      "name": "Plant Anatomy Diagram (ACTIVITY)",
+      "data": {
+        "questionNumber": "60",
+        "sectionTitle": "Unit 8: Scientific Diagrams",
+        "question": "Draw a plant and label its 4 major parts: roots, stem, leaves, and flower.",
+        "type": "ACTIVITY",
+        "correctAnswer": "Activity / Teacher Checked",
+        "acceptedAnswers": ["Activity / Teacher Checked"]
+      }
+    },
+    {
+      "id": "sc_60",
+      "category": "O/A Level & Advanced Math",
+      "name": "Linear Equation Solve (SHORT)",
+      "data": {
+        "questionNumber": "61",
+        "sectionTitle": "Algebra: Linear Equations",
+        "question": "Solve for x: 3x + 7 = 28",
+        "type": "SHORT",
+        "correctAnswer": "7",
+        "acceptedAnswers": ["7", "x = 7", "x=7"]
+      }
+    },
+    {
+      "id": "sc_61",
+      "category": "O/A Level & Advanced Math",
+      "name": "Quadratic Factorization (MCQ)",
+      "data": {
+        "questionNumber": "62",
+        "sectionTitle": "Algebra: Factorization",
+        "question": "Factorize completely: x² - 9",
+        "type": "MCQ",
+        "options": ["(x - 3)(x + 3)", "(x - 9)(x + 1)", "(x - 3)²", "(x + 3)²"],
+        "correctAnswer": "(x - 3)(x + 3)",
+        "acceptedAnswers": ["(x - 3)(x + 3)"]
+      }
+    },
+    {
+      "id": "sc_62",
+      "category": "O/A Level & Advanced Math",
+      "name": "Pythagorean Theorem Hypotenuse (SHORT)",
+      "data": {
+        "questionNumber": "63",
+        "sectionTitle": "Trigonometry & Geometry",
+        "question": "In a right-angled triangle, side a = 6 cm and side b = 8 cm. Find the hypotenuse c in cm.",
+        "type": "SHORT",
+        "correctAnswer": "10",
+        "acceptedAnswers": ["10", "10 cm", "10cm"]
+      }
+    },
+    {
+      "id": "sc_63",
+      "category": "O/A Level & Advanced Math",
+      "name": "Probability Fraction (FIB)",
+      "data": {
+        "questionNumber": "64",
+        "sectionTitle": "Statistics & Probability",
+        "question": "A fair 6-sided die is rolled. The probability of obtaining a prime number (2, 3, or 5) in simplest fraction form is ______",
+        "type": "FIB",
+        "correctAnswer": "½",
+        "acceptedAnswers": ["½", "1/2", "0.5", "3/6"]
+      }
+    },
+    {
+      "id": "sc_64",
+      "category": "O/A Level & Advanced Math",
+      "name": "Speed Distance Time Calculation (SHORT)",
+      "data": {
+        "questionNumber": "65",
+        "sectionTitle": "Applied Mathematics",
+        "question": "A high-speed train travels 240 kilometers in 3 hours. Calculate its average speed in km/h.",
+        "type": "SHORT",
+        "correctAnswer": "80",
+        "acceptedAnswers": ["80", "80 km/h", "80km/h"]
+      }
+    },
+    {
+      "id": "sc_65",
+      "category": "O/A Level & Science",
+      "name": "Chemistry Atomic Number (MCQ)",
+      "data": {
+        "questionNumber": "66",
+        "sectionTitle": "O-Level Chemistry: Atomic Structure",
+        "question": "What is the atomic number of Carbon (C)?",
+        "type": "MCQ",
+        "options": ["6", "12", "14", "8"],
+        "correctAnswer": "6",
+        "acceptedAnswers": ["6"]
+      }
+    },
+    {
+      "id": "sc_66",
+      "category": "O/A Level & Science",
+      "name": "Physics Ohm's Law (FIB)",
+      "data": {
+        "questionNumber": "67",
+        "sectionTitle": "O-Level Physics: Electricity",
+        "question": "According to Ohm's law, Voltage (V) = Current (I) × ______",
+        "type": "FIB",
+        "correctAnswer": "Resistance",
+        "acceptedAnswers": ["Resistance", "resistance", "R"]
+      }
+    },
+    {
+      "id": "sc_67",
+      "category": "O/A Level & Science",
+      "name": "Biology Mitochondria Organelle (MCQ)",
+      "data": {
+        "questionNumber": "68",
+        "sectionTitle": "O-Level Biology: Cytology",
+        "question": "Which organelle is responsible for cellular respiration and energy (ATP) production?",
+        "type": "MCQ",
+        "options": ["Mitochondria", "Ribosome", "Golgi apparatus", "Endoplasmic reticulum"],
+        "correctAnswer": "Mitochondria",
+        "acceptedAnswers": ["Mitochondria", "mitochondria"]
+      }
+    },
+    {
+      "id": "sc_68",
+      "category": "O/A Level & Diagnostic",
+      "name": "Diagnostic Subject-Verb Agreement (SHORT)",
+      "data": {
+        "questionNumber": "69",
+        "sectionTitle": "Diagnostic English: Syntax",
+        "question": "Identify and correct the grammatical error: 'Neither of the students were ready for the test.'",
+        "type": "SHORT",
+        "correctAnswer": "Replace 'were' with 'was'",
+        "acceptedAnswers": ["Replace 'were' with 'was'", "was", "was ready"]
+      }
+    },
+    {
+      "id": "sc_69",
+      "category": "O/A Level & Diagnostic",
+      "name": "Diagnostic Place Value Hundreds (FIB)",
+      "data": {
+        "questionNumber": "70",
+        "sectionTitle": "Diagnostic Math: Number Sense",
+        "question": "In the number 8,429, the digit 4 represents the value of ______",
+        "type": "FIB",
+        "correctAnswer": "400",
+        "acceptedAnswers": ["400", "four hundred", "4 hundreds"]
+      }
+    }
+  ],
+  "fullCourseBlueprints": [
+    {
+      "blueprintId": "drill_58_full_80_questions",
+      "title": "Mental Maths & Data Handling Drill 58 (Complete 80 Questions)",
+      "subject": "MATH",
+      "gradeLevel": "Grade 1",
+      "unitTitle": "Review & Data Interpretation",
+      "skillFocus": "Mental Math, Comparisons, 2D Geometry, Fractions, Data Handling",
+      "lifeConnection": "Students solve calculations and read tables from everyday situations.",
+      "duration": 30,
+      "content": "# Mental Maths & Data Handling Drill 58\n\nWelcome to Drill 58. Complete all 10 parts.\n\n### Skills Overview:\n- **Part A:** Quick Addition (1–10)\n- **Part B:** Quick Subtraction (11–20)\n- **Part C:** Choose the Correct Fraction (21–30)\n- **Part D:** Circle the Correct Shape (31–40)\n- **Part E:** Missing Numbers (41–50)\n- **Part F:** Number Comparisons (51–60)\n- **Part G:** Doubles & Halves (61–70)\n- **Part H:** Practical Activities (71–75)\n- **Part I:** Word Problems (76–78)\n- **Part J:** Data Handling & Tables (79–80)",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=400&q=80",
+      "questions": [
+        {"questionNumber": "1", "sectionTitle": "Part A: Quick Addition", "question": "2 + 3 = ______", "type": "FIB", "correctAnswer": "5"},
+        {"questionNumber": "2", "sectionTitle": "Part A: Quick Addition", "question": "4 + 1 = ______", "type": "FIB", "correctAnswer": "5"},
+        {"questionNumber": "3", "sectionTitle": "Part A: Quick Addition", "question": "5 + 5 = ______", "type": "FIB", "correctAnswer": "10"},
+        {"questionNumber": "4", "sectionTitle": "Part A: Quick Addition", "question": "6 + 2 = ______", "type": "FIB", "correctAnswer": "8"},
+        {"questionNumber": "5", "sectionTitle": "Part A: Quick Addition", "question": "3 + 4 = ______", "type": "FIB", "correctAnswer": "7"},
+        {"questionNumber": "6", "sectionTitle": "Part A: Quick Addition", "question": "7 + 1 = ______", "type": "FIB", "correctAnswer": "8"},
+        {"questionNumber": "7", "sectionTitle": "Part A: Quick Addition", "question": "8 + 2 = ______", "type": "FIB", "correctAnswer": "10"},
+        {"questionNumber": "8", "sectionTitle": "Part A: Quick Addition", "question": "1 + 9 = ______", "type": "FIB", "correctAnswer": "10"},
+        {"questionNumber": "9", "sectionTitle": "Part A: Quick Addition", "question": "0 + 6 = ______", "type": "FIB", "correctAnswer": "6"},
+        {"questionNumber": "10", "sectionTitle": "Part A: Quick Addition", "question": "4 + 4 = ______", "type": "FIB", "correctAnswer": "8"},
+        {"questionNumber": "11", "sectionTitle": "Part B: Quick Subtraction", "question": "5 - 2 = ______", "type": "FIB", "correctAnswer": "3"},
+        {"questionNumber": "12", "sectionTitle": "Part B: Quick Subtraction", "question": "6 - 1 = ______", "type": "FIB", "correctAnswer": "5"},
+        {"questionNumber": "13", "sectionTitle": "Part B: Quick Subtraction", "question": "7 - 3 = ______", "type": "FIB", "correctAnswer": "4"},
+        {"questionNumber": "14", "sectionTitle": "Part B: Quick Subtraction", "question": "8 - 4 = ______", "type": "FIB", "correctAnswer": "4"},
+        {"questionNumber": "15", "sectionTitle": "Part B: Quick Subtraction", "question": "9 - 5 = ______", "type": "FIB", "correctAnswer": "4"},
+        {"questionNumber": "16", "sectionTitle": "Part B: Quick Subtraction", "question": "10 - 2 = ______", "type": "FIB", "correctAnswer": "8"},
+        {"questionNumber": "17", "sectionTitle": "Part B: Quick Subtraction", "question": "4 - 0 = ______", "type": "FIB", "correctAnswer": "4"},
+        {"questionNumber": "18", "sectionTitle": "Part B: Quick Subtraction", "question": "6 - 6 = ______", "type": "FIB", "correctAnswer": "0"},
+        {"questionNumber": "19", "sectionTitle": "Part B: Quick Subtraction", "question": "7 - 5 = ______", "type": "FIB", "correctAnswer": "2"},
+        {"questionNumber": "20", "sectionTitle": "Part B: Quick Subtraction", "question": "10 - 7 = ______", "type": "FIB", "correctAnswer": "3"},
+        {"questionNumber": "21", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "One part of a shape divided into 2 equal parts:", "type": "MCQ", "options": ["½", "⅓", "¼"], "correctAnswer": "½", "acceptedAnswers": ["½", "1/2", "0.5"]},
+        {"questionNumber": "22", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "One part of a shape divided into 3 equal parts:", "type": "MCQ", "options": ["½", "⅓", "¼"], "correctAnswer": "⅓", "acceptedAnswers": ["⅓", "1/3"]},
+        {"questionNumber": "23", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "One part of a shape divided into 4 equal parts:", "type": "MCQ", "options": ["½", "⅓", "¼"], "correctAnswer": "¼", "acceptedAnswers": ["¼", "1/4", "0.25"]},
+        {"questionNumber": "24", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "Two parts out of 4 equal parts:", "type": "MCQ", "options": ["½", "⅔", "¼"], "correctAnswer": "½", "acceptedAnswers": ["½", "2/4", "1/2"]},
+        {"questionNumber": "25", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "Three parts out of 4 equal parts:", "type": "MCQ", "options": ["¾", "⅓", "½"], "correctAnswer": "¾", "acceptedAnswers": ["¾", "3/4"]},
+        {"questionNumber": "26", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "Two equal parts make:", "type": "MCQ", "options": ["1 whole", "½", "¼"], "correctAnswer": "1 whole", "acceptedAnswers": ["1 whole", "1"]},
+        {"questionNumber": "27", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "Four equal parts make:", "type": "MCQ", "options": ["1 whole", "½", "⅓"], "correctAnswer": "1 whole", "acceptedAnswers": ["1 whole", "1"]},
+        {"questionNumber": "28", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "One-quarter is written as:", "type": "MCQ", "options": ["¼", "⅓", "½"], "correctAnswer": "¼", "acceptedAnswers": ["¼", "1/4"]},
+        {"questionNumber": "29", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "One-third is written as:", "type": "MCQ", "options": ["⅓", "¼", "½"], "correctAnswer": "⅓", "acceptedAnswers": ["⅓", "1/3"]},
+        {"questionNumber": "30", "sectionTitle": "Part C: Choose the Correct Fraction", "question": "One-half is written as:", "type": "MCQ", "options": ["½", "⅓", "¼"], "correctAnswer": "½", "acceptedAnswers": ["½", "1/2"]},
+        {"questionNumber": "31", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape has 3 sides?", "type": "MCQ", "options": ["Circle", "Triangle", "Square"], "correctAnswer": "Triangle"},
+        {"questionNumber": "32", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape has 4 equal sides?", "type": "MCQ", "options": ["Rectangle", "Square", "Circle"], "correctAnswer": "Square"},
+        {"questionNumber": "33", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape has no straight sides?", "type": "MCQ", "options": ["Circle", "Triangle", "Pentagon"], "correctAnswer": "Circle"},
+        {"questionNumber": "34", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape has 5 sides?", "type": "MCQ", "options": ["Hexagon", "Pentagon", "Octagon"], "correctAnswer": "Pentagon"},
+        {"questionNumber": "35", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape has 6 sides?", "type": "MCQ", "options": ["Pentagon", "Hexagon", "Square"], "correctAnswer": "Hexagon"},
+        {"questionNumber": "36", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape has 8 sides?", "type": "MCQ", "options": ["Octagon", "Circle", "Triangle"], "correctAnswer": "Octagon"},
+        {"questionNumber": "37", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape looks like a clock?", "type": "MCQ", "options": ["Circle", "Rectangle", "Triangle"], "correctAnswer": "Circle"},
+        {"questionNumber": "38", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape looks like a book?", "type": "MCQ", "options": ["Rectangle", "Circle", "Pentagon"], "correctAnswer": "Rectangle"},
+        {"questionNumber": "39", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape has 4 corners?", "type": "MCQ", "options": ["Square", "Triangle", "Both"], "correctAnswer": "Square"},
+        {"questionNumber": "40", "sectionTitle": "Part D: Circle the Correct Shape", "question": "Which shape has no corners?", "type": "MCQ", "options": ["Circle", "Square", "Rectangle"], "correctAnswer": "Circle"},
+        {"questionNumber": "41", "sectionTitle": "Part E: Missing Numbers", "question": "2 + ______ = 5", "type": "FIB", "correctAnswer": "3"},
+        {"questionNumber": "42", "sectionTitle": "Part E: Missing Numbers", "question": "4 + ______ = 7", "type": "FIB", "correctAnswer": "3"},
+        {"questionNumber": "43", "sectionTitle": "Part E: Missing Numbers", "question": "6 + ______ = 10", "type": "FIB", "correctAnswer": "4"},
+        {"questionNumber": "44", "sectionTitle": "Part E: Missing Numbers", "question": "1 + ______ = 8", "type": "FIB", "correctAnswer": "7"},
+        {"questionNumber": "45", "sectionTitle": "Part E: Missing Numbers", "question": "5 + ______ = 9", "type": "FIB", "correctAnswer": "4"},
+        {"questionNumber": "46", "sectionTitle": "Part E: Missing Numbers", "question": "8 - ______ = 5", "type": "FIB", "correctAnswer": "3"},
+        {"questionNumber": "47", "sectionTitle": "Part E: Missing Numbers", "question": "10 - ______ = 6", "type": "FIB", "correctAnswer": "4"},
+        {"questionNumber": "48", "sectionTitle": "Part E: Missing Numbers", "question": "7 - ______ = 2", "type": "FIB", "correctAnswer": "5"},
+        {"questionNumber": "49", "sectionTitle": "Part E: Missing Numbers", "question": "9 - ______ = 4", "type": "FIB", "correctAnswer": "5"},
+        {"questionNumber": "50", "sectionTitle": "Part E: Missing Numbers", "question": "6 - ______ = 1", "type": "FIB", "correctAnswer": "5"},
+        {"questionNumber": "51", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 8 ______ 5", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": ">"},
+        {"questionNumber": "52", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 3 ______ 7", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": "<"},
+        {"questionNumber": "53", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 10 ______ 10", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": "="},
+        {"questionNumber": "54", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 14 ______ 18", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": "<"},
+        {"questionNumber": "55", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 25 ______ 21", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": ">"},
+        {"questionNumber": "56", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 30 ______ 30", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": "="},
+        {"questionNumber": "57", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 42 ______ 24", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": ">"},
+        {"questionNumber": "58", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 19 ______ 20", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": "<"},
+        {"questionNumber": "59", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 50 ______ 50", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": "="},
+        {"questionNumber": "60", "sectionTitle": "Part F: Number Comparisons", "question": "Compare: 99 ______ 89", "type": "MCQ", "options": [">", "<", "="], "correctAnswer": ">"},
+        {"questionNumber": "61", "sectionTitle": "Part G: Doubles & Halves", "question": "Double of 2 is ______", "type": "FIB", "correctAnswer": "4"},
+        {"questionNumber": "62", "sectionTitle": "Part G: Doubles & Halves", "question": "Double of 5 is ______", "type": "FIB", "correctAnswer": "10"},
+        {"questionNumber": "63", "sectionTitle": "Part G: Doubles & Halves", "question": "Double of 7 is ______", "type": "FIB", "correctAnswer": "14"},
+        {"questionNumber": "64", "sectionTitle": "Part G: Doubles & Halves", "question": "Double of 10 is ______", "type": "FIB", "correctAnswer": "20"},
+        {"questionNumber": "65", "sectionTitle": "Part G: Doubles & Halves", "question": "Double of 12 is ______", "type": "FIB", "correctAnswer": "24"},
+        {"questionNumber": "66", "sectionTitle": "Part G: Doubles & Halves", "question": "Half of 4 is ______", "type": "FIB", "correctAnswer": "2"},
+        {"questionNumber": "67", "sectionTitle": "Part G: Doubles & Halves", "question": "Half of 10 is ______", "type": "FIB", "correctAnswer": "5"},
+        {"questionNumber": "68", "sectionTitle": "Part G: Doubles & Halves", "question": "Half of 14 is ______", "type": "FIB", "correctAnswer": "7"},
+        {"questionNumber": "69", "sectionTitle": "Part G: Doubles & Halves", "question": "Half of 20 is ______", "type": "FIB", "correctAnswer": "10"},
+        {"questionNumber": "70", "sectionTitle": "Part G: Doubles & Halves", "question": "Half of 24 is ______", "type": "FIB", "correctAnswer": "12"},
+        {"questionNumber": "71", "sectionTitle": "Part H: Practical Activities", "question": "Draw a triangle and color it blue.", "type": "ACTIVITY", "correctAnswer": "Activity / Teacher Checked"},
+        {"questionNumber": "72", "sectionTitle": "Part H: Practical Activities", "question": "Draw a circle and divide it in half.", "type": "ACTIVITY", "correctAnswer": "Activity / Teacher Checked"},
+        {"questionNumber": "73", "sectionTitle": "Part H: Practical Activities", "question": "Draw a square and color ½ of it.", "type": "ACTIVITY", "correctAnswer": "Activity / Teacher Checked"},
+        {"questionNumber": "74", "sectionTitle": "Part H: Practical Activities", "question": "Draw 6 stars in a row.", "type": "ACTIVITY", "correctAnswer": "Activity / Teacher Checked"},
+        {"questionNumber": "75", "sectionTitle": "Part H: Practical Activities", "question": "Draw a shape with 5 sides (Pentagon).", "type": "ACTIVITY", "correctAnswer": "Activity / Teacher Checked"},
+        {"questionNumber": "76", "sectionTitle": "Part I: Word Problems", "question": "Ali has 5 marbles. He buys 4 more marbles. How many marbles does Ali have now?", "type": "SHORT", "correctAnswer": "9", "acceptedAnswers": ["9", "9 marbles"]},
+        {"questionNumber": "77", "sectionTitle": "Part I: Word Problems", "question": "There are 10 birds on a branch. 3 birds fly away. How many birds remain on the branch?", "type": "SHORT", "correctAnswer": "7", "acceptedAnswers": ["7", "7 birds"]},
+        {"questionNumber": "78", "sectionTitle": "Part I: Word Problems", "question": "A box contains 8 chocolates. You share ½ of the box with your sister. How many chocolates do you give her?", "type": "SHORT", "correctAnswer": "4", "acceptedAnswers": ["4", "4 chocolates"]},
+        {"questionNumber": "79", "sectionTitle": "Part J: Data Handling", "context": "Fruit\tNumber\nApple\t4\nBanana\t3\nMango\t5\nOrange\t2", "question": "Which fruit has the highest number? ______", "type": "FIB", "correctAnswer": "Mango", "acceptedAnswers": ["Mango", "mango"]},
+        {"questionNumber": "80", "sectionTitle": "Part J: Data Handling", "context": "Fruit\tNumber\nApple\t4\nBanana\t3\nMango\t5\nOrange\t2", "question": "How many fruits are there altogether? ______", "type": "FIB", "correctAnswer": "14", "acceptedAnswers": ["14", "14 fruits"]}
+      ]
+    }
+  ]
+}

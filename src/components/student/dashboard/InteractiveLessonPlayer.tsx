@@ -260,14 +260,46 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
     setIsSplitView(isComprehension);
   }, [isComprehension]);
 
-  // Robust answer checking logic
+  // Fraction normalization helper
+  const normalizeFraction = (str: string): string => {
+    return str
+      .replace(/½/g, "1/2")
+      .replace(/⅓/g, "1/3")
+      .replace(/¼/g, "1/4")
+      .replace(/¾/g, "3/4")
+      .replace(/⅔/g, "2/3")
+      .replace(/1 whole/gi, "1")
+      .trim();
+  };
+
+  // Robust universal answer checking logic
   const checkAnswer = (q: Question, studentAns: string): boolean => {
-    if (!q.correctAnswer) return false; // Default to incorrect if no answer specified
+    const qType = (q.type || (Array.isArray(q.options) && q.options.length > 0 ? "MCQ" : "SHORT")).toUpperCase();
+    
+    // Activity questions (e.g. Draw a triangle, activity-based) are verified upon student engagement
+    if (qType === "ACTIVITY" || (q.correctAnswer && q.correctAnswer.toLowerCase().includes("activity"))) {
+      return true;
+    }
+
+    if (!q.correctAnswer) return false;
     const sAns = (studentAns || "").trim().toLowerCase();
     const cAns = q.correctAnswer.trim().toLowerCase();
     if (sAns === cAns) return true;
+
+    // Check fraction equivalences e.g. 1/2 vs ½
+    if (normalizeFraction(sAns) === normalizeFraction(cAns)) return true;
+
+    // Check acceptedAnswers if present
+    const accepted = (q as any).acceptedAnswers;
+    if (Array.isArray(accepted) && accepted.length > 0) {
+      if (accepted.some((alt: string) => {
+        const altLower = String(alt).trim().toLowerCase();
+        return altLower === sAns || normalizeFraction(altLower) === normalizeFraction(sAns);
+      })) {
+        return true;
+      }
+    }
     
-    const qType = (q.type || (Array.isArray(q.options) && q.options.length > 0 ? "MCQ" : "SHORT")).toUpperCase();
     if (qType === "MCQ" && q.options && Array.isArray(q.options)) {
       const selectedIdx = q.options.findIndex(
         (opt: string) => (opt || "").trim().toLowerCase() === sAns
@@ -298,8 +330,8 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
         }
       }
     } else {
-      // For short answers, normalize spaces and punctuation
-      const norm = (str: string) => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s+/g, " ");
+      // For short answers and FIB, normalize spaces, punctuation, and case
+      const norm = (str: string) => normalizeFraction(str).replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s+/g, " ");
       const normS = norm(sAns);
       const normC = norm(cAns);
       if (normS === normC) return true;
@@ -948,14 +980,34 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
                         return (
                           <div className="max-w-4xl mx-auto w-full space-y-5 my-auto">
                             {/* Question Header Badge */}
-                            <div className="flex items-center justify-between">
-                              <span className="px-3.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest">
-                                Question #{qIdx + 1} ({isMCQ ? "Multiple Choice" : "Written Answer"})
-                              </span>
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="px-3.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest">
+                                  Question #{qIdx + 1} ({isMCQ ? "Multiple Choice" : "Written Answer"})
+                                </span>
+                                {((q as any).sectionTitle || (q as any).section) && (
+                                  <span className="px-3 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-wider">
+                                    {(q as any).sectionTitle || (q as any).section}
+                                  </span>
+                                )}
+                              </div>
                               <span className="text-xs font-bold text-slate-400">
                                 Answered: {Object.keys(answers).filter(k => answers[Number(k)]?.trim()).length} / {questions.length}
                               </span>
                             </div>
+
+                            {/* Context Data Table / Stimulus if present */}
+                            {(q as any).context && (
+                              <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 shadow-2xs space-y-1.5">
+                                <div className="flex items-center gap-1.5 text-xs font-black text-indigo-700 uppercase tracking-wider">
+                                  <FileText className="h-4 w-4 text-indigo-600" />
+                                  <span>Reference Table / Data</span>
+                                </div>
+                                <div className="font-mono text-xs md:text-sm whitespace-pre-wrap bg-white p-3.5 rounded-xl border border-slate-200 leading-relaxed text-slate-900 font-semibold shadow-inner">
+                                  {(q as any).context}
+                                </div>
+                              </div>
+                            )}
 
                             {/* Question Prompt */}
                             <div className="p-5 md:p-6 bg-white border border-slate-100 rounded-3xl shadow-xs border-blue-100 bg-blue-50/20 space-y-2">
