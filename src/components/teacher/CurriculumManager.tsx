@@ -178,7 +178,7 @@ export function CurriculumManager() {
 
   // Sub-editor fields for adding questions inside form
   const [newQuestionText, setNewQuestionText] = useState("");
-  const [newQuestionType, setNewQuestionType] = useState<"MCQ" | "SHORT" | "FIB">("MCQ");
+  const [newQuestionType, setNewQuestionType] = useState<"MCQ" | "SHORT" | "FIB" | "ACTIVITY">("MCQ");
   const [newQuestionOptions, setNewQuestionOptions] = useState<string[]>(["", ""]);
   const [newQuestionAnswer, setNewQuestionAnswer] = useState("");
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
@@ -2208,12 +2208,13 @@ export function CurriculumManager() {
                                   <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Response Type</label>
                                   <select
                                     value={newQuestionType}
-                                    onChange={(e) => setNewQuestionType(e.target.value as "MCQ" | "SHORT" | "FIB")}
+                                    onChange={(e) => setNewQuestionType(e.target.value as "MCQ" | "SHORT" | "FIB" | "ACTIVITY")}
                                     className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200"
                                   >
                                     <option value="MCQ">Multiple Choice (MCQ)</option>
                                     <option value="SHORT">Short text input</option>
                                     <option value="FIB">Fill in the Blanks (FIB)</option>
+                                    <option value="ACTIVITY">Drawing / Practical Activity</option>
                                   </select>
                                 </div>
 

@@ -114,7 +114,7 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
     setLessonPaletteBatch(Math.floor(activeQuestionIndex / 10));
   }, [activeQuestionIndex]);
 
-  const [checkedQuestions, setCheckedQuestions] = useState<Record<number, { isChecked: boolean; isCorrect: boolean; feedback: string }>>({});
+  const [checkedQuestions, setCheckedQuestions] = useState<Record<number, { isChecked: boolean; isCorrect: boolean; feedback: string; isEvaluating?: boolean }>>({});
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [aiEvaluations, setAiEvaluations] = useState<Record<number, { isCorrect: boolean; explanation: string }>>({});
   const [isGrading, setIsGrading] = useState(false);
@@ -343,15 +343,140 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
       }
     } else {
       // For short answers and FIB, normalize spaces, punctuation, and case
-      const norm = (str: string) => normalizeFraction(str).replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s+/g, " ");
+      const norm = (str: string) => normalizeFraction(str).replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " ");
       const normS = norm(sAns);
       const normC = norm(cAns);
       if (normS === normC) return true;
       if (normS.length > 2 && normC.length > 2) {
         if (normS.includes(normC) || normC.includes(normS)) return true;
       }
+
+      // Check number extractions & phrasing variations (e.g. cAns="50", sAns="50 is the bigger number" or "50 is bigger")
+      const numberMatchesC = cAns.match(/-?\d+(\.\d+)?/g);
+      if (numberMatchesC && numberMatchesC.length === 1) {
+        const targetNum = numberMatchesC[0];
+        const numRegex = new RegExp(`\\b${targetNum}\\b`, "i");
+        if (numRegex.test(sAns)) {
+          const containsAffirmation = /(bigger|greater|largest|maximum|smaller|lowest|minimum|more|answer|is|result|equals)/i.test(sAns);
+          if (containsAffirmation || normS === targetNum) {
+            return true;
+          }
+        }
+      }
     }
     return false;
+  };
+
+  const handleCheckSingleAnswer = async (q: Question, qIdx: number, userAns: string) => {
+    if (!userAns) {
+      alert("Please enter or select an answer first.");
+      return;
+    }
+
+    if (autoAdvanceTimeoutRef.current) {
+      clearTimeout(autoAdvanceTimeoutRef.current);
+    }
+
+    // Fast local heuristic verification
+    const isLocalCorrect = checkAnswer(q, userAns);
+    if (isLocalCorrect) {
+      setCheckedQuestions(prev => ({
+        ...prev,
+        [qIdx]: {
+          isChecked: true,
+          isCorrect: true,
+          isEvaluating: false,
+          feedback: "✓ Correct! Great job. Moving to next question..."
+        }
+      }));
+
+      setAiEvaluations(prev => ({
+        ...prev,
+        [qIdx]: { isCorrect: true, explanation: "✓ Correct! Great job." }
+      }));
+
+      autoAdvanceTimeoutRef.current = setTimeout(() => {
+        if (activeQuestionIndex < questions.length - 1) {
+          setActiveQuestionIndex(prev => prev + 1);
+        } else {
+          setActiveQuestionIndex(prev => (prev + 1) % questions.length);
+        }
+      }, 1200);
+      return;
+    }
+
+    // If local heuristic did not match (e.g. sentence variations like "50 is larger than 12", worded explanations),
+    // send to AI evaluator to grade intelligently!
+    setCheckedQuestions(prev => ({
+      ...prev,
+      [qIdx]: {
+        isChecked: true,
+        isCorrect: false,
+        isEvaluating: true,
+        feedback: "🤖 AI Teacher evaluating your answer..."
+      }
+    }));
+
+    try {
+      const res = await fetch("/api/evaluate-single-answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: q.question,
+          correctAnswer: q.correctAnswer,
+          userAnswer: userAns,
+          context: (q as any).context,
+          options: q.options
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        const isCorrect = !!data.isCorrect;
+        const explanation = data.explanation || (isCorrect ? "✓ Correct!" : `✗ The correct answer is "${q.correctAnswer}".`);
+
+        setCheckedQuestions(prev => ({
+          ...prev,
+          [qIdx]: {
+            isChecked: true,
+            isCorrect,
+            isEvaluating: false,
+            feedback: explanation
+          }
+        }));
+
+        setAiEvaluations(prev => ({
+          ...prev,
+          [qIdx]: { isCorrect, explanation }
+        }));
+
+        if (isCorrect) {
+          autoAdvanceTimeoutRef.current = setTimeout(() => {
+            if (activeQuestionIndex < questions.length - 1) {
+              setActiveQuestionIndex(prev => prev + 1);
+            } else {
+              setActiveQuestionIndex(prev => (prev + 1) % questions.length);
+            }
+          }, 1500);
+        }
+        return;
+      }
+    } catch (err) {
+      console.error("AI check error:", err);
+    }
+
+    // Fallback if AI service unavailable
+    setCheckedQuestions(prev => ({
+      ...prev,
+      [qIdx]: {
+        isChecked: true,
+        isCorrect: false,
+        isEvaluating: false,
+        feedback: q.correctAnswer
+          ? `✗ Incorrect. Expected answer: "${q.correctAnswer}". Try again!`
+          : "✗ Incorrect. Try recalculating!"
+      }
+    }));
   };
 
   const isQuestionCorrect = (idx: number, q: Question): boolean => {
@@ -1080,45 +1205,16 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
                             {/* Check Answer & Skip Action Buttons */}
                             <div className="flex items-center gap-2.5 pt-1 flex-wrap">
                               <button
-                                onClick={() => {
-                                  const userAns = currentAnswer.trim();
-                                  if (!userAns) {
-                                    alert("Please enter or select an answer first.");
-                                    return;
-                                  }
-
-                                  if (autoAdvanceTimeoutRef.current) {
-                                    clearTimeout(autoAdvanceTimeoutRef.current);
-                                  }
-
-                                  const isCorrect = checkAnswer(q, userAns);
-                                  setCheckedQuestions(prev => ({
-                                    ...prev,
-                                    [qIdx]: {
-                                      isChecked: true,
-                                      isCorrect,
-                                      feedback: isCorrect
-                                        ? "✓ Correct answer! Moving to next question..."
-                                        : q.correctAnswer
-                                          ? `✗ Incorrect. Expected answer: "${q.correctAnswer}". Try again!`
-                                          : "✗ Incorrect. Try recalculating!"
-                                    }
-                                  }));
-
-                                  // If correct, automatically advance to next question after 1 second
-                                  if (isCorrect) {
-                                    autoAdvanceTimeoutRef.current = setTimeout(() => {
-                                      if (activeQuestionIndex < questions.length - 1) {
-                                        setActiveQuestionIndex(prev => prev + 1);
-                                      } else {
-                                        setActiveQuestionIndex(prev => (prev + 1) % questions.length);
-                                      }
-                                    }, 1000);
-                                  }
-                                }}
-                                className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95"
+                                disabled={checkedState?.isEvaluating}
+                                onClick={() => handleCheckSingleAnswer(q, qIdx, currentAnswer.trim())}
+                                className="px-4 py-2 bg-amber-400 hover:bg-amber-500 disabled:opacity-60 text-slate-950 text-xs font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95"
                               >
-                                <Check className="w-3.5 h-3.5 stroke-[3]" /> Check Answer
+                                {checkedState?.isEvaluating ? (
+                                  <Sparkles className="w-3.5 h-3.5 animate-spin text-amber-900" />
+                                ) : (
+                                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                )}
+                                {checkedState?.isEvaluating ? "Checking..." : "Check Answer"}
                               </button>
 
                               <button
@@ -1140,12 +1236,16 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
                                 initial={{ opacity: 0, y: 3 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className={`p-3 rounded-xl border text-xs font-bold flex items-center gap-2.5 ${
-                                  checkedState.isCorrect 
-                                    ? "bg-emerald-50 text-emerald-900 border-emerald-300" 
-                                    : "bg-rose-50 text-rose-900 border-rose-300"
+                                  checkedState.isEvaluating
+                                    ? "bg-blue-50 text-blue-900 border-blue-200 animate-pulse"
+                                    : checkedState.isCorrect 
+                                      ? "bg-emerald-50 text-emerald-900 border-emerald-300" 
+                                      : "bg-rose-50 text-rose-900 border-rose-300"
                                 }`}
                               >
-                                {checkedState.isCorrect ? (
+                                {checkedState.isEvaluating ? (
+                                  <Sparkles className="w-4.5 h-4.5 text-blue-600 shrink-0 animate-spin" />
+                                ) : checkedState.isCorrect ? (
                                   <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
                                 ) : (
                                   <XCircle className="w-4.5 h-4.5 text-rose-600 shrink-0" />

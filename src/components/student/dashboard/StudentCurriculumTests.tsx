@@ -73,7 +73,7 @@ export function AutoScalingText({ text, className = "", maxFontSize = 18, minFon
 interface Question {
   id: string;
   question: string;
-  type: "MCQ" | "SHORT" | "FIB";
+  type: "MCQ" | "SHORT" | "FIB" | "ACTIVITY";
   options?: string[];
   correctAnswer?: string;
 }
@@ -121,7 +121,7 @@ export function StudentCurriculumTests() {
     setMathPaletteBatch(Math.floor(currentMathQuestionIndex / 10));
   }, [currentMathQuestionIndex]);
 
-  const [checkedQuestions, setCheckedQuestions] = useState<Record<string, { isChecked: boolean; isCorrect: boolean; feedback: string }>>({});
+  const [checkedQuestions, setCheckedQuestions] = useState<Record<string, { isChecked: boolean; isCorrect: boolean; feedback: string; isEvaluating?: boolean }>>({});
   const [submitResult, setSubmitResult] = useState<{
     score: number;
     promoted: boolean;
@@ -260,6 +260,124 @@ export function StudentCurriculumTests() {
     setUserAnswers(prev => ({
       ...prev,
       [qId]: value
+    }));
+  };
+
+  const handleCheckMathQuestion = async (q: Question, userAns: string, totalCount: number) => {
+    if (!userAns) {
+      alert("Please enter or select an answer first.");
+      return;
+    }
+
+    if (autoAdvanceTimeoutRef.current) {
+      clearTimeout(autoAdvanceTimeoutRef.current);
+    }
+
+    const normalizeFrac = (str: string) =>
+      str.replace(/½/g, "1/2").replace(/⅓/g, "1/3").replace(/¼/g, "1/4").replace(/¾/g, "3/4").replace(/⅔/g, "2/3").replace(/1 whole/gi, "1").trim();
+    const correct = (q.correctAnswer || "").trim();
+    const normUser = normalizeFrac(userAns.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " "));
+    const normCorrect = normalizeFrac(correct.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " "));
+    const accepted = (q as any).acceptedAnswers;
+
+    let isLocalCorrect =
+      q.type === "ACTIVITY" ||
+      correct.toLowerCase().includes("activity") ||
+      (correct ? normUser === normCorrect : true) ||
+      (Array.isArray(accepted) && accepted.some((a: string) => normalizeFrac(String(a).toLowerCase()) === normUser));
+
+    // Check number extractions & phrasing variations (e.g. correct="50", userAns="50 is the bigger number" or "50 is bigger")
+    if (!isLocalCorrect && correct) {
+      const numberMatchesC = correct.match(/-?\d+(\.\d+)?/g);
+      if (numberMatchesC && numberMatchesC.length === 1) {
+        const targetNum = numberMatchesC[0];
+        const numRegex = new RegExp(`\\b${targetNum}\\b`, "i");
+        if (numRegex.test(userAns)) {
+          const containsAffirmation = /(bigger|greater|largest|maximum|smaller|lowest|minimum|more|answer|is|result|equals)/i.test(userAns);
+          if (containsAffirmation || normUser === targetNum) {
+            isLocalCorrect = true;
+          }
+        }
+      }
+    }
+
+    if (isLocalCorrect) {
+      setCheckedQuestions(prev => ({
+        ...prev,
+        [q.id]: {
+          isChecked: true,
+          isCorrect: true,
+          isEvaluating: false,
+          feedback: "✓ Correct! Excellent mathematical reasoning. Moving to next question..."
+        }
+      }));
+
+      autoAdvanceTimeoutRef.current = setTimeout(() => {
+        setCurrentMathQuestionIndex((prev) => (prev + 1) % totalCount);
+      }, 1200);
+      return;
+    }
+
+    // If local heuristics don't immediately match, run AI evaluation for sentence variations and reasoning!
+    setCheckedQuestions(prev => ({
+      ...prev,
+      [q.id]: {
+        isChecked: true,
+        isCorrect: false,
+        isEvaluating: true,
+        feedback: "🤖 AI Teacher evaluating your answer..."
+      }
+    }));
+
+    try {
+      const res = await fetch("/api/evaluate-single-answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: q.question,
+          correctAnswer: q.correctAnswer,
+          userAnswer: userAns,
+          options: q.options
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        const isCorrect = !!data.isCorrect;
+        const explanation = data.explanation || (isCorrect ? "✓ Correct!" : `✗ The model answer is "${correct}".`);
+
+        setCheckedQuestions(prev => ({
+          ...prev,
+          [q.id]: {
+            isChecked: true,
+            isCorrect,
+            isEvaluating: false,
+            feedback: explanation
+          }
+        }));
+
+        if (isCorrect) {
+          autoAdvanceTimeoutRef.current = setTimeout(() => {
+            setCurrentMathQuestionIndex((prev) => (prev + 1) % totalCount);
+          }, 1500);
+        }
+        return;
+      }
+    } catch (err) {
+      console.error("AI check math question error:", err);
+    }
+
+    // Fallback if AI unavailable
+    setCheckedQuestions(prev => ({
+      ...prev,
+      [q.id]: {
+        isChecked: true,
+        isCorrect: false,
+        isEvaluating: false,
+        feedback: correct
+          ? `✗ Incorrect. The model answer is "${correct}". Try recalculating!`
+          : "✗ Incorrect answer. Try recalculating!"
+      }
     }));
   };
 
@@ -737,51 +855,16 @@ export function StudentCurriculumTests() {
                               {/* Check Answer & Skip Action Buttons */}
                               <div className="flex items-center gap-2.5 pt-1 flex-wrap">
                                 <button
-                                  onClick={() => {
-                                    const userAns = currentVal.trim();
-                                    if (!userAns) {
-                                      alert("Please enter or select an answer first.");
-                                      return;
-                                    }
-
-                                    if (autoAdvanceTimeoutRef.current) {
-                                      clearTimeout(autoAdvanceTimeoutRef.current);
-                                    }
-
-                                    const normalizeFrac = (str: string) => str.replace(/½/g, "1/2").replace(/⅓/g, "1/3").replace(/¼/g, "1/4").replace(/¾/g, "3/4").replace(/⅔/g, "2/3").replace(/1 whole/gi, "1").trim();
-                                    const correct = (q.correctAnswer || "").trim();
-                                    const normUser = normalizeFrac(userAns.toLowerCase());
-                                    const normCorrect = normalizeFrac(correct.toLowerCase());
-                                    const accepted = (q as any).acceptedAnswers;
-                                    
-                                    const isCorrect = 
-                                      q.type === "ACTIVITY" ||
-                                      correct.toLowerCase().includes("activity") ||
-                                      (correct ? normUser === normCorrect : true) ||
-                                      (Array.isArray(accepted) && accepted.some((a: string) => normalizeFrac(String(a).toLowerCase()) === normUser));
-                                    setCheckedQuestions(prev => ({
-                                      ...prev,
-                                      [q.id]: {
-                                        isChecked: true,
-                                        isCorrect: isCorrect,
-                                        feedback: isCorrect 
-                                          ? "✓ Correct! Excellent mathematical reasoning. Moving to next question..." 
-                                          : correct 
-                                            ? `✗ Incorrect. The model answer is "${correct}". Try recalculating!`
-                                            : "✗ Incorrect answer. Try recalculating!"
-                                      }
-                                    }));
-
-                                    // If correct, auto advance to next question after 1 second
-                                    if (isCorrect) {
-                                      autoAdvanceTimeoutRef.current = setTimeout(() => {
-                                        setCurrentMathQuestionIndex((prev) => (prev + 1) % questionsList.length);
-                                      }, 1000);
-                                    }
-                                  }}
-                                  className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95"
+                                  disabled={checkedState?.isEvaluating}
+                                  onClick={() => handleCheckMathQuestion(q, currentVal.trim(), questionsList.length)}
+                                  className="px-4 py-2 bg-amber-400 hover:bg-amber-500 disabled:opacity-60 text-slate-950 text-xs font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95"
                                 >
-                                  <Check className="w-3.5 h-3.5 stroke-[3]" /> Check Answer
+                                  {checkedState?.isEvaluating ? (
+                                    <Sparkles className="w-3.5 h-3.5 animate-spin text-amber-900" />
+                                  ) : (
+                                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                  )}
+                                  {checkedState?.isEvaluating ? "Checking..." : "Check Answer"}
                                 </button>
 
                                 <button
@@ -803,12 +886,16 @@ export function StudentCurriculumTests() {
                                   initial={{ opacity: 0, y: 3 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   className={`p-3 rounded-xl border text-xs font-bold flex items-center gap-2.5 ${
-                                    checkedState.isCorrect 
-                                      ? "bg-emerald-50 text-emerald-900 border-emerald-300" 
-                                      : "bg-rose-50 text-rose-900 border-rose-300"
+                                    checkedState.isEvaluating
+                                      ? "bg-blue-50 text-blue-900 border-blue-200 animate-pulse"
+                                      : checkedState.isCorrect 
+                                        ? "bg-emerald-50 text-emerald-900 border-emerald-300" 
+                                        : "bg-rose-50 text-rose-900 border-rose-300"
                                   }`}
                                 >
-                                  {checkedState.isCorrect ? (
+                                  {checkedState.isEvaluating ? (
+                                    <Sparkles className="w-4.5 h-4.5 text-blue-600 shrink-0 animate-spin" />
+                                  ) : checkedState.isCorrect ? (
                                     <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
                                   ) : (
                                     <XCircle className="w-4.5 h-4.5 text-rose-600 shrink-0" />

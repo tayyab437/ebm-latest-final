@@ -8953,6 +8953,113 @@ Also provide a score from 0 to 100, and a friendly, supportive, and constructive
   }
 });
 
+app.post("/api/evaluate-single-answer", async (req, res) => {
+  try {
+    const { question, correctAnswer, userAnswer, context, options } = req.body;
+    if (!userAnswer || !userAnswer.trim()) {
+      return res.status(400).json({ success: false, error: "Empty user answer" });
+    }
+
+    const qText = (question || "").trim();
+    const cAns = (correctAnswer || "").trim();
+    const uAns = (userAnswer || "").trim();
+
+    // 1. Fast Smart Heuristic Matching:
+    const normalizeFrac = (str: string) =>
+      str.replace(/½/g, "1/2").replace(/⅓/g, "1/3").replace(/¼/g, "1/4").replace(/¾/g, "3/4").replace(/⅔/g, "2/3").trim();
+
+    const cleanU = normalizeFrac(uAns.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " "));
+    const cleanC = normalizeFrac(cAns.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " "));
+
+    // Direct match
+    if (cleanU === cleanC) {
+      return res.json({
+        success: true,
+        isCorrect: true,
+        explanation: `✓ Correct! "${uAns}" is the exact answer.`
+      });
+    }
+
+    // Number extraction check (e.g. cAns="50" and uAns="50 is the bigger number" or "50 is bigger")
+    const numberMatchesC = cAns.match(/-?\d+(\.\d+)?/g);
+    if (numberMatchesC && numberMatchesC.length === 1) {
+      const targetNum = numberMatchesC[0];
+      const regex = new RegExp(`\\b${targetNum}\\b`, "i");
+      if (regex.test(uAns)) {
+        const containsAffirmation = /(bigger|greater|largest|maximum|smaller|lowest|minimum|more|answer|is|result|equals)/i.test(uAns);
+        if (containsAffirmation || cleanU === targetNum) {
+          return res.json({
+            success: true,
+            isCorrect: true,
+            explanation: `✓ Correct! You correctly identified ${targetNum}.`
+          });
+        }
+      }
+    }
+
+    // 2. Call Gemini AI for contextual and mathematical understanding
+    try {
+      const ai = getAiClient();
+      const prompt = `You are a warm, encouraging K-12 math and reading tutor evaluating a student's answer.
+Question: "${qText}"
+${context ? `Context: "${context}"\n` : ""}
+${options && Array.isArray(options) ? `Options: ${JSON.stringify(options)}\n` : ""}
+Correct Reference Answer: "${cAns}"
+Student's Answer: "${uAns}"
+
+TASK:
+1. Determine if the student's answer is conceptually, mathematically, and semantically correct despite phrasing variations (e.g., if expected answer is "50" and the student writes "50 is the bigger number", "50 is bigger", "the larger number is 50", or "fifty", it is 100% CORRECT).
+2. Set 'isCorrect' = true if the student demonstrated the correct answer or understanding.
+3. Provide a friendly 1-2 sentence explanation addressed directly to the student explaining why it is correct, or what the correct answer is and why.
+
+Output JSON with 'isCorrect' (boolean) and 'explanation' (string).`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-flash-latest",
+        contents: prompt,
+        config: {
+          systemInstruction: "You are an empathetic, expert K-12 educator. Output valid JSON with 'isCorrect' (boolean) and 'explanation' (string, max 2 sentences).",
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              isCorrect: { type: Type.BOOLEAN, description: "Whether the student's answer is correct" },
+              explanation: { type: Type.STRING, description: "1-2 sentence concise explanation for the student" }
+            },
+            required: ["isCorrect", "explanation"]
+          }
+        }
+      });
+
+      const resultText = response.text;
+      if (resultText) {
+        const parsed = JSON.parse(resultText);
+        return res.json({
+          success: true,
+          isCorrect: !!parsed.isCorrect,
+          explanation: parsed.explanation || (parsed.isCorrect ? "✓ Correct!" : `✗ The expected answer was "${cAns}".`)
+        });
+      }
+    } catch (aiErr) {
+      console.error("AI single answer evaluation error:", aiErr);
+    }
+
+    // Fallback if AI unreachable
+    const isClose = cleanU.includes(cleanC) || cleanC.includes(cleanU);
+    return res.json({
+      success: true,
+      isCorrect: isClose,
+      explanation: isClose 
+        ? `✓ Correct! "${uAns}" matches the question.`
+        : `✗ Expected answer: "${cAns}". Try recalculating!`
+    });
+
+  } catch (e: any) {
+    console.error("Error in /api/evaluate-single-answer:", e);
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
 /* ================== DYNAMIC SEO & SOCIAL TAGS INJECTOR ================== */
 
 function optimizeUnsplashServerUrl(
