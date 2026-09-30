@@ -7,8 +7,9 @@
     "overview": "Curriculum JSON files represent structured courses containing reading material, metadata, and ordered question items categorized into sections.",
     "rootProperties": {
       "title": "Required string. Name of the curriculum unit or assessment.",
-      "subject": "Required string. Must be 'MATH', 'ENGLISH', 'SCIENCE', or a custom subject string.",
-      "gradeLevel": "Optional string. Target education level (e.g. 'Grade 1', 'Grade 2', 'Grade 5', 'O Level'). Default: 'Grade 2'.",
+      "classId": "Optional string. The ID of the target classroom (e.g. 'class_primary_2b'). If provided, assigns the curriculum specifically to that classroom. Can also be selected via the UI modal dropdown.",
+      "subject": "Required string. Must be 'MATH', 'ENGLISH', 'SCIENCE', 'GENERAL', or a custom subject string. Can also be selected or overridden via the UI modal dropdown.",
+      "gradeLevel": "Optional string (aliases: 'targetGrade', 'grade', 'level'). Target education level (e.g. 'Grade 1', 'Grade 2', 'Grade 5', 'O Level', 'A Level'). Default: 'Grade 2'. Can also be selected or overridden via the UI modal dropdown.",
       "unitTitle": "Optional string. Sub-topic or chapter title.",
       "skillFocus": "Optional string. Summary of skills practiced (e.g. 'Quick Addition, Fractions, Data Handling').",
       "lifeConnection": "Optional string. Real-world application of the material.",

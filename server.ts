@@ -8171,12 +8171,23 @@ function runHeuristicParser(comprehensionText: string, answerKeyText: string): a
   };
 }
 
-function parseDirectJsonCurriculum(raw: any, filename?: string): any {
+function parseDirectJsonCurriculum(raw: any, filename?: string, overrides?: { classId?: string; subject?: string; gradeLevel?: string }): any {
   let root = Array.isArray(raw) ? { questions: raw } : (raw || {});
 
   const title = root.title || root.name || filename?.replace(/\.[^/.]+$/, "") || "Curriculum Module";
-  const subject = (root.subject || "MATH").toUpperCase().includes("ENG") ? "ENGLISH" : "MATH";
-  const gradeLevel = root.gradeLevel || root.level || root.grade || "Grade 2";
+  
+  // Subject resolution with overrides and multi-subject support (MATH, ENGLISH, SCIENCE, etc.)
+  let rawSubject = overrides?.subject || root.subject || "MATH";
+  const subject = rawSubject.toUpperCase().includes("ENG") 
+    ? "ENGLISH" 
+    : (rawSubject.toUpperCase().includes("SCI") ? "SCIENCE" : rawSubject.toUpperCase());
+
+  // Grade level resolution with overrides, targetGrade, gradeLevel, or grade
+  const gradeLevel = overrides?.gradeLevel || root.gradeLevel || root.targetGrade || root.grade || root.level || "Grade 2";
+
+  // Target class ID resolution with overrides or JSON field
+  const classId = overrides?.classId || root.classId || root.class || root.targetClass || root.targetClassId || null;
+
   const unitTitle = root.unitTitle || root.unit || title;
   const skillFocus = root.skillFocus || root.skills || "Review and Practice";
   const lifeConnection = root.lifeConnection || root.connection || "Practical real-world application";
@@ -8184,7 +8195,9 @@ function parseDirectJsonCurriculum(raw: any, filename?: string): any {
   const duration = parseInt(root.duration, 10) || 20;
   const thumbnailUrl = root.thumbnailUrl || (subject === "MATH"
     ? "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=300&q=80"
-    : "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=300&q=80");
+    : (subject === "SCIENCE"
+        ? "https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=300&q=80"
+        : "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=300&q=80"));
 
   const rawQuestions = Array.isArray(root.questions) 
     ? root.questions 
@@ -8264,6 +8277,7 @@ function parseDirectJsonCurriculum(raw: any, filename?: string): any {
 
   return {
     id: "curr_" + Date.now(),
+    classId: classId || null,
     title,
     subject,
     gradeLevel,
@@ -8279,7 +8293,7 @@ function parseDirectJsonCurriculum(raw: any, filename?: string): any {
 
 app.post("/api/curriculum/parse", async (req, res) => {
   try {
-    const { filename, filetype, content, comprehensionText, answerKeyText } = req.body;
+    const { filename, filetype, content, comprehensionText, answerKeyText, classId, subject, gradeLevel } = req.body;
 
     // Direct JSON Ingestion Engine - 0ms AI delay, 100% deterministic & robust
     let directJson: any = null;
@@ -8302,10 +8316,10 @@ app.post("/api/curriculum/parse", async (req, res) => {
     }
 
     if (directJson) {
-      const parsedItem = parseDirectJsonCurriculum(directJson, filename);
+      const parsedItem = parseDirectJsonCurriculum(directJson, filename, { classId, subject, gradeLevel });
       const db = await getDb();
       await db.insert(schema.curriculum).values(parsedItem);
-      console.log(`Direct JSON Curriculum Imported: ${parsedItem.title} with ${parsedItem.questions.length} questions`);
+      console.log(`Direct JSON Curriculum Imported: ${parsedItem.title} (${parsedItem.subject}, ${parsedItem.gradeLevel}, Class: ${parsedItem.classId || "None"}) with ${parsedItem.questions.length} questions`);
       return res.json({ success: true, item: parsedItem });
     }
 

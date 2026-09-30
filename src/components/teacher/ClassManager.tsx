@@ -281,11 +281,30 @@ export function ClassManager() {
   // Open Edit Dialog
   const triggerEdit = (c: TeacherClass) => {
     setEditingClass(c);
-    setEditName(c.name);
-    setEditSubjects(c.subjects || (c.subject ? [c.subject] : []));
-    setEditGradeLevel(c.gradeLevel);
-    setEditSchedule(c.schedule);
-    setEditRoom(c.room);
+    setEditName(c.name || "");
+    
+    // Safely parse subjects into an array of strings
+    let parsedSubjects: string[] = [];
+    if (Array.isArray(c.subjects)) {
+      parsedSubjects = c.subjects;
+    } else if (typeof c.subjects === "string") {
+      try {
+        const parsed = JSON.parse(c.subjects);
+        parsedSubjects = Array.isArray(parsed) ? parsed : [c.subjects];
+      } catch (_) {
+        parsedSubjects = (c.subjects as string).includes(",")
+          ? (c.subjects as string).split(",").map((s) => s.trim()).filter(Boolean)
+          : [(c.subjects as string).trim()].filter(Boolean);
+      }
+    } else if ((c as any).subject) {
+      parsedSubjects = [(c as any).subject];
+    }
+
+    setEditSubjects(parsedSubjects);
+    setEditNewSubject("");
+    setEditGradeLevel(c.gradeLevel || "");
+    setEditSchedule(c.schedule || "");
+    setEditRoom(c.room || "");
     setActiveMenuId(null);
   };
 
@@ -984,19 +1003,19 @@ export function ClassManager() {
               </label>
               
               <div className="flex flex-wrap gap-2 mb-2">
-                {editSubjects.map((s, idx) => (
+                {(Array.isArray(editSubjects) ? editSubjects : []).map((s, idx) => (
                   <span key={idx} className="flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100 animate-in zoom-in-95">
                     {s}
                     <button 
                       type="button" 
-                      onClick={() => setEditSubjects(editSubjects.filter((_, i) => i !== idx))}
+                      onClick={() => setEditSubjects((Array.isArray(editSubjects) ? editSubjects : []).filter((_, i) => i !== idx))}
                       className="hover:text-red-500 transition-colors cursor-pointer"
                     >
                       <X className="h-3 w-3" />
                     </button>
                   </span>
                 ))}
-                {editSubjects.length === 0 && (
+                {(!Array.isArray(editSubjects) || editSubjects.length === 0) && (
                   <span className="text-[10px] text-slate-400 italic">No subjects added yet.</span>
                 )}
               </div>
@@ -1011,7 +1030,8 @@ export function ClassManager() {
                     if (e.key === 'Enter') {
                       e.preventDefault();
                       if (editNewSubject.trim()) {
-                        setEditSubjects([...editSubjects, editNewSubject.trim()]);
+                        const current = Array.isArray(editSubjects) ? editSubjects : [];
+                        setEditSubjects([...current, editNewSubject.trim()]);
                         setEditNewSubject("");
                       }
                     }
@@ -1022,7 +1042,8 @@ export function ClassManager() {
                   type="button"
                   onClick={() => {
                     if (editNewSubject.trim()) {
-                      setEditSubjects([...editSubjects, editNewSubject.trim()]);
+                      const current = Array.isArray(editSubjects) ? editSubjects : [];
+                      setEditSubjects([...current, editNewSubject.trim()]);
                       setEditNewSubject("");
                     }
                   }}

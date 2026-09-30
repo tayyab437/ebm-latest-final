@@ -17,7 +17,25 @@ function loadLocalClasses(): TeacherClass[] {
   const cached = localStorage.getItem("ebm_teacher_classes_cache");
   if (cached) {
     try {
-      return JSON.parse(cached);
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed)) {
+        return parsed.map((c: any) => {
+          let subjects: string[] = [];
+          if (Array.isArray(c.subjects)) {
+            subjects = c.subjects;
+          } else if (typeof c.subjects === "string") {
+            try {
+              const parsedS = JSON.parse(c.subjects);
+              subjects = Array.isArray(parsedS) ? parsedS : [c.subjects];
+            } catch (_) {
+              subjects = c.subjects.includes(",") ? c.subjects.split(",").map((s: string) => s.trim()).filter(Boolean) : [c.subjects];
+            }
+          } else if (c.subject) {
+            subjects = [c.subject];
+          }
+          return { ...c, subjects };
+        });
+      }
     } catch (e) {}
   }
   return DEFAULT_CLASSES;
@@ -106,8 +124,24 @@ export const useTeacherStore = create<TeacherState>((set, get) => ({
   toggleSidebar: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
 
   setClasses: (classes) => {
-    localStorage.setItem("ebm_teacher_classes_cache", JSON.stringify(classes));
-    set({ classes });
+    const formatted = classes.map((c: any) => {
+      let subjects: string[] = [];
+      if (Array.isArray(c.subjects)) {
+        subjects = c.subjects;
+      } else if (typeof c.subjects === "string") {
+        try {
+          const parsedS = JSON.parse(c.subjects);
+          subjects = Array.isArray(parsedS) ? parsedS : [c.subjects];
+        } catch (_) {
+          subjects = c.subjects.includes(",") ? c.subjects.split(",").map((s: string) => s.trim()).filter(Boolean) : [c.subjects];
+        }
+      } else if (c.subject) {
+        subjects = [c.subject];
+      }
+      return { ...c, subjects };
+    });
+    localStorage.setItem("ebm_teacher_classes_cache", JSON.stringify(formatted));
+    set({ classes: formatted });
   },
 
   setStudents: async (students) => {
@@ -150,8 +184,24 @@ export const useTeacherStore = create<TeacherState>((set, get) => ({
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.classes) {
-          localStorage.setItem("ebm_teacher_classes_cache", JSON.stringify(data.classes));
-          set({ classes: data.classes });
+          const formatted = data.classes.map((c: any) => {
+            let subjects: string[] = [];
+            if (Array.isArray(c.subjects)) {
+              subjects = c.subjects;
+            } else if (typeof c.subjects === "string") {
+              try {
+                const parsedS = JSON.parse(c.subjects);
+                subjects = Array.isArray(parsedS) ? parsedS : [c.subjects];
+              } catch (_) {
+                subjects = c.subjects.includes(",") ? c.subjects.split(",").map((s: string) => s.trim()).filter(Boolean) : [c.subjects];
+              }
+            } else if (c.subject) {
+              subjects = [c.subject];
+            }
+            return { ...c, subjects };
+          });
+          localStorage.setItem("ebm_teacher_classes_cache", JSON.stringify(formatted));
+          set({ classes: formatted });
           return;
         }
       }

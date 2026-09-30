@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import Markdown from "react-markdown";
 import {
   BookOpen,
   Plus,
@@ -1368,8 +1369,14 @@ export function CurriculumManager() {
                   {/* Body Content */}
                   <div>
                     <span className="font-bold uppercase tracking-wider text-[10px] block text-slate-400 mb-2">Lesson Material</span>
-                    <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed text-sm whitespace-pre-wrap font-sans bg-slate-50/50 p-4 rounded-xl border border-slate-100">
-                      {selectedItem.content}
+                    <div className="bg-slate-50/70 p-4 md:p-5 rounded-xl border border-slate-200/80 overflow-x-auto shadow-2xs">
+                      <article className="prose prose-slate max-w-none">
+                        <div className="markdown-body text-slate-800 leading-relaxed font-sans text-sm space-y-3">
+                          <Markdown>
+                            {selectedItem.content || "*No lesson notes provided.*"}
+                          </Markdown>
+                        </div>
+                      </article>
                     </div>
                   </div>
                 </div>
