@@ -3,7 +3,7 @@
  * Domain: https://ejazbukharimethod.com
  *
  * Fully synchronous, non-blocking, zero-layout-shift SSR template generator.
- * Accurately mirrors the displayed version of all pages without physical address conflicts.
+ * Perfectly mirrors the displayed version of all pages without physical address conflicts.
  */
 
 import { ROUTE_REGISTRY, ASSESSMENT_VISIBLE_FAQS } from "../services/seo.schema.js";
@@ -21,8 +21,8 @@ function escapeHtml(str: string): string {
 export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): string {
   const cleanPath = reqPath.split("?")[0].replace(/\/+$/, "") || "/";
   const routeMeta = ROUTE_REGISTRY[cleanPath] || {
-    title: "EBM Personalized Learning Platform | Grade 1 to O/A Level",
-    description: "Personalized learning platform for students from Grade 1 to O/A Levels, featuring structured curricula, diagnostic assessments, and AI-powered tutoring.",
+    title: "EBM: A Personalized Learning Platform for Every Student",
+    description: "EBM combines structured learning, personalized guidance, and AI-enhanced tools to help students build strong academic foundations and progress with confidence.",
     canonicalUrl: `https://ejazbukharimethod.com${cleanPath}`,
     breadcrumbName: "Home"
   };
@@ -338,36 +338,35 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
     `;
   }
 
-  // 10. Default Homepage & All Other Routes: Complete Rich Semantic Structure
+  // 10. Default Homepage: Complete Rich Semantic Structure matching EBMHomepage.tsx verbatim
   return `
   ${renderHeader()}
   <main id="main-content" class="ebm-ssr-main">
-    <!-- ================= HERO SECTION ================= -->
-    <section aria-labelledby="hero-title" class="ebm-hero-sec">
-      <h1 id="hero-title" class="ebm-hero-h1">
-        EBM Personalized Learning Platform – Grade 1 to Cambridge O/A Levels
+    <!-- ================= HERO BANNER ================= -->
+    <section aria-labelledby="ebm-hero-title" class="ebm-hero-sec">
+      <h1 id="ebm-hero-title" class="ebm-hero-h1">
+        EBM: A Personalized Learning Platform for Every Student
       </h1>
-      <p class="ebm-hero-p">
-        Accelerate academic mastery with the Ejaz Bukhari Method. Delivering individualized learning trajectories, adaptive diagnostic evaluations, and structured Cambridge curriculum instruction from primary foundations to advanced O/A Level distinctions.
+      <p id="ebm-hero-subtitle" class="ebm-hero-p">
+        EBM combines structured learning, personalized guidance, and AI-enhanced tools to help students build strong academic foundations and progress with confidence.
       </p>
 
-      <!-- Key Academic Proof Metrics -->
+      <!-- Three Core Pillars Clouds -->
       <div class="ebm-metrics-grid">
         <div class="ebm-metric-card">
-          <p class="ebm-metric-val">98%</p>
-          <p class="ebm-metric-label">Grade Turnaround Rate</p>
+          <h2 class="ebm-pillar-title">Learning Support from Grade 1 to O/A Levels</h2>
+          <p class="ebm-curriculum-tag">Mathematics &bull; English</p>
+          <p class="ebm-pillar-desc">Comprehensive curriculum coverage with structured learning checkpoints.</p>
         </div>
         <div class="ebm-metric-card">
-          <p class="ebm-metric-val">25+ Years</p>
-          <p class="ebm-metric-label">Pedagogical Excellence</p>
+          <h2 class="ebm-pillar-title">Build Skills for Academic and Real-World Success</h2>
+          <p class="ebm-curriculum-tag">Practical Methods &bull; Educator Support &bull; Learner Growth</p>
+          <p class="ebm-pillar-desc">Develop critical thinking, problem-solving, and cognitive intuition.</p>
         </div>
         <div class="ebm-metric-card">
-          <p class="ebm-metric-val">10,000+</p>
-          <p class="ebm-metric-label">Students Accelerated</p>
-        </div>
-        <div class="ebm-metric-card">
-          <p class="ebm-metric-val">100%</p>
-          <p class="ebm-metric-label">Cambridge Syllabus Coverage</p>
+          <h2 class="ebm-pillar-title">AI Diagnostics &amp; Adaptive Learning</h2>
+          <p class="ebm-curriculum-tag">Adaptive Practice &bull; Targeted Guidance &bull; Real-Time Insights</p>
+          <p class="ebm-pillar-desc">Identify learning bottlenecks and adapt pacing dynamically.</p>
         </div>
       </div>
 
@@ -377,56 +376,133 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
       </div>
     </section>
 
-    <!-- ================= ACADEMIC CURRICULA ================= -->
+    <!-- ================= CURRICULUM PREVIEW & GRADE PATHWAYS ================= -->
     <section aria-labelledby="curriculum-heading" class="ebm-curricula-sec">
       <h2 id="curriculum-heading" class="ebm-section-h2">
-        Comprehensive Academic Programs &amp; Grade Pathways
+        Explore EBM Curricula Across Grade Levels
       </h2>
+      <p class="ebm-lead-sub">
+        Explore detailed course outlines, lesson progressions, and skill benchmarks tailored for each stage of development.
+      </p>
+
       <div class="ebm-curricula-grid">
         <article class="ebm-curriculum-card">
-          <h3 class="ebm-curriculum-title">Primary Foundation (Grades 1–5)</h3>
-          <p class="ebm-curriculum-desc">Builds vital numeracy skills, reading comprehension, mathematical intuition, and foundational reasoning through structured practice.</p>
-          <span class="ebm-curriculum-tag">Key Focus: Number Sense &amp; Critical Thinking</span>
+          <h3 class="ebm-curriculum-title">Grade 1 Mathematics</h3>
+          <p class="ebm-curriculum-desc">Foundational numeracy, addition &amp; subtraction within 20, place value, shapes, and early measurement concepts.</p>
+          <span class="ebm-curriculum-tag">Grade 1 &bull; Core Numeracy</span>
         </article>
+
+        <article class="ebm-curriculum-card">
+          <h3 class="ebm-curriculum-title">Grade 1 English Comprehension</h3>
+          <p class="ebm-curriculum-desc">Phonics decoding, sight word mastery, sentence formation, and guided comprehension stories.</p>
+          <span class="ebm-curriculum-tag">Grade 1 &bull; Phonics &amp; Reading</span>
+        </article>
+
+        <article class="ebm-curriculum-card">
+          <h3 class="ebm-curriculum-title">Grade 2 Mathematics</h3>
+          <p class="ebm-curriculum-desc">Two-digit arithmetic, introduction to multiplication, simple fractions, data tables, and time.</p>
+          <span class="ebm-curriculum-tag">Grade 2 &bull; Arithmetic &amp; Logic</span>
+        </article>
+
+        <article class="ebm-curriculum-card">
+          <h3 class="ebm-curriculum-title">Grade 2 English Comprehension</h3>
+          <p class="ebm-curriculum-desc">Grammar fundamentals, punctuation, vocabulary expansion, and reading fluency exercises.</p>
+          <span class="ebm-curriculum-tag">Grade 2 &bull; Vocabulary &amp; Grammar</span>
+        </article>
+
+        <article class="ebm-curriculum-card">
+          <h3 class="ebm-curriculum-title">Grade 3 Mathematics</h3>
+          <p class="ebm-curriculum-desc">Multiplication tables, division fundamentals, fractions comparison, area, and word problem modeling.</p>
+          <span class="ebm-curriculum-tag">Grade 3 &bull; Problem Solving</span>
+        </article>
+
+        <article class="ebm-curriculum-card">
+          <h3 class="ebm-curriculum-title">Grade 3 English Comprehension</h3>
+          <p class="ebm-curriculum-desc">Paragraph comprehension, narrative writing, inferencing, and contextual vocabulary.</p>
+          <span class="ebm-curriculum-tag">Grade 3 &bull; Critical Reading</span>
+        </article>
+
+        <article class="ebm-curriculum-card">
+          <h3 class="ebm-curriculum-title">Grade 4 Mathematics</h3>
+          <p class="ebm-curriculum-desc">Multi-digit multiplication, long division, decimals, fractions operations, and geometric angles.</p>
+          <span class="ebm-curriculum-tag">Grade 4 &bull; Advanced Arithmetic</span>
+        </article>
+
+        <article class="ebm-curriculum-card">
+          <h3 class="ebm-curriculum-title">Grade 4 English Comprehension</h3>
+          <p class="ebm-curriculum-desc">Textual analysis, expository writing, grammar synthesis, and analytical reading strategies.</p>
+          <span class="ebm-curriculum-tag">Grade 4 &bull; Textual Analysis</span>
+        </article>
+
         <article class="ebm-curriculum-card">
           <h3 class="ebm-curriculum-title">Middle School Mastery (Grades 6–8)</h3>
-          <p class="ebm-curriculum-desc">Bridges foundational arithmetic to pre-algebra, scientific inquiry, spatial geometry, and analytical problem-solving frameworks.</p>
-          <span class="ebm-curriculum-tag">Key Focus: Pre-Algebra &amp; Analytical Logic</span>
+          <p class="ebm-curriculum-desc">Pre-algebra, proportional reasoning, spatial geometry, and introductory algebraic derivations.</p>
+          <span class="ebm-curriculum-tag">Grades 6–8 &bull; Pre-Algebra</span>
         </article>
+
         <article class="ebm-curriculum-card">
           <h3 class="ebm-curriculum-title">Cambridge O Level &amp; IGCSE (Grades 9–11)</h3>
-          <p class="ebm-curriculum-desc">Exhaustive syllabus coverage for Cambridge Mathematics (4024/0580), Add Math (4037/0606), Physics, Chemistry, and past paper drills.</p>
-          <span class="ebm-curriculum-tag">Key Focus: Exam Techniques &amp; Distinction Mastery</span>
+          <p class="ebm-curriculum-desc">Exhaustive CAIE syllabus coverage for Cambridge Mathematics (4024/0580), Add Math (4037/0606), and past papers.</p>
+          <span class="ebm-curriculum-tag">Grades 9–11 &bull; Cambridge O Level</span>
         </article>
+
         <article class="ebm-curriculum-card">
           <h3 class="ebm-curriculum-title">Cambridge A Levels (Grades 12–13)</h3>
-          <p class="ebm-curriculum-desc">Advanced Pure Mathematics (P1/P3), Mechanics (M1), Statistics (S1), Physics, and competitive university admissions prep.</p>
-          <span class="ebm-curriculum-tag">Key Focus: Advanced Calculus &amp; STEM Rigor</span>
+          <p class="ebm-curriculum-desc">Advanced Pure Mathematics (P1/P3), Mechanics (M1), Probability &amp; Statistics (S1), and STEM rigor.</p>
+          <span class="ebm-curriculum-tag">Grades 12–13 &bull; Cambridge A Level</span>
         </article>
       </div>
     </section>
 
-    <!-- ================= METHODOLOGY PILLARS ================= -->
-    <section aria-labelledby="pillars-heading" class="ebm-curricula-sec">
-      <h2 id="pillars-heading" class="ebm-section-h2">
-        The Four Pillars of the Ejaz Bukhari Method
+    <!-- ================= METHODOLOGY & SKILLS ROADMAP ================= -->
+    <section aria-labelledby="skills-heading" class="ebm-curricula-sec">
+      <h2 id="skills-heading" class="ebm-section-h2">
+        A Comprehensive 10-Pillar Skill Development Ecosystem
       </h2>
+      <p class="ebm-lead-sub">
+        Beyond standardized memorization: building foundational capabilities for academic mastery and life.
+      </p>
+
       <div class="ebm-pillars-grid">
         <div class="ebm-pillar-card">
-          <h3 class="ebm-pillar-title">1. Adaptive Diagnostic Testing</h3>
-          <p class="ebm-pillar-desc">Identifies exactly what concepts a student knows, partially understands, or has missed, removing guesswork before instruction begins.</p>
+          <h3 class="ebm-pillar-title">1. Thinking &amp; Intelligence</h3>
+          <p class="ebm-pillar-desc">First-principles deduction, cognitive modeling, and logical reasoning frameworks.</p>
         </div>
         <div class="ebm-pillar-card">
-          <h3 class="ebm-pillar-title">2. Personalized Learning Trajectories</h3>
-          <p class="ebm-pillar-desc">No standardized class pacing. Lessons, problem sets, and milestones adjust dynamically to match each learner's cognitive velocity.</p>
+          <h3 class="ebm-pillar-title">2. Academic Foundation</h3>
+          <p class="ebm-pillar-desc">Uncompromising mastery of core mathematics and English language standards.</p>
         </div>
         <div class="ebm-pillar-card">
-          <h3 class="ebm-pillar-title">3. Conceptual Derivation</h3>
-          <p class="ebm-pillar-desc">Students learn first-principles reasoning and mathematical derivations, building resilient problem-solving reflexes for complex exams.</p>
+          <h3 class="ebm-pillar-title">3. Social Skills</h3>
+          <p class="ebm-pillar-desc">Collaborative problem-solving, active listening, and constructive team engagement.</p>
         </div>
         <div class="ebm-pillar-card">
-          <h3 class="ebm-pillar-title">4. Real-Time Mastery Analytics</h3>
-          <p class="ebm-pillar-desc">Transparent tracking dashboards allow parents, teachers, and students to inspect syllabus completion, accuracy rates, and readiness metrics.</p>
+          <h3 class="ebm-pillar-title">4. Emotional Intelligence</h3>
+          <p class="ebm-pillar-desc">Resilience against exam anxiety, growth mindset reinforcement, and emotional self-regulation.</p>
+        </div>
+        <div class="ebm-pillar-card">
+          <h3 class="ebm-pillar-title">5. Financial Literacy</h3>
+          <p class="ebm-pillar-desc">Applied practical mathematics, resource allocation, and value comprehension.</p>
+        </div>
+        <div class="ebm-pillar-card">
+          <h3 class="ebm-pillar-title">6. Digital &amp; AI Literacy</h3>
+          <p class="ebm-pillar-desc">Responsible utilization of computational tools, algorithmic thinking, and AI interfaces.</p>
+        </div>
+        <div class="ebm-pillar-card">
+          <h3 class="ebm-pillar-title">7. Communication</h3>
+          <p class="ebm-pillar-desc">Clear verbal and written articulation of mathematical derivations and conceptual ideas.</p>
+        </div>
+        <div class="ebm-pillar-card">
+          <h3 class="ebm-pillar-title">8. Leadership &amp; Strategy</h3>
+          <p class="ebm-pillar-desc">Independent study discipline, time management, and goal-oriented execution.</p>
+        </div>
+        <div class="ebm-pillar-card">
+          <h3 class="ebm-pillar-title">9. Ethics &amp; Values</h3>
+          <p class="ebm-pillar-desc">Academic integrity, honesty in diagnostics, and respectful classroom citizenship.</p>
+        </div>
+        <div class="ebm-pillar-card">
+          <h3 class="ebm-pillar-title">10. Global Awareness</h3>
+          <p class="ebm-pillar-desc">International Cambridge benchmarking, real-world context application, and curiosity.</p>
         </div>
       </div>
     </section>
