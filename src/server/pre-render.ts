@@ -2,10 +2,11 @@
  * Semantic Server-Side Pre-Rendering for AI Crawlers, LLMs, and Search Engines
  * Domain: https://ejazbukharimethod.com
  *
- * Externalized CSS rules (zero inline styles). All styles are located in /css/site.css.
+ * Fully synchronous, non-blocking, zero-layout-shift SSR template generator.
+ * Accurately mirrors the displayed version of all pages without physical address conflicts.
  */
 
-import { ROUTE_REGISTRY } from "../services/seo.schema.js";
+import { ROUTE_REGISTRY, ASSESSMENT_VISIBLE_FAQS } from "../services/seo.schema.js";
 
 function escapeHtml(str: string): string {
   if (!str) return "";
@@ -55,7 +56,7 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
             <div class="ebm-author-avatar">EB</div>
             <div>
               <h3 class="ebm-author-name">About the Author: Syed Ejaz Bukhari</h3>
-              <p class="ebm-author-bio">Director of Pedagogy and Founder of the Ejaz Bukhari Method. Syed Ejaz Bukhari has pioneered diagnostic learning models and conceptual mathematics frameworks for students from Grade 1 through Cambridge O/A Levels.</p>
+              <p class="ebm-author-bio">Founder &amp; Director of Pedagogy of the Ejaz Bukhari Method. Syed Ejaz Bukhari has pioneered diagnostic learning models and conceptual mathematics frameworks for students from Grade 1 through Cambridge O/A Levels for over 25 years.</p>
             </div>
           </div>
           <p class="ebm-article-back-link">
@@ -102,7 +103,7 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
     `;
   }
 
-  // 3. About Page
+  // 3. About Us Page
   if (cleanPath === "/about") {
     return `
     ${renderHeader()}
@@ -131,7 +132,7 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
 
       <section class="ebm-card-callout">
         <h3 class="ebm-card-callout-title">Over 25 Years of Proven Academic Excellence</h3>
-        <p class="ebm-card-callout-desc">With over 10,000 students accelerated, a 98% grade turnaround rate, and dozens of Cambridge O/A Level high-achiever distinctions, the Ejaz Bukhari Method stands as a proven benchmark in personalized education.</p>
+        <p class="ebm-card-callout-desc">With over 10,000 students accelerated, a 98% grade turnaround rate, and dozens of Cambridge O/A Level high-achiever distinctions, the Ejaz Bukhari Method stands as a proven benchmark in personalized education globally.</p>
       </section>
     </main>
     ${renderFooter()}
@@ -153,38 +154,13 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
       <section class="ebm-curricula-sec">
         <h2 class="ebm-section-h2">Frequently Asked Questions About the EBM Diagnostic Assessment</h2>
         <div class="ebm-faq-list">
+          ${ASSESSMENT_VISIBLE_FAQS.map(
+            (faq) => `
           <div class="ebm-faq-item">
-            <h3 class="ebm-faq-dt">What is the EBM Diagnostic Assessment?</h3>
-            <p class="ebm-faq-dd">The EBM Diagnostic Assessment helps identify where a learner currently stands in Mathematics and English Comprehension. It provides insight into strengths, learning needs, and areas that may require further support.</p>
-          </div>
-          <div class="ebm-faq-item">
-            <h3 class="ebm-faq-dt">Which subjects does the EBM Diagnostic Assessment cover?</h3>
-            <p class="ebm-faq-dd">The EBM Diagnostic Assessment covers Mathematics and English Comprehension, helping provide a clearer picture of a learner's academic skills across these areas.</p>
-          </div>
-          <div class="ebm-faq-item">
-            <h3 class="ebm-faq-dt">Which grade levels does the EBM Diagnostic Assessment support?</h3>
-            <p class="ebm-faq-dd">The assessment is designed to support learners from Grade 1 through O/A Levels, with assessment content aligned to the learner's level and learning needs.</p>
-          </div>
-          <div class="ebm-faq-item">
-            <h3 class="ebm-faq-dt">How does the EBM Diagnostic Assessment work?</h3>
-            <p class="ebm-faq-dd">The assessment uses an adaptive approach to evaluate a learner's current skills. As the learner responds to questions, the assessment helps identify areas of strength and areas where additional learning support may be needed.</p>
-          </div>
-          <div class="ebm-faq-item">
-            <h3 class="ebm-faq-dt">What happens after a learner completes the assessment?</h3>
-            <p class="ebm-faq-dd">The assessment results provide meaningful learning insights that can help identify appropriate next steps. These insights can support more focused and personalized learning.</p>
-          </div>
-          <div class="ebm-faq-item">
-            <h3 class="ebm-faq-dt">How does the assessment support personalized learning?</h3>
-            <p class="ebm-faq-dd">By identifying a learner's current strengths and learning needs, the EBM Diagnostic Assessment helps provide a clearer starting point for personalized learning and targeted skill development.</p>
-          </div>
-          <div class="ebm-faq-item">
-            <h3 class="ebm-faq-dt">Can parents and educators use the assessment insights?</h3>
-            <p class="ebm-faq-dd">Yes. Assessment insights can help parents and educators better understand a learner's current performance and identify areas where additional learning support may be beneficial.</p>
-          </div>
-          <div class="ebm-faq-item">
-            <h3 class="ebm-faq-dt">Does the assessment measure both foundational and advanced skills?</h3>
-            <p class="ebm-faq-dd">Yes. The EBM Diagnostic Assessment supports learners across different stages of development, from foundational skills in earlier grades through more advanced Mathematics and English Comprehension skills at O/A Levels.</p>
-          </div>
+            <h3 class="ebm-faq-dt">${escapeHtml(faq.question)}</h3>
+            <p class="ebm-faq-dd">${escapeHtml(faq.answer)}</p>
+          </div>`
+          ).join("")}
         </div>
       </section>
     </main>
@@ -228,13 +204,13 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
     `;
   }
 
-  // 6. Learning Portal Page
-  if (cleanPath === "/learning") {
+  // 6. Learning & Programs Portal Page
+  if (cleanPath === "/learning" || cleanPath === "/programs" || cleanPath === "/curriculum") {
     return `
     ${renderHeader()}
     <main id="main-content" class="ebm-ssr-main-narrow">
       <section class="ebm-hero-sec">
-        <h1 class="ebm-page-h1">EBM Interactive Learning Modules &amp; Curriculum Portal</h1>
+        <h1 class="ebm-page-h1">EBM Interactive Learning Modules &amp; Academic Programs</h1>
         <p class="ebm-page-lead">
           Structured instructional modules, derivation walk-throughs, and interactive problem sets calibrated to individual mastery velocity from Grade 1 to Cambridge O/A Levels.
         </p>
@@ -242,16 +218,20 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
 
       <section class="ebm-curricula-grid">
         <div class="ebm-curriculum-card">
-          <h2 class="ebm-curriculum-title">Adaptive Question Engine</h2>
-          <p class="ebm-curriculum-desc">Dynamically surfaces challenge problems matching the learner's zone of proximal development, reinforcing strengths while eliminating learning gaps.</p>
+          <h2 class="ebm-curriculum-title">Primary Foundation (Grades 1–5)</h2>
+          <p class="ebm-curriculum-desc">Core numeracy, early mathematical logic, arithmetic fluency, and foundational English comprehension.</p>
         </div>
         <div class="ebm-curriculum-card">
-          <h2 class="ebm-curriculum-title">Conceptual Step-by-Step Derivations</h2>
-          <p class="ebm-curriculum-desc">Every problem is accompanied by first-principles mathematical derivations rather than superficial answers.</p>
+          <h2 class="ebm-curriculum-title">Middle School Mastery (Grades 6–8)</h2>
+          <p class="ebm-curriculum-desc">Pre-algebra, fractions, spatial geometry, data interpretation, and analytical reading strategies.</p>
         </div>
         <div class="ebm-curriculum-card">
-          <h2 class="ebm-curriculum-title">Cambridge Exam Topical Drills</h2>
-          <p class="ebm-curriculum-desc">Direct alignment with CAIE syllabus standards, topical past paper libraries, and marking scheme rubrics.</p>
+          <h2 class="ebm-curriculum-title">Cambridge O Level &amp; IGCSE (Grades 9–11)</h2>
+          <p class="ebm-curriculum-desc">Complete syllabus mastery for Mathematics (4024/0580), Add Math (4037/0606), Physics, Chemistry, and past paper drills.</p>
+        </div>
+        <div class="ebm-curriculum-card">
+          <h2 class="ebm-curriculum-title">Cambridge A Level (Grades 12–13)</h2>
+          <p class="ebm-curriculum-desc">Advanced Pure Mathematics (P1/P3), Mechanics (M1), Statistics (S1), Physics, and university entrance prep.</p>
         </div>
       </section>
     </main>
@@ -290,7 +270,7 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
     `;
   }
 
-  // 8. Inspiration Page
+  // 8. Inspiration & Resources Page
   if (cleanPath === "/inspiration") {
     return `
     ${renderHeader()}
@@ -317,24 +297,41 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
     `;
   }
 
-  // 9. Contact Page
+  // 9. Contact Us Page
   if (cleanPath === "/contact") {
     return `
     ${renderHeader()}
     <main id="main-content" class="ebm-ssr-main-article">
       <section class="ebm-hero-sec">
-        <h1 class="ebm-page-h1">Contact Ejaz Bukhari Method Admissions &amp; Support</h1>
+        <h1 class="ebm-page-h1">Contact &amp; Admissions</h1>
         <p class="ebm-page-lead">
-          Schedule an academic diagnostic consultation, inquire about customized tutoring programs, or connect with our pedagogical team.
+          Ready to accelerate your educational journey? Our academic advisors are available to answer your questions and guide you through the EBM integration process.
         </p>
       </section>
 
       <section class="ebm-info-box">
-        <h2 class="ebm-info-title">Academic Office Information</h2>
-        <p class="ebm-info-row"><strong>Email:</strong> <a href="mailto:admin@ebm.edu">admin@ebm.edu</a></p>
-        <p class="ebm-info-row"><strong>Official Domain:</strong> <a href="https://ejazbukharimethod.com">https://ejazbukharimethod.com</a></p>
-        <p class="ebm-info-row"><strong>Consultation Hours:</strong> Monday – Saturday, 9:00 AM – 7:00 PM</p>
-        <p class="ebm-info-row"><strong>Programs:</strong> Grade 1 to Cambridge O/A Levels (Mathematics, Sciences, English)</p>
+        <h2 class="ebm-info-title">Get in Touch</h2>
+        
+        <div class="ebm-info-row">
+          <strong>Phone Consultation:</strong> Mon-Fri from 9am to 6pm EST &bull; <a href="tel:+923334541572">+92 333 4541572</a>
+        </div>
+        
+        <div class="ebm-info-row">
+          <strong>Email Direct:</strong> Our team responds within 24 hours &bull; <a href="mailto:syedejazbukari@gmail.com">syedejazbukari@gmail.com</a>
+        </div>
+        
+        <div class="ebm-info-row">
+          <strong>Online Academy:</strong> 100% Virtual &amp; Remote Campus (Accessible Worldwide)
+        </div>
+
+        <div class="ebm-info-row">
+          <strong>Official Web Portal:</strong> <a href="https://ejazbukharimethod.com">https://ejazbukharimethod.com</a>
+        </div>
+      </section>
+
+      <section class="ebm-curricula-sec">
+        <h2 class="ebm-section-h2">Send an Inquiry</h2>
+        <p class="ebm-pillar-desc">Fill out our online inquiry form or schedule an initial diagnostic consultation for your child.</p>
       </section>
     </main>
     ${renderFooter()}
@@ -512,7 +509,8 @@ function renderFooter(): string {
       <div>
         <h4 class="ebm-footer-heading-brand">Ejaz Bukhari Method (EBM)</h4>
         <p class="ebm-footer-p">Personalized academic learning platform from Grade 1 to Cambridge O/A Levels integrating adaptive diagnostics, cognitive velocity tracking, and personalized pedagogy.</p>
-        <p class="ebm-footer-p">Admissions &amp; Support: <a href="mailto:admin@ebm.edu">admin@ebm.edu</a></p>
+        <p class="ebm-footer-p"><strong>Online Academy:</strong> 100% Virtual &amp; Remote Campus (Accessible Worldwide)</p>
+        <p class="ebm-footer-p">Admissions &amp; Support: <a href="mailto:syedejazbukari@gmail.com">syedejazbukari@gmail.com</a> | Phone: <a href="tel:+923334541572">+92 333 4541572</a></p>
       </div>
       <div>
         <h4 class="ebm-footer-heading">Academic Programs</h4>

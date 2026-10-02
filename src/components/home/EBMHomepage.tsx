@@ -1007,9 +1007,6 @@ export default function EBMHomepage({
                     referrerPolicy="no-referrer"
                   />
                 </div>
-                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 text-[11px] font-extrabold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md whitespace-nowrap border border-amber-300">
-                  Example
-                </span>
               </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-3 tracking-tight font-serif text-white">Flexible for any classroom</h3>
               <p className="text-[13px] sm:text-sm mb-7 px-4 opacity-95 font-medium leading-relaxed max-w-[280px]">
