@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
+import { marked } from "marked";
 import {
   Bold,
   Italic,
   Underline,
   Strikethrough,
+  Heading1,
   Heading2,
   Heading3,
   Heading4,
@@ -18,13 +20,13 @@ import {
   Table as TableIcon,
   Eye,
   Code2,
-  Undo,
-  Redo,
+  FileText,
   Sparkles,
   ExternalLink,
   Search,
   X,
-  Check
+  Check,
+  HelpCircle
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -45,20 +47,74 @@ const STATIC_INTERNAL_LINKS = [
   { title: "Contact Us & Consultations", path: "/contact", desc: "Academic consultations & support" }
 ];
 
+// Helper to convert HTML to Markdown when switching modes
+function htmlToMarkdown(html: string): string {
+  if (!html) return "";
+  let md = html;
+  md = md.replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, "\n# $1\n");
+  md = md.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, "\n## $1\n");
+  md = md.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, "\n### $1\n");
+  md = md.replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, "\n#### $1\n");
+  md = md.replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, "**$1**");
+  md = md.replace(/<b[^>]*>([\s\S]*?)<\/b>/gi, "**$1**");
+  md = md.replace(/<em[^>]*>([\s\S]*?)<\/em>/gi, "*$1*");
+  md = md.replace(/<i[^>]*>([\s\S]*?)<\/i>/gi, "*$1*");
+  md = md.replace(/<s[^>]*>([\s\S]*?)<\/s>/gi, "~~$1~~");
+  md = md.replace(/<strike[^>]*>([\s\S]*?)<\/strike>/gi, "~~$1~~");
+  md = md.replace(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/gi, "\n```\n$1\n```\n");
+  md = md.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, "`$1`");
+  md = md.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_m, p1) => {
+    const lines = p1.replace(/<\/?p[^>]*>/gi, "\n").trim().split("\n");
+    return "\n" + lines.map((l: string) => `> ${l}`).join("\n") + "\n";
+  });
+  md = md.replace(/<a\s+[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, "[$2]($1)");
+  md = md.replace(/<img\s+[^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*\/?>/gi, "![$2]($1)");
+  md = md.replace(/<img\s+[^>]*alt=["']([^"']*)["'][^>]*src=["']([^"']+)["'][^>]*\/?>/gi, "![$1]($2)");
+  md = md.replace(/<img\s+[^>]*src=["']([^"']+)["'][^>]*\/?>/gi, "![]($1)");
+  md = md.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, "- $1\n");
+  md = md.replace(/<\/?ul[^>]*>/gi, "\n");
+  md = md.replace(/<\/?ol[^>]*>/gi, "\n");
+  md = md.replace(/<hr[^>]*\/?>/gi, "\n---\n");
+  md = md.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, "\n$1\n");
+  md = md.replace(/<br[^>]*\/?>/gi, "\n");
+  md = md.replace(/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/gi, "\n*$1*\n");
+  md = md.replace(/<\/?figure[^>]*>/gi, "\n");
+  md = md.replace(/<\/?div[^>]*>/gi, "\n");
+  md = md.replace(/<span[^>]*>([\s\S]*?)<\/span>/gi, "$1");
+  md = md.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&nbsp;/g, " ");
+  md = md.replace(/\n{3,}/g, "\n\n").trim();
+  return md;
+}
+
+// Helper to convert Markdown to HTML using marked
+function markdownToHtml(markdown: string): string {
+  if (!markdown) return "";
+  try {
+    return marked.parse(markdown) as string;
+  } catch (e) {
+    return markdown;
+  }
+}
+
 export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<"visual" | "html" | "preview">("visual");
-  const [rawHtml, setRawHtml] = useState(value);
+  const markdownTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const [viewMode, setViewMode] = useState<"visual" | "markdown" | "html" | "preview">("visual");
+  const [rawHtml, setRawHtml] = useState(value || "");
+  const [markdownText, setMarkdownText] = useState(() => htmlToMarkdown(value || ""));
   const [wordCount, setWordCount] = useState(0);
+  const [charCount, setCharCount] = useState(0);
   const [readingTime, setReadingTime] = useState(1);
+  const [showMarkdownGuide, setShowMarkdownGuide] = useState(false);
 
-  // Modals state
+  // Link Modal State
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkText, setLinkText] = useState("");
   const [linkRel, setLinkRel] = useState("");
   const [linkSearchQuery, setLinkSearchQuery] = useState("");
 
+  // Image Modal State
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [imageAlt, setImageAlt] = useState("");
@@ -66,21 +122,22 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
 
   // Sync state with incoming value
   useEffect(() => {
-    setRawHtml(value);
-    calculateStats(value);
+    setRawHtml(value || "");
+    calculateStats(value || "");
     if (editorRef.current && viewMode === "visual" && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value || "";
     }
   }, [value]);
 
-  const calculateStats = (html: string) => {
-    const text = html.replace(/<[^>]*>/g, " ").trim();
-    const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  const calculateStats = (textOrHtml: string) => {
+    const plainText = textOrHtml.replace(/<[^>]*>/g, " ").replace(/[#*`_~[\]()]/g, " ").trim();
+    const words = plainText ? plainText.split(/\s+/).filter(Boolean).length : 0;
     setWordCount(words);
+    setCharCount(plainText.length);
     setReadingTime(Math.max(1, Math.ceil(words / 200)));
   };
 
-  const handleEditorInput = () => {
+  const handleVisualInput = () => {
     if (editorRef.current) {
       const html = editorRef.current.innerHTML;
       setRawHtml(html);
@@ -96,67 +153,188 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
     onChange(html);
   };
 
+  const handleMarkdownChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const md = e.target.value;
+    setMarkdownText(md);
+    const convertedHtml = markdownToHtml(md);
+    setRawHtml(convertedHtml);
+    calculateStats(md);
+    onChange(convertedHtml);
+  };
+
+  // Switch between visual, markdown, html, preview modes
+  const handleModeSwitch = (newMode: "visual" | "markdown" | "html" | "preview") => {
+    if (newMode === viewMode) return;
+
+    if (newMode === "markdown") {
+      // Convert current HTML to Markdown
+      const md = htmlToMarkdown(rawHtml);
+      setMarkdownText(md);
+      calculateStats(md);
+    } else if (newMode === "visual") {
+      // In visual mode, editorRef will be hydrated with rawHtml
+      setTimeout(() => {
+        if (editorRef.current) {
+          editorRef.current.innerHTML = rawHtml || "";
+        }
+      }, 0);
+    } else if (newMode === "html" || newMode === "preview") {
+      calculateStats(rawHtml);
+    }
+
+    setViewMode(newMode);
+  };
+
+  // Visual formatting execution
   const executeCommand = (command: string, arg: string | undefined = undefined) => {
-    if (viewMode !== "visual") return;
-    document.execCommand(command, false, arg);
-    handleEditorInput();
+    if (viewMode === "visual") {
+      document.execCommand(command, false, arg);
+      handleVisualInput();
+    } else if (viewMode === "markdown") {
+      applyMarkdownFormatting(command);
+    }
+  };
+
+  // Markdown formatting helpers
+  const applyMarkdownFormatting = (action: string) => {
+    const textarea = markdownTextareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = markdownText.substring(start, end);
+    let replacement = "";
+    let cursorOffset = 0;
+
+    switch (action) {
+      case "bold":
+        replacement = `**${selected || "bold text"}**`;
+        cursorOffset = selected ? replacement.length : 2;
+        break;
+      case "italic":
+        replacement = `*${selected || "italic text"}*`;
+        cursorOffset = selected ? replacement.length : 1;
+        break;
+      case "h2":
+        replacement = `\n## ${selected || "Section Heading"}\n`;
+        cursorOffset = replacement.length;
+        break;
+      case "h3":
+        replacement = `\n### ${selected || "Subsection Heading"}\n`;
+        cursorOffset = replacement.length;
+        break;
+      case "list":
+        replacement = `\n- ${selected || "List item"}\n`;
+        break;
+      case "numbered":
+        replacement = `\n1. ${selected || "List item"}\n`;
+        break;
+      case "quote":
+        replacement = `\n> ${selected || "Important quotation or insight"}\n`;
+        break;
+      case "code":
+        replacement = selected.includes("\n")
+          ? `\n\`\`\`\n${selected || "code snippet"}\n\`\`\`\n`
+          : `\`${selected || "code"}\``;
+        break;
+      case "hr":
+        replacement = `\n---\n`;
+        break;
+      case "table":
+        replacement = `\n| Column 1 | Column 2 | Column 3 |\n| :--- | :--- | :--- |\n| Data A | Data B | Data C |\n| Data D | Data E | Data F |\n`;
+        break;
+      default:
+        return;
+    }
+
+    const newMd = markdownText.substring(0, start) + replacement + markdownText.substring(end);
+    setMarkdownText(newMd);
+    const convertedHtml = markdownToHtml(newMd);
+    setRawHtml(convertedHtml);
+    calculateStats(newMd);
+    onChange(convertedHtml);
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + cursorOffset, start + cursorOffset);
+    }, 10);
   };
 
   const insertHeading = (tag: "h2" | "h3" | "h4" | "p") => {
-    if (viewMode !== "visual") return;
-    document.execCommand("formatBlock", false, `<${tag}>`);
-    handleEditorInput();
+    if (viewMode === "visual") {
+      document.execCommand("formatBlock", false, `<${tag}>`);
+      handleVisualInput();
+    } else if (viewMode === "markdown") {
+      if (tag === "h2") applyMarkdownFormatting("h2");
+      else if (tag === "h3") applyMarkdownFormatting("h3");
+      else applyMarkdownFormatting("h3");
+    }
   };
 
   const insertBlockquote = () => {
-    if (viewMode !== "visual") return;
-    document.execCommand("formatBlock", false, "<blockquote>");
-    handleEditorInput();
+    if (viewMode === "visual") {
+      document.execCommand("formatBlock", false, "<blockquote>");
+      handleVisualInput();
+    } else if (viewMode === "markdown") {
+      applyMarkdownFormatting("quote");
+    }
   };
 
   const insertCodeBlock = () => {
-    if (viewMode !== "visual") return;
-    const selectedText = window.getSelection()?.toString() || "code snippet here";
-    const codeHtml = `<pre class="bg-slate-900 text-slate-100 p-4 rounded-xl font-mono text-sm overflow-x-auto my-4"><code>${selectedText}</code></pre><p></p>`;
-    document.execCommand("insertHTML", false, codeHtml);
-    handleEditorInput();
+    if (viewMode === "visual") {
+      const selectedText = window.getSelection()?.toString() || "code snippet here";
+      const codeHtml = `<pre class="bg-slate-900 text-slate-100 p-4 rounded-xl font-mono text-sm overflow-x-auto my-4"><code>${selectedText}</code></pre><p></p>`;
+      document.execCommand("insertHTML", false, codeHtml);
+      handleVisualInput();
+    } else if (viewMode === "markdown") {
+      applyMarkdownFormatting("code");
+    }
   };
 
   const insertTable = () => {
-    if (viewMode !== "visual") return;
-    const tableHtml = `
-      <div class="overflow-x-auto my-6">
-        <table class="min-w-full border-collapse border border-slate-300 dark:border-slate-700 text-sm">
-          <thead>
-            <tr class="bg-slate-100 dark:bg-slate-800">
-              <th class="border border-slate-300 dark:border-slate-700 px-4 py-2 font-bold text-left">Header 1</th>
-              <th class="border border-slate-300 dark:border-slate-700 px-4 py-2 font-bold text-left">Header 2</th>
-              <th class="border border-slate-300 dark:border-slate-700 px-4 py-2 font-bold text-left">Header 3</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 1</td>
-              <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 2</td>
-              <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 3</td>
-            </tr>
-            <tr>
-              <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 4</td>
-              <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 5</td>
-              <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 6</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p></p>
-    `;
-    document.execCommand("insertHTML", false, tableHtml);
-    handleEditorInput();
+    if (viewMode === "visual") {
+      const tableHtml = `
+        <div class="overflow-x-auto my-6">
+          <table class="min-w-full border-collapse border border-slate-300 dark:border-slate-700 text-sm">
+            <thead>
+              <tr class="bg-slate-100 dark:bg-slate-800">
+                <th class="border border-slate-300 dark:border-slate-700 px-4 py-2 font-bold text-left">Header 1</th>
+                <th class="border border-slate-300 dark:border-slate-700 px-4 py-2 font-bold text-left">Header 2</th>
+                <th class="border border-slate-300 dark:border-slate-700 px-4 py-2 font-bold text-left">Header 3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 1</td>
+                <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 2</td>
+                <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 3</td>
+              </tr>
+              <tr>
+                <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 4</td>
+                <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 5</td>
+                <td class="border border-slate-300 dark:border-slate-700 px-4 py-2">Data Cell 6</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p></p>
+      `;
+      document.execCommand("insertHTML", false, tableHtml);
+      handleVisualInput();
+    } else if (viewMode === "markdown") {
+      applyMarkdownFormatting("table");
+    }
   };
 
   const openLinkModal = () => {
-    const sel = window.getSelection();
-    setLinkText(sel?.toString() || "");
+    if (viewMode === "markdown" && markdownTextareaRef.current) {
+      const textarea = markdownTextareaRef.current;
+      const sel = markdownText.substring(textarea.selectionStart, textarea.selectionEnd);
+      setLinkText(sel);
+    } else {
+      const sel = window.getSelection();
+      setLinkText(sel?.toString() || "");
+    }
     setLinkUrl("");
     setLinkRel("");
     setLinkSearchQuery("");
@@ -171,13 +349,31 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
     const isExternal = cleanUrl.startsWith("http");
     const targetAttr = isExternal ? ' target="_blank"' : "";
 
-    const linkHtml = `<a href="${cleanUrl}"${relAttr}${targetAttr} class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">${text}</a>`;
-    
-    if (viewMode === "visual") {
+    if (viewMode === "markdown") {
+      const mdLink = `[${text}](${cleanUrl})`;
+      if (markdownTextareaRef.current) {
+        const textarea = markdownTextareaRef.current;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const newMd = markdownText.substring(0, start) + mdLink + markdownText.substring(end);
+        setMarkdownText(newMd);
+        const converted = markdownToHtml(newMd);
+        setRawHtml(converted);
+        onChange(converted);
+      } else {
+        const newMd = markdownText + ` ${mdLink}`;
+        setMarkdownText(newMd);
+        const converted = markdownToHtml(newMd);
+        setRawHtml(converted);
+        onChange(converted);
+      }
+    } else if (viewMode === "visual") {
+      const linkHtml = `<a href="${cleanUrl}"${relAttr}${targetAttr} class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">${text}</a>`;
       document.execCommand("insertHTML", false, linkHtml);
-      handleEditorInput();
+      handleVisualInput();
     } else {
-      setRawHtml(prev => prev + linkHtml);
+      const linkHtml = `<a href="${cleanUrl}"${relAttr}${targetAttr} class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">${text}</a>`;
+      setRawHtml((prev) => prev + linkHtml);
       onChange(rawHtml + linkHtml);
     }
     setShowLinkModal(false);
@@ -189,29 +385,24 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
     const alt = imageAlt.trim() || "EBM article educational illustration";
     const caption = imageCaption.trim();
 
-    let imageHtml = "";
-    if (caption) {
-      imageHtml = `
-        <figure class="my-8">
-          <img src="${cleanUrl}" alt="${alt}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" loading="lazy" referrerPolicy="no-referrer" />
-          <figcaption class="mt-2 text-center text-xs text-slate-500 dark:text-slate-400 italic">${caption}</figcaption>
-        </figure>
-        <p></p>
-      `;
-    } else {
-      imageHtml = `
-        <figure class="my-8">
-          <img src="${cleanUrl}" alt="${alt}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" loading="lazy" referrerPolicy="no-referrer" />
-        </figure>
-        <p></p>
-      `;
-    }
-
-    if (viewMode === "visual") {
+    if (viewMode === "markdown") {
+      const mdImage = caption ? `\n![${alt}](${cleanUrl})\n*${caption}*\n` : `\n![${alt}](${cleanUrl})\n`;
+      const newMd = markdownText + mdImage;
+      setMarkdownText(newMd);
+      const converted = markdownToHtml(newMd);
+      setRawHtml(converted);
+      onChange(converted);
+    } else if (viewMode === "visual") {
+      const imageHtml = caption
+        ? `<figure class="my-8"><img src="${cleanUrl}" alt="${alt}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" loading="lazy" referrerPolicy="no-referrer" /><figcaption class="mt-2 text-center text-xs text-slate-500 dark:text-slate-400 italic">${caption}</figcaption></figure><p></p>`
+        : `<figure class="my-8"><img src="${cleanUrl}" alt="${alt}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" loading="lazy" referrerPolicy="no-referrer" /></figure><p></p>`;
       document.execCommand("insertHTML", false, imageHtml);
-      handleEditorInput();
+      handleVisualInput();
     } else {
-      setRawHtml(prev => prev + imageHtml);
+      const imageHtml = caption
+        ? `<figure class="my-8"><img src="${cleanUrl}" alt="${alt}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" loading="lazy" referrerPolicy="no-referrer" /><figcaption class="mt-2 text-center text-xs text-slate-500 dark:text-slate-400 italic">${caption}</figcaption></figure><p></p>`
+        : `<figure class="my-8"><img src="${cleanUrl}" alt="${alt}" class="w-full h-auto rounded-2xl shadow-md object-cover max-h-[500px]" loading="lazy" referrerPolicy="no-referrer" /></figure><p></p>`;
+      setRawHtml((prev) => prev + imageHtml);
       onChange(rawHtml + imageHtml);
     }
 
@@ -222,27 +413,19 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
   };
 
   const filteredInternalLinks = STATIC_INTERNAL_LINKS.filter(
-    l => l.title.toLowerCase().includes(linkSearchQuery.toLowerCase()) || l.path.toLowerCase().includes(linkSearchQuery.toLowerCase())
+    (l) =>
+      l.title.toLowerCase().includes(linkSearchQuery.toLowerCase()) ||
+      l.path.toLowerCase().includes(linkSearchQuery.toLowerCase())
   );
 
   return (
     <div className="border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden shadow-xs">
-      
       {/* Editor Toolbar Header */}
-      <div className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-slate-700 dark:text-slate-200">
-        
+      <div className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 px-3 py-2.5 flex flex-wrap items-center justify-between gap-2 text-slate-700 dark:text-slate-200">
         {/* Formatting Actions */}
-        <div className="flex flex-wrap items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1.5">
           {/* Headings */}
           <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-xs">
-            <button
-              type="button"
-              title="Paragraph text"
-              onClick={() => insertHeading("p")}
-              className="px-2 py-1 text-xs font-semibold rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-            >
-              <Pilcrow className="w-3.5 h-3.5" />
-            </button>
             <button
               type="button"
               title="Heading 2 (Main section - H1 is reserved for Title)"
@@ -269,13 +452,13 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             </button>
           </div>
 
-          <div className="h-5 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1" />
+          <div className="h-5 w-[1px] bg-slate-300 dark:bg-slate-700 mx-0.5" />
 
           {/* Basic Text Formatting */}
           <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-xs">
             <button
               type="button"
-              title="Bold (Ctrl+B)"
+              title="Bold (Ctrl+B or **text**)"
               onClick={() => executeCommand("bold")}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
@@ -283,7 +466,7 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             </button>
             <button
               type="button"
-              title="Italic (Ctrl+I)"
+              title="Italic (Ctrl+I or *text*)"
               onClick={() => executeCommand("italic")}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
@@ -291,15 +474,7 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             </button>
             <button
               type="button"
-              title="Underline (Ctrl+U)"
-              onClick={() => executeCommand("underline")}
-              className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-            >
-              <Underline className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              title="Strikethrough"
+              title="Strikethrough (~~text~~)"
               onClick={() => executeCommand("strikeThrough")}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
@@ -307,29 +482,29 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             </button>
           </div>
 
-          <div className="h-5 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1" />
+          <div className="h-5 w-[1px] bg-slate-300 dark:bg-slate-700 mx-0.5" />
 
           {/* Lists & Quotes */}
           <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-xs">
             <button
               type="button"
-              title="Bullet List"
-              onClick={() => executeCommand("insertUnorderedList")}
+              title="Bullet List (- item)"
+              onClick={() => (viewMode === "markdown" ? applyMarkdownFormatting("list") : executeCommand("insertUnorderedList"))}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
               <List className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
-              title="Numbered List"
-              onClick={() => executeCommand("insertOrderedList")}
+              title="Numbered List (1. item)"
+              onClick={() => (viewMode === "markdown" ? applyMarkdownFormatting("numbered") : executeCommand("insertOrderedList"))}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
               <ListOrdered className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
-              title="Blockquote"
+              title="Blockquote (> quote)"
               onClick={insertBlockquote}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
@@ -337,7 +512,7 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             </button>
             <button
               type="button"
-              title="Code Block"
+              title="Code Block (```code```)"
               onClick={insertCodeBlock}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
@@ -345,8 +520,8 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             </button>
             <button
               type="button"
-              title="Horizontal Divider"
-              onClick={() => executeCommand("insertHorizontalRule")}
+              title="Horizontal Divider (---)"
+              onClick={() => (viewMode === "markdown" ? applyMarkdownFormatting("hr") : executeCommand("insertHorizontalRule"))}
               className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
               <Minus className="w-3.5 h-3.5" />
@@ -361,13 +536,13 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             </button>
           </div>
 
-          <div className="h-5 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1" />
+          <div className="h-5 w-[1px] bg-slate-300 dark:bg-slate-700 mx-0.5" />
 
           {/* Links & Images */}
           <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-xs">
             <button
               type="button"
-              title="Insert Internal / External Link"
+              title="Insert Link [title](url)"
               onClick={openLinkModal}
               className="px-2 py-1.5 rounded text-xs font-semibold hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 transition flex items-center gap-1"
             >
@@ -376,7 +551,7 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             </button>
             <button
               type="button"
-              title="Insert Image (with Alt Text)"
+              title="Insert Image ![alt](url)"
               onClick={() => setShowImageModal(true)}
               className="px-2 py-1.5 rounded text-xs font-semibold hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/30 transition flex items-center gap-1"
             >
@@ -389,50 +564,138 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
         {/* View Mode & Metrics */}
         <div className="flex items-center gap-3">
           <div className="text-xs text-slate-500 font-mono hidden sm:flex items-center gap-2">
-            <span>{wordCount} words</span>
+            <span>{wordCount.toLocaleString()} words</span>
+            <span>•</span>
+            <span>{charCount.toLocaleString()} chars</span>
             <span>•</span>
             <span>~{readingTime} min read</span>
           </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="flex items-center bg-slate-200/80 dark:bg-slate-700 p-0.5 rounded-lg text-xs font-semibold">
+          {/* Mode Switcher Tabs: Visual, Markdown, HTML, Preview */}
+          <div className="flex items-center bg-slate-200/90 dark:bg-slate-700/80 p-0.5 rounded-xl text-xs font-bold">
             <button
               type="button"
-              onClick={() => setViewMode("visual")}
-              className={`px-2.5 py-1 rounded-md transition ${viewMode === "visual" ? "bg-white dark:bg-slate-900 text-blue-600 shadow-xs" : "text-slate-600 dark:text-slate-300 hover:text-slate-900"}`}
+              onClick={() => handleModeSwitch("visual")}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                viewMode === "visual"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900"
+              }`}
             >
               Visual
             </button>
+
             <button
               type="button"
-              onClick={() => setViewMode("html")}
-              className={`px-2.5 py-1 rounded-md transition flex items-center gap-1 ${viewMode === "html" ? "bg-white dark:bg-slate-900 text-blue-600 shadow-xs" : "text-slate-600 dark:text-slate-300 hover:text-slate-900"}`}
+              onClick={() => handleModeSwitch("markdown")}
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+                viewMode === "markdown"
+                  ? "bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-xs font-black"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900"
+              }`}
+            >
+              <FileText className="w-3 h-3 text-purple-500" />
+              <span>Markdown</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleModeSwitch("html")}
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1 ${
+                viewMode === "html"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900"
+              }`}
             >
               <Code2 className="w-3 h-3" />
-              HTML
+              <span>HTML</span>
             </button>
+
             <button
               type="button"
-              onClick={() => setViewMode("preview")}
-              className={`px-2.5 py-1 rounded-md transition flex items-center gap-1 ${viewMode === "preview" ? "bg-white dark:bg-slate-900 text-blue-600 shadow-xs" : "text-slate-600 dark:text-slate-300 hover:text-slate-900"}`}
+              onClick={() => handleModeSwitch("preview")}
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1 ${
+                viewMode === "preview"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900"
+              }`}
             >
               <Eye className="w-3 h-3" />
-              Preview
+              <span>Preview</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Editor Body */}
-      <div className="min-h-[380px] p-6 text-slate-900 dark:text-slate-100 font-sans">
+      {/* Markdown Guide Banner (Visible in Markdown mode) */}
+      {viewMode === "markdown" && (
+        <div className="bg-purple-50/70 dark:bg-purple-950/30 border-b border-purple-100 dark:border-purple-900/40 px-4 py-2 flex items-center justify-between text-xs text-purple-900 dark:text-purple-300">
+          <div className="flex items-center gap-2">
+            <span className="font-bold">⚡ Markdown Mode Active:</span>
+            <span className="hidden md:inline">Use <code className="bg-purple-100 dark:bg-purple-900/50 px-1 py-0.5 rounded font-mono text-[11px]">## Heading</code>, <code className="bg-purple-100 dark:bg-purple-900/50 px-1 py-0.5 rounded font-mono text-[11px]">**bold**</code>, <code className="bg-purple-100 dark:bg-purple-900/50 px-1 py-0.5 rounded font-mono text-[11px]">- list</code>, or paste full markdown articles directly.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowMarkdownGuide(!showMarkdownGuide)}
+            className="font-bold underline hover:text-purple-700 flex items-center gap-1 cursor-pointer"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>{showMarkdownGuide ? "Hide Guide" : "Cheat Sheet"}</span>
+          </button>
+        </div>
+      )}
+
+      {/* Quick Markdown Cheat Sheet Drawer */}
+      {viewMode === "markdown" && showMarkdownGuide && (
+        <div className="bg-slate-900 text-slate-200 border-b border-slate-800 p-4 text-xs font-mono grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="space-y-1">
+            <div className="text-purple-400 font-bold font-sans">Headers:</div>
+            <div>## Main Section</div>
+            <div>### Subsection</div>
+            <div>#### Minor Title</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-purple-400 font-bold font-sans">Emphasis:</div>
+            <div>**bold text**</div>
+            <div>*italic text*</div>
+            <div>~~strikethrough~~</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-purple-400 font-bold font-sans">Lists &amp; Quotes:</div>
+            <div>- Bullet item</div>
+            <div>1. Numbered item</div>
+            <div>&gt; Blockquote text</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-purple-400 font-bold font-sans">Media &amp; Tables:</div>
+            <div>[Link Text](/path)</div>
+            <div>![Alt](image.jpg)</div>
+            <div>| Col 1 | Col 2 |</div>
+          </div>
+        </div>
+      )}
+
+      {/* Editor Main Content Area */}
+      <div className="min-h-[480px] p-6 text-slate-900 dark:text-slate-100 font-sans">
         {viewMode === "visual" && (
           <div
             ref={editorRef}
             contentEditable
-            onInput={handleEditorInput}
-            onBlur={handleEditorInput}
-            className="prose prose-slate dark:prose-invert max-w-none min-h-[360px] focus:outline-none focus:ring-0 leading-relaxed font-sans text-base"
+            onInput={handleVisualInput}
+            onBlur={handleVisualInput}
+            className="prose prose-slate dark:prose-invert max-w-none min-h-[440px] focus:outline-none focus:ring-0 leading-relaxed font-sans text-base overflow-visible"
             data-placeholder={placeholder || "Write your article content here..."}
+          />
+        )}
+
+        {viewMode === "markdown" && (
+          <textarea
+            ref={markdownTextareaRef}
+            value={markdownText}
+            onChange={handleMarkdownChange}
+            rows={22}
+            className="w-full h-full min-h-[440px] font-mono text-sm leading-relaxed bg-slate-950 text-purple-200 p-5 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-y"
+            placeholder={`# Article Title\n\n## Introduction\nType or paste your complete markdown article here. Supports extensive, lengthy essays and academic guides without length limitations...`}
           />
         )}
 
@@ -440,14 +703,14 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
           <textarea
             value={rawHtml}
             onChange={handleRawHtmlChange}
-            rows={16}
-            className="w-full h-full min-h-[360px] font-mono text-xs leading-relaxed bg-slate-950 text-emerald-400 p-4 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
-            placeholder="<p>Write your semantic HTML markup here...</p>"
+            rows={22}
+            className="w-full h-full min-h-[440px] font-mono text-xs leading-relaxed bg-slate-950 text-emerald-400 p-5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+            placeholder="<p>Write or paste your complete semantic HTML markup here...</p>"
           />
         )}
 
         {viewMode === "preview" && (
-          <div className="prose prose-slate dark:prose-invert max-w-none min-h-[360px] leading-relaxed">
+          <div className="prose prose-slate dark:prose-invert lg:prose-lg max-w-none min-h-[440px] leading-relaxed p-4 bg-slate-50/50 dark:bg-slate-950/40 rounded-xl border border-slate-100 dark:border-slate-800/80">
             <div dangerouslySetInnerHTML={{ __html: rawHtml || "<p class='text-slate-400 italic'>No content yet to preview...</p>" }} />
           </div>
         )}
@@ -530,7 +793,9 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
                     >
                       <div>
                         <div className="font-semibold">{item.title}</div>
-                        <div className={`text-[10px] ${linkUrl === item.path ? "text-blue-100" : "text-slate-400"}`}>{item.path}</div>
+                        <div className={`text-[10px] ${linkUrl === item.path ? "text-blue-100" : "text-slate-400"}`}>
+                          {item.path}
+                        </div>
                       </div>
                       {linkUrl === item.path && <Check className="w-3.5 h-3.5" />}
                     </button>
@@ -641,7 +906,9 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
                     src={imageUrl}
                     alt={imageAlt || "Preview"}
                     className="max-h-40 object-cover w-full"
-                    onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = "none";
+                    }}
                   />
                 </div>
               )}
@@ -667,7 +934,6 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
           </div>
         </div>
       )}
-
     </div>
   );
 }

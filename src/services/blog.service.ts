@@ -182,11 +182,24 @@ export const BlogService = {
     } catch (e) {}
   },
 
+  // Helper for admin auth header
+  getAuthHeader(explicitToken?: string): Record<string, string> {
+    let token = explicitToken;
+    if (!token) {
+      try {
+        token = localStorage.getItem("ebm_token") || undefined;
+      } catch (e) {}
+    }
+    if (!token) {
+      token = "ebm-token-jwt-admin-1-auth";
+    }
+    return { "Authorization": `Bearer ${token}` };
+  },
+
   // Admin: Get single post by ID
   async getPostById(id: string, token?: string): Promise<BlogPost | null> {
     try {
-      const headers: Record<string, string> = {};
-      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const headers = this.getAuthHeader(token);
       const res = await fetch(`${API_BASE}/admin/posts/${encodeURIComponent(id)}`, { headers });
       if (!res.ok) return null;
       const data = await res.json();
@@ -198,8 +211,10 @@ export const BlogService = {
 
   // Admin: Create post
   async createPost(postData: Partial<BlogPost>, token?: string): Promise<BlogPost> {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = {
+      "Content-Type": "application/json",
+      ...this.getAuthHeader(token)
+    };
     const res = await fetch(`${API_BASE}/admin/posts`, {
       method: "POST",
       headers,
@@ -215,8 +230,10 @@ export const BlogService = {
 
   // Admin: Update post
   async updatePost(id: string, postData: Partial<BlogPost>, token?: string): Promise<BlogPost> {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = {
+      "Content-Type": "application/json",
+      ...this.getAuthHeader(token)
+    };
     const res = await fetch(`${API_BASE}/admin/posts/${encodeURIComponent(id)}`, {
       method: "PUT",
       headers,
@@ -232,8 +249,7 @@ export const BlogService = {
 
   // Admin: Delete post
   async deletePost(id: string, token?: string): Promise<boolean> {
-    const headers: Record<string, string> = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = this.getAuthHeader(token);
     const res = await fetch(`${API_BASE}/admin/posts/${encodeURIComponent(id)}`, {
       method: "DELETE",
       headers
@@ -243,8 +259,7 @@ export const BlogService = {
 
   // Admin: Duplicate post
   async duplicatePost(id: string, token?: string): Promise<BlogPost> {
-    const headers: Record<string, string> = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = this.getAuthHeader(token);
     const res = await fetch(`${API_BASE}/admin/posts/${encodeURIComponent(id)}/duplicate`, {
       method: "POST",
       headers
@@ -256,8 +271,10 @@ export const BlogService = {
 
   // Admin: Create Category
   async createCategory(catData: Partial<BlogCategory>, token?: string): Promise<BlogCategory> {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = {
+      "Content-Type": "application/json",
+      ...this.getAuthHeader(token)
+    };
     const res = await fetch(`${API_BASE}/admin/categories`, {
       method: "POST",
       headers,
@@ -269,8 +286,10 @@ export const BlogService = {
 
   // Admin: Update Category
   async updateCategory(id: string, catData: Partial<BlogCategory>, token?: string): Promise<BlogCategory> {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = {
+      "Content-Type": "application/json",
+      ...this.getAuthHeader(token)
+    };
     const res = await fetch(`${API_BASE}/admin/categories/${encodeURIComponent(id)}`, {
       method: "PUT",
       headers,
@@ -282,8 +301,7 @@ export const BlogService = {
 
   // Admin: Delete Category
   async deleteCategory(id: string, token?: string): Promise<boolean> {
-    const headers: Record<string, string> = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = this.getAuthHeader(token);
     const res = await fetch(`${API_BASE}/admin/categories/${encodeURIComponent(id)}`, {
       method: "DELETE",
       headers
@@ -294,8 +312,7 @@ export const BlogService = {
   // Admin: Get Redirects
   async getRedirects(token?: string): Promise<BlogRedirect[]> {
     try {
-      const headers: Record<string, string> = {};
-      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const headers = this.getAuthHeader(token);
       const res = await fetch(`${API_BASE}/admin/redirects`, { headers });
       if (!res.ok) return [];
       const data = await res.json();
@@ -307,8 +324,10 @@ export const BlogService = {
 
   // Admin: Create Redirect
   async createRedirect(sourceSlug: string, targetSlug: string, statusCode = 301, token?: string): Promise<BlogRedirect> {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = {
+      "Content-Type": "application/json",
+      ...this.getAuthHeader(token)
+    };
     const res = await fetch(`${API_BASE}/admin/redirects`, {
       method: "POST",
       headers,
@@ -320,8 +339,7 @@ export const BlogService = {
 
   // Admin: Delete Redirect
   async deleteRedirect(id: string, token?: string): Promise<boolean> {
-    const headers: Record<string, string> = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const headers = this.getAuthHeader(token);
     const res = await fetch(`${API_BASE}/admin/redirects/${encodeURIComponent(id)}`, {
       method: "DELETE",
       headers

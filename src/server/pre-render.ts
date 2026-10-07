@@ -7,6 +7,7 @@
  */
 
 import { ROUTE_REGISTRY, ASSESSMENT_VISIBLE_FAQS } from "../services/seo.schema.js";
+import { marked } from "marked";
 
 function escapeHtml(str: string): string {
   if (!str) return "";
@@ -16,6 +17,28 @@ function escapeHtml(str: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function renderHtmlOrMarkdown(content: string): string {
+  if (!content) return "";
+  const trimmed = content.trim();
+  if (
+    !trimmed.startsWith("<p>") &&
+    !trimmed.startsWith("<div>") &&
+    (trimmed.includes("# ") ||
+      trimmed.includes("## ") ||
+      trimmed.includes("### ") ||
+      trimmed.includes("**") ||
+      trimmed.includes("- ") ||
+      !trimmed.includes("</"))
+  ) {
+    try {
+      return marked.parse(content) as string;
+    } catch (e) {
+      return content;
+    }
+  }
+  return content;
 }
 
 export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): string {
@@ -30,7 +53,7 @@ export function getPreRenderedHtml(reqPath: string, blogPostPayload?: any): stri
   // 1. Single Blog Post View
   if (cleanPath.startsWith("/blog/") && blogPostPayload) {
     const post = blogPostPayload;
-    const cleanContent = post.content || post.excerpt || "";
+    const cleanContent = renderHtmlOrMarkdown(post.content || post.excerpt || "");
     return `
     ${renderHeader()}
     <main id="main-content" class="ebm-ssr-main-article">

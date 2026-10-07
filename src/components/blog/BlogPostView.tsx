@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { marked } from "marked";
 import {
   Calendar,
   Clock,
@@ -34,9 +35,37 @@ declare global {
   }
 }
 
-function extractHeadings(html: string) {
-  if (!html) return [];
+function renderContentToHtml(rawContent: string): string {
+  if (!rawContent) return "";
+  const trimmed = rawContent.trim();
+  // If it's Markdown or mixed markdown without standard HTML wrapper, convert using marked
+  const isLikelyMarkdown =
+    !trimmed.startsWith("<p>") &&
+    !trimmed.startsWith("<div>") &&
+    !trimmed.startsWith("<article>") &&
+    (trimmed.includes("# ") ||
+      trimmed.includes("## ") ||
+      trimmed.includes("### ") ||
+      trimmed.includes("**") ||
+      trimmed.includes("```") ||
+      trimmed.includes("- ") ||
+      trimmed.includes("> ") ||
+      !trimmed.includes("</"));
+
+  if (isLikelyMarkdown) {
+    try {
+      return marked.parse(rawContent) as string;
+    } catch (e) {
+      return rawContent;
+    }
+  }
+  return rawContent;
+}
+
+function extractHeadings(content: string) {
+  if (!content) return [];
   try {
+    const html = renderContentToHtml(content);
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
     const headings = Array.from(doc.querySelectorAll("h2, h3"));
@@ -448,10 +477,10 @@ export function BlogPostView() {
         )}
 
         {/* Article Body Typography */}
-        <article className="prose prose-slate dark:prose-invert lg:prose-lg max-w-none bg-white dark:bg-slate-900 p-8 sm:p-12 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs leading-relaxed text-slate-800 dark:text-slate-200">
+        <article className="prose prose-slate dark:prose-invert lg:prose-lg max-w-none bg-white dark:bg-slate-900 p-8 sm:p-12 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs leading-relaxed text-slate-800 dark:text-slate-200 overflow-visible">
           <div
-            dangerouslySetInnerHTML={{ __html: post.content }}
-            className="space-y-6"
+            dangerouslySetInnerHTML={{ __html: renderContentToHtml(post.content) }}
+            className="space-y-6 overflow-visible"
           />
         </article>
 

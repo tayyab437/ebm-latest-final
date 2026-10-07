@@ -1141,8 +1141,8 @@ async function initializeDb() {
           \`id\` varchar(100) PRIMARY KEY,
           \`title\` varchar(500) NOT NULL,
           \`slug\` varchar(500) NOT NULL,
-          \`excerpt\` text,
-          \`content\` text NOT NULL,
+          \`excerpt\` longtext,
+          \`content\` longtext NOT NULL,
           \`categoryId\` varchar(100) NOT NULL,
           \`secondaryCategoryIds\` json,
           \`featuredImage\` text,
@@ -1168,6 +1168,11 @@ async function initializeDb() {
           \`ctaText\` varchar(255)
         );
       `);
+      // Ensure content is LONGTEXT in existing tables
+      try {
+        await connection.query(`ALTER TABLE \`blog_posts\` MODIFY COLUMN \`content\` LONGTEXT NOT NULL;`);
+        await connection.query(`ALTER TABLE \`blog_posts\` MODIFY COLUMN \`excerpt\` LONGTEXT;`);
+      } catch (alterErr) {}
       await connection.query(`
         CREATE TABLE IF NOT EXISTS \`blog_redirects\` (
           \`id\` varchar(100) PRIMARY KEY,
