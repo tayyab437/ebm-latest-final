@@ -836,15 +836,36 @@ export function StudentCurriculumTests() {
                                   
                                   {/* Clean math input box with focus ring matching screenshot style */}
                                   <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                                      Your Math Answer:
-                                    </label>
+                                    <div className="flex items-center justify-between">
+                                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                                        Your Math Answer:
+                                      </label>
+                                      <span className="text-[10px] text-slate-400 font-medium">
+                                        <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700 font-mono text-[9px] font-bold">Enter ↵</kbd> Next Question • <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700 font-mono text-[9px] font-bold">Shift + Enter</kbd> New Line
+                                      </span>
+                                    </div>
                                     <input
                                       key={`math-input-${q.id}`}
                                       type="text"
                                       ref={mathInputRef}
                                       value={currentVal}
                                       onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                          if (e.shiftKey) {
+                                            return;
+                                          }
+                                          e.preventDefault();
+                                          if (autoAdvanceTimeoutRef.current) {
+                                            clearTimeout(autoAdvanceTimeoutRef.current);
+                                          }
+                                          if (currentMathQuestionIndex < questionsList.length - 1) {
+                                            setCurrentMathQuestionIndex(prev => prev + 1);
+                                          } else {
+                                            handleSubmitQuiz();
+                                          }
+                                        }
+                                      }}
                                       placeholder="Type your answer or numerical value here..."
                                       className="w-full text-sm p-3 sm:p-3.5 rounded-xl border-2 border-indigo-500/80 bg-white text-slate-900 font-bold focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/20 focus:outline-none transition-all shadow-sm"
                                     />
@@ -1307,6 +1328,20 @@ export function StudentCurriculumTests() {
                             disabled={quizSubmitted}
                             value={currentVal}
                             onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                if (e.shiftKey) {
+                                  return;
+                                }
+                                e.preventDefault();
+                                const nextInput = document.querySelector(`input[data-checkpoint-idx="${index + 1}"]`) as HTMLInputElement;
+                                if (nextInput) {
+                                  nextInput.focus();
+                                  nextInput.scrollIntoView({ behavior: "smooth", block: "center" });
+                                }
+                              }
+                            }}
+                            data-checkpoint-idx={index}
                             placeholder={q.type === "FIB" ? "Click word above or type fill-in answer..." : "Type your answer here..."}
                             className="w-full text-xs sm:text-sm p-4 rounded-2xl border border-slate-300 bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all disabled:opacity-75 disabled:cursor-not-allowed shadow-xs font-semibold text-slate-900"
                           />

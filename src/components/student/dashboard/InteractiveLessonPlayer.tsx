@@ -632,6 +632,33 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
     }
   };
 
+  // Global Enter key navigation for MCQ questions and question view (advances without triggering check answer)
+  useEffect(() => {
+    if (currentStep !== "practice" || playerStep !== "questions") return;
+
+    const handleLessonKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      // If focused in textarea or input, its own handler manages Enter
+      if (target && (target.tagName === "TEXTAREA" || target.tagName === "INPUT")) {
+        return;
+      }
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (autoAdvanceTimeoutRef.current) {
+          clearTimeout(autoAdvanceTimeoutRef.current);
+        }
+        if (activeQuestionIndex < questions.length - 1) {
+          setActiveQuestionIndex(prev => prev + 1);
+        } else {
+          handleFinish();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleLessonKeyDown);
+    return () => window.removeEventListener("keydown", handleLessonKeyDown);
+  }, [currentStep, playerStep, activeQuestionIndex, questions.length]);
+
   const answeredCount = Object.keys(answers).filter(k => answers[Number(k)]?.trim().length > 0).length;
   const progressPercent = hasQuestions 
     ? Math.round((answeredCount / questions.length) * 100)
@@ -1186,17 +1213,40 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
                                 })}
                               </div>
                             ) : (
-                              <div className="space-y-1">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                                  Your Complete Answer:
-                                </label>
+                              <div className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                                    Your Complete Answer:
+                                  </label>
+                                  <span className="text-[10px] text-slate-400 font-medium">
+                                    <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700 font-mono text-[9px] font-bold">Enter ↵</kbd> Next Question • <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700 font-mono text-[9px] font-bold">Shift + Enter</kbd> New Line
+                                  </span>
+                                </div>
                                 <textarea
                                   key={`answer-textarea-${qIdx}`}
                                   ref={answerTextareaRef}
                                   value={currentAnswer}
                                   onChange={(e) => setAnswers(prev => ({ ...prev, [qIdx]: e.target.value }))}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      if (e.shiftKey) {
+                                        // Shift + Enter: move to next line (default textarea newline behavior)
+                                        return;
+                                      }
+                                      // Enter without Shift: strictly proceed to next question (never triggers check answer button)
+                                      e.preventDefault();
+                                      if (autoAdvanceTimeoutRef.current) {
+                                        clearTimeout(autoAdvanceTimeoutRef.current);
+                                      }
+                                      if (activeQuestionIndex < questions.length - 1) {
+                                        setActiveQuestionIndex(prev => prev + 1);
+                                      } else {
+                                        handleFinish();
+                                      }
+                                    }
+                                  }}
                                   placeholder="Type your answer here..."
-                                  rows={2}
+                                  rows={3}
                                   className="w-full text-sm p-3 md:p-3.5 rounded-xl border-2 border-blue-500/80 bg-white text-slate-900 font-bold focus:border-blue-600 focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition-all shadow-sm resize-none"
                                 />
                               </div>

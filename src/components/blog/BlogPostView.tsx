@@ -16,7 +16,8 @@ import {
   Facebook,
   Link2,
   Eye,
-  ListOrdered
+  ListOrdered,
+  Tag
 } from "lucide-react";
 import type { BlogPost } from "../../types/blog.types";
 import { parseTags } from "../../types/blog.types";
@@ -484,19 +485,22 @@ export function BlogPostView() {
           />
         </article>
 
-        {/* Tags Bar with Accessible Touch Padding */}
+        {/* Topics / Tags Bar */}
         {safeTags.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap pt-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">
-              Topics:
-            </span>
+          <div className="flex items-center gap-2.5 flex-wrap pt-2 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-1">
+              <Tag className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+              <span>Topics:</span>
+            </div>
             {safeTags.map((tag) => (
-              <span
+              <Link
                 key={tag}
-                className="min-h-[44px] inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                to={`/blog?search=${encodeURIComponent(tag)}`}
+                className="inline-flex items-center gap-1 min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 dark:bg-slate-800 dark:hover:bg-blue-950/50 dark:text-slate-300 dark:hover:text-blue-300 border border-slate-200/60 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-700 transition-all shadow-2xs"
               >
-                #{tag}
-              </span>
+                <span className="text-blue-500 font-semibold">#</span>
+                <span>{tag}</span>
+              </Link>
             ))}
           </div>
         )}

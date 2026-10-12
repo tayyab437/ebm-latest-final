@@ -102,8 +102,18 @@ export interface BlogFilterOptions {
 }
 
 export function parseTags(tags: any): string[] {
+  if (!tags) return [];
+  const cleanTag = (str: string) =>
+    str
+      .replace(/^#+/, "")
+      .replace(/^["']|["']$/g, "")
+      .replace(/[\[\]]/g, "")
+      .trim();
+
   if (Array.isArray(tags)) {
-    return tags.map(t => String(t).trim()).filter(Boolean);
+    return tags
+      .map(t => cleanTag(String(t)))
+      .filter(Boolean);
   }
   if (typeof tags === "string") {
     const trimmed = tags.trim();
@@ -111,13 +121,13 @@ export function parseTags(tags: any): string[] {
     try {
       const parsed = JSON.parse(trimmed);
       if (Array.isArray(parsed)) {
-        return parsed.map(t => String(t).trim()).filter(Boolean);
+        return parsed.map(t => cleanTag(String(t))).filter(Boolean);
       }
       if (typeof parsed === "string") {
-        return parsed.split(",").map(t => t.trim()).filter(Boolean);
+        return parsed.split(/[,;\n]+/).map(t => cleanTag(t)).filter(Boolean);
       }
     } catch (_) {}
-    return trimmed.split(",").map(t => t.trim()).filter(Boolean);
+    return trimmed.split(/[,;\n]+/).map(t => cleanTag(t)).filter(Boolean);
   }
   return [];
 }

@@ -206,6 +206,28 @@ export function ExamPlayer() {
     }
   };
 
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (isSubmitted) return;
+      const target = e.target as HTMLElement;
+      // If user is focused in a textarea, the textarea's onKeyDown handles it
+      if (target && target.tagName === "TEXTAREA") {
+        return;
+      }
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (currentQuestionIndex < questions.length - 1) {
+          setCurrentQuestionIndex(prev => prev + 1);
+        } else {
+          handleSubmit();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [currentQuestionIndex, questions.length, isSubmitted]);
+
   return (
     <div ref={examPlayerRef} className={clsx("fixed inset-0 bg-[#030712] z-[100] flex flex-col font-sans text-slate-100 selection:bg-rose-500 selection:text-white overflow-hidden", isFullScreen && "w-screen h-screen")}>
       {/* Player Top Navigation Bar */}
@@ -417,12 +439,32 @@ export function ExamPlayer() {
                         <textarea 
                           value={answers[currentQuestion.id] || ""}
                           onChange={(e) => handleAnswer(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              if (e.shiftKey) {
+                                // Shift + Enter: move to next line (default textarea behavior)
+                                return;
+                              }
+                              // Enter without Shift: proceed to next question
+                              e.preventDefault();
+                              if (currentQuestionIndex < questions.length - 1) {
+                                setCurrentQuestionIndex(currentQuestionIndex + 1);
+                              } else {
+                                handleSubmit();
+                              }
+                            }
+                          }}
                           placeholder="Type your complete answer here..."
-                          className="w-full h-28 bg-white/5 border border-white/10 rounded-xl p-4 text-xs sm:text-sm font-semibold text-white outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all placeholder:text-slate-600 shadow-inner"
+                          className="w-full h-28 bg-white/5 border border-white/10 rounded-xl p-4 text-xs sm:text-sm font-semibold text-white outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all placeholder:text-slate-600 shadow-inner resize-none"
                         />
-                        <p className="text-[10px] font-bold text-slate-500 text-right">
-                          {(answers[currentQuestion.id] || "").length} characters written
-                        </p>
+                        <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium px-1">
+                          <span>
+                            Press <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/20 rounded text-slate-300 font-mono text-[9px] font-bold">Enter ↵</kbd> Next Question • <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/20 rounded text-slate-300 font-mono text-[9px] font-bold">Shift + Enter</kbd> New Line
+                          </span>
+                          <span>
+                            {(answers[currentQuestion.id] || "").length} characters written
+                          </span>
+                        </div>
                       </div>
                     )}
 
