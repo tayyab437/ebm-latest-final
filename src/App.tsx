@@ -7,7 +7,7 @@ import { UserRole, EbmYear, CourseModule, DailyPlannerTask, StudentProgress, Par
 import { EBM_ROADMAP_DETAILS, INITIAL_COURSES, MOCK_DAILY_TASKS, MOCK_STUDENTS_PROGRESS } from "./constants";
 import AnnouncementBar from "./components/home/AnnouncementBar";
 import HomeFooter from "./components/home/Footer";
-import { InspirationPage } from "./components/pages/InspirationPage";
+const InspirationPage = React.lazy(() => import("./components/pages/InspirationPage").then(m => ({ default: m.InspirationPage })));
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
 // Import EBMHomepage synchronously to ensure zero layout shift and 0ms render delay on landing

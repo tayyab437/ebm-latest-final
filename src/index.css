@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./site.css";
 
 @theme {
   --color-amber-50: var(--color-blue-50);
