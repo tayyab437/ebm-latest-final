@@ -10,8 +10,8 @@ import HomeFooter from "./components/home/Footer";
 import { InspirationPage } from "./components/pages/InspirationPage";
 import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
 
-// Lazy-load EBMHomepage, non-homepage components, and authentication views to keep initial bundle ultra-lightweight
-const EBMHomepage = React.lazy(() => import("./components/home/EBMHomepage"));
+// Import EBMHomepage synchronously to ensure zero layout shift and 0ms render delay on landing
+import EBMHomepage from "./components/home/EBMHomepage";
 const AuthLayout = React.lazy(() => import("./components/auth/AuthLayout").then(m => ({ default: m.AuthLayout })));
 const AuthCard = React.lazy(() => import("./components/auth/AuthCard").then(m => ({ default: m.AuthCard })));
 const LoginForm = React.lazy(() => import("./components/auth/LoginForm").then(m => ({ default: m.LoginForm })));
@@ -800,7 +800,7 @@ export default function App() {
       {/* ================== GLOBAL BRAND TOPBAR ================== */}
       {!isPortalPage && (
         <>
-          <header id="ebm-header" className="bg-white/85 dark:bg-slate-900/85 backdrop-blur-md backdrop-saturate-150 border-b border-white/60 dark:border-slate-800/60 text-slate-800 dark:text-slate-100 sticky top-0 z-50 shadow-xs select-none transition-all duration-300 py-3">
+          <header id="ebm-header" className="bg-white/85 dark:bg-slate-900/85 backdrop-blur-md backdrop-saturate-150 border-b border-white/60 dark:border-slate-800/60 text-slate-800 dark:text-slate-100 sticky top-0 z-50 shadow-xs select-none transition-all duration-300 py-3 min-h-[64px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           {/* Logo & Platform Tagline */}
           <div className="flex items-center gap-3 sm:gap-4">

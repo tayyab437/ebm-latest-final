@@ -978,7 +978,7 @@ app.get("/robots.txt", (req, res) => {
   if (fs.existsSync(filePath)) {
     return res.sendFile(filePath);
   }
-  return res.send("User-agent: *\nAllow: /\nAllow: /llms.txt\nAllow: /llms-full.txt\nAllow: /*/llms.txt\nAllow: /*/llms-full.txt\nAllow: /ai-catalog.json\nAllow: /.well-known/ai-catalog.json\nAllow: /ard.json\nAllow: /.well-known/ard.json\nAllow: /api/ai/\nDisallow: /dashboard/\nDisallow: /admin/\nDisallow: /teacher/\nDisallow: /parent/\n\nSitemap: https://ejazbukharimethod.com/sitemap.xml\nAgentmap: https://ejazbukharimethod.com/.well-known/ai-catalog.json\nAgentmap: https://ejazbukharimethod.com/.well-known/ard.json\n");
+  return res.send("User-agent: *\nAllow: /\nAllow: /llms.txt\nAllow: /llms-full.txt\nAllow: /*/llms.txt\nAllow: /*/llms-full.txt\nAllow: /ai-catalog.json\nAllow: /.well-known/ai-catalog.json\nAllow: /ard.json\nAllow: /.well-known/ard.json\nAllow: /api/ai/\nDisallow: /dashboard/\nDisallow: /admin/\nDisallow: /teacher/\nDisallow: /parent/\n\nSitemap: https://ejazbukharimethod.com/sitemap.xml\n# AI Agent discovery catalogs:\n# https://ejazbukharimethod.com/.well-known/ai-catalog.json\n# https://ejazbukharimethod.com/.well-known/ard.json\n");
 });
 
 // Blog REST API router
@@ -9083,7 +9083,7 @@ function optimizeUnsplashServerUrl(
   }
 }
 
-async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<string> {
+async function injectSeoMetadata(rawHtml: string, reqPath: string, userAgent?: string): Promise<string> {
   const BASE_URL = "https://ejazbukharimethod.com";
   let title = "EBM Personalized Learning Platform | Grade 1 to O/A Level";
   let description = "Personalized learning platform for students from Grade 1 to O/A Levels, featuring structured curricula, diagnostic assessments, and AI-powered tutoring.";
@@ -9292,20 +9292,23 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string): Promise<stri
     html = html.replace("</head>", `${extraJsonLd}\n  </head>`);
   }
 
-  // Eliminate Render-Blocking CSS by converting standard stylesheet links to high-priority preloaded + non-blocking deferred stylesheets
-  html = html.replace(/<link\b[^>]*?rel=["']stylesheet["'][^>]*?href=["']([^"']+\.css)["'][^>]*?>|<link\b[^>]*?href=["']([^"']+\.css)["'][^>]*?rel=["']stylesheet["'][^>]*?>/gi, (match, p1, p2) => {
-    const href = p1 || p2;
-    return `<link rel="preload" as="style" href="${href}" crossorigin /><link rel="stylesheet" href="${href}" media="print" onload="this.media='all'" crossorigin /><noscript><link rel="stylesheet" href="${href}" crossorigin /></noscript>`;
-  });
+  // Detect automated search bots & AI discovery crawlers (Googlebot, Bingbot, LLM crawlers)
+  const isCrawler = /googlebot|bingbot|yandex|baiduspider|duckduckbot|slurp|twitterbot|facebookexternalhit|linkedinbot|embedly|quora|showyoubot|outbrain|pinterest|applebot|gptbot|chatgpt-user|claudebot|perplexitybot|bytespider/i.test(userAgent || "");
 
-  // Inject route-specific pre-rendered semantic HTML inside <div id="root"> for LLM readability & AI web crawlers
-  const preRenderedHtml = getPreRenderedHtml(cleanPath, blogPostPayload);
-  if (html.includes("<!-- EBM_CONTENT_START -->") && html.includes("<!-- EBM_CONTENT_END -->")) {
-    html = html.replace(/<!-- EBM_CONTENT_START -->[\s\S]*?<!-- EBM_CONTENT_END -->/i, `<!-- EBM_CONTENT_START -->\n${preRenderedHtml}\n    <!-- EBM_CONTENT_END -->`);
-  } else if (html.includes('<div id="root"></div>')) {
-    html = html.replace('<div id="root"></div>', `<div id="root">\n<!-- EBM_CONTENT_START -->\n${preRenderedHtml}\n    <!-- EBM_CONTENT_END -->\n    </div>`);
+  // Inject route-specific pre-rendered semantic HTML inside <div id="root"> ONLY for search crawlers & AI bots
+  // Real browser visitors & Core Web Vitals audits receive clean <div id="root"></div> to ensure instant zero-shift React mount
+  if (isCrawler) {
+    const preRenderedHtml = getPreRenderedHtml(cleanPath, blogPostPayload);
+    if (html.includes("<!-- EBM_CONTENT_START -->") && html.includes("<!-- EBM_CONTENT_END -->")) {
+      html = html.replace(/<!-- EBM_CONTENT_START -->[\s\S]*?<!-- EBM_CONTENT_END -->/i, `<!-- EBM_CONTENT_START -->\n${preRenderedHtml}\n    <!-- EBM_CONTENT_END -->`);
+    } else if (html.includes('<div id="root"></div>')) {
+      html = html.replace('<div id="root"></div>', `<div id="root">\n<!-- EBM_CONTENT_START -->\n${preRenderedHtml}\n    <!-- EBM_CONTENT_END -->\n    </div>`);
+    }
   } else {
-    html = html.replace(/<div id="root">([\s\S]*?)<\/div>\s*<script/i, `<div id="root">\n<!-- EBM_CONTENT_START -->\n${preRenderedHtml}\n    <!-- EBM_CONTENT_END -->\n    </div>\n    <script`);
+    // Ensure any leftover SSR markers are cleaned for human visitors
+    if (html.includes("<!-- EBM_CONTENT_START -->") && html.includes("<!-- EBM_CONTENT_END -->")) {
+      html = html.replace(/<!-- EBM_CONTENT_START -->[\s\S]*?<!-- EBM_CONTENT_END -->/i, "");
+    }
   }
 
   return html;
@@ -9356,7 +9359,7 @@ async function startServer() {
       try {
         const rawIndex = fs.readFileSync(path.resolve(process.cwd(), "index.html"), "utf-8");
         const template = await vite.transformIndexHtml(url, rawIndex);
-        const enrichedHtml = await injectSeoMetadata(template, req.path);
+        const enrichedHtml = await injectSeoMetadata(template, req.path, req.headers["user-agent"]);
         res.status(200).set({ "Content-Type": "text/html; charset=utf-8" }).end(enrichedHtml);
       } catch (e) {
         vite.ssrFixStacktrace(e as Error);
@@ -9395,7 +9398,7 @@ async function startServer() {
       try {
         if (fs.existsSync(indexPath)) {
           const rawHtml = fs.readFileSync(indexPath, "utf-8");
-          const enrichedHtml = await injectSeoMetadata(rawHtml, req.path);
+          const enrichedHtml = await injectSeoMetadata(rawHtml, req.path, req.headers["user-agent"]);
           return res.send(enrichedHtml);
         }
         res.sendFile(indexPath);
