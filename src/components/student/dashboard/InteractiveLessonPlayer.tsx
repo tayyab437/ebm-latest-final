@@ -27,6 +27,7 @@ import {
   Send
 } from "lucide-react";
 import { clsx } from "clsx";
+import { useDashboardStore } from "./dashboard.store";
 
 interface AutoScalingTextProps {
   text: string;
@@ -559,6 +560,7 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
   };
 
   const handleSubmitResults = async () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     setSubmitError(null);
     try {
@@ -617,6 +619,8 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
 
       if (resData.success) {
         setSubmitSuccess(true);
+        // Refresh authoritative dashboard progress store
+        useDashboardStore.getState().fetchData();
         // Let the parent know and trigger update
         setTimeout(() => {
           onSubmit(lesson.id, lesson.title);

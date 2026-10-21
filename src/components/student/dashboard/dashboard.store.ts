@@ -60,11 +60,6 @@ export const useDashboardStore = create<DashboardState>((set) => ({
             showCelebration: true, 
             newGrade: response.nextGrade || dashboardResponse.data?.currentGrade || "" 
           });
-          // Force a small delay then reload to ensure full ecosystem sync if needed,
-          // though store update should handle it, the user reported needing a manual reload.
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
         } else {
           set({ isLoading: false });
         }
@@ -143,8 +138,11 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       }
     } catch (error: any) {
       console.error("Dashboard fetch error:", error);
-      // Fallback to mock data for development if API fails
-      set({ data: MOCK_DASHBOARD_DATA, isLoading: false });
+      set((state) => ({ 
+        error: error.message || "Failed to load dashboard data. Please check your connection and retry.", 
+        isLoading: false,
+        data: state.data // Preserve real student data
+      }));
     }
   },
   markNotificationRead: async (id) => {

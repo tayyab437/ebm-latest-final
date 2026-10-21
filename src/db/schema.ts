@@ -28,6 +28,7 @@ export const students = mysqlTable('students', {
   unlockedDiagnostics: json('unlockedDiagnostics'),
   profilePictureUrl: text('profilePictureUrl'),
   loginHistory: json('loginHistory'),
+  studyTimeByDay: json('studyTimeByDay'), // { "2026-10-21": 3600, ... }
 });
 
 export const parents = mysqlTable('parents', {

@@ -15,7 +15,3 @@ Disallow: /teacher/
 Disallow: /parent/
 
 Sitemap: https://ejazbukharimethod.com/sitemap.xml
-# AI Agent discovery catalogs:
-# https://ejazbukharimethod.com/.well-known/ai-catalog.json
-# https://ejazbukharimethod.com/.well-known/ard.json
-

@@ -65,14 +65,8 @@ export function SubjectGrid({ limit }: SubjectGridProps) {
 
     fetchAllData();
 
-    // Real-time updates polling
-    const interval = setInterval(() => {
-      fetchAllData();
-    }, 3000);
-
     return () => {
       isMounted = false;
-      clearInterval(interval);
     };
   }, [data?.currentGrade]);
 

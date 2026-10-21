@@ -112,6 +112,7 @@ export interface LearningStatistics {
   totalXp: number;
   learningStreakDays: number;
   loginHistory?: string[];
+  studyTimeByDay?: Record<string, number>;
 }
 
 export interface StudentDashboardData {

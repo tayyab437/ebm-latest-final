@@ -16,10 +16,14 @@ import { getPreRenderedHtml } from "./src/server/pre-render.js";
 
 export function extractUserIdFromToken(token: string | undefined): string | null {
   if (!token) return null;
-  const cleanToken = token.replace("Bearer ", "");
-  const withoutPrefix = cleanToken.replace("ebm-token-jwt-", "");
-  const lastDashIdx = withoutPrefix.lastIndexOf("-");
-  if (lastDashIdx > 0) return withoutPrefix.substring(0, lastDashIdx);
+  const cleanToken = token.replace(/^Bearer\s+/i, "").trim();
+  if (!cleanToken) return null;
+  const withoutPrefix = cleanToken.replace(/^ebm-token-jwt-/, "");
+  // Only strip trailing timestamp if it matches 10 to 14 numeric digits
+  const timestampMatch = withoutPrefix.match(/^(.+)-(\d{10,14})$/);
+  if (timestampMatch) {
+    return timestampMatch[1];
+  }
   return withoutPrefix;
 }
 
@@ -2310,24 +2314,74 @@ app.get("/api/student/classes", async (req, res) => {
   }
 });
 
+async function recalculateStudentPerformance(db: any, studentId: string) {
+  try {
+    const studentSubmissions = await db.select().from(schema.submissions).where(eq(schema.submissions.studentId, studentId));
+    const studentExamResults = await db.select().from(schema.exam_results).where(eq(schema.exam_results.studentId, studentId));
+    const allExams = await db.select().from(schema.exams);
+
+    const scores: number[] = [];
+    for (const sub of studentSubmissions) {
+      if (sub.score !== null && sub.score !== undefined) {
+        scores.push(Number(sub.score));
+      }
+    }
+    for (const er of studentExamResults) {
+      if (er.marksObtained !== null && er.marksObtained !== undefined) {
+        const exam = allExams.find((e: any) => e.id === er.examId);
+        const totalMarks = exam?.totalMarks || 100;
+        const examPercentage = Math.round((Number(er.marksObtained) / totalMarks) * 100);
+        scores.push(examPercentage);
+      }
+    }
+
+    let calculatedPerformance = 80;
+    if (scores.length > 0) {
+      const totalScoreSum = scores.reduce((sum: number, val: number) => sum + val, 0);
+      calculatedPerformance = Math.round(totalScoreSum / scores.length);
+    }
+
+    const studentRecord = await db.select().from(schema.students).where(eq(schema.students.id, studentId));
+    if (studentRecord.length > 0) {
+      const student = studentRecord[0];
+      const attendanceRate = student.attendanceRate !== null ? student.attendanceRate : 100;
+      let riskStatus = "LOW";
+      if (attendanceRate < 80 || calculatedPerformance < 70) {
+        riskStatus = "HIGH";
+      } else if (attendanceRate < 90 || calculatedPerformance < 80) {
+        riskStatus = "MEDIUM";
+      }
+
+      await db.update(schema.students)
+        .set({ performanceScore: calculatedPerformance, riskStatus })
+        .where(eq(schema.students.id, studentId));
+    }
+  } catch (e) {
+    console.error("Error recalculating student performance:", e);
+  }
+}
+
 app.get("/api/student/completed-lessons", async (req, res) => {
   try {
     const db = await getDb();
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    let studentId = "student-1";
-    if (token) {
-      studentId = extractUserIdFromToken(token) || studentId;
+    const token = req.headers.authorization?.replace(/^Bearer\s+/i, "");
+    if (!token) {
+      return res.status(401).json({ success: false, error: "Authentication required" });
+    }
+    const studentId = extractUserIdFromToken(token);
+    if (!studentId) {
+      return res.status(401).json({ success: false, error: "Invalid token" });
     }
     
     // 1. Get from completed_lessons table
     const completed = await db.select().from(schema.completed_lessons).where(eq(schema.completed_lessons.studentId, studentId));
-    const completedIds = new Set(completed.map(c => c.lessonId));
+    const completedIds = new Set(completed.map((c: any) => c.lessonId));
     
     // 2. Get from submissions (legacy fallback)
     const dbSubmissions = await db.select().from(schema.submissions).where(eq(schema.submissions.studentId, studentId));
     
     // Process submissions to find completed curriculum IDs
-    const curriculumSubmissions = dbSubmissions.filter(s => 
+    const curriculumSubmissions = dbSubmissions.filter((s: any) => 
       s.type === "CURRICULUM" || 
       s.type === "CURRICULICUM" || 
       s.type === "curriculum_practice" || 
@@ -2360,7 +2414,6 @@ app.get("/api/student/completed-lessons", async (req, res) => {
           } as any);
         }
       } else if (subs.length > 0) {
-        // If no score recorded but there is a submission, count it
         completedIds.add(assessmentId);
         completed.push({
           id: `legacy_${assessmentId}`,
@@ -2380,14 +2433,20 @@ app.get("/api/student/completed-lessons", async (req, res) => {
 app.post("/api/student/completed-lessons", async (req, res) => {
   try {
     const db = await getDb();
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    let studentId = "student-1";
-    if (token) {
-      studentId = extractUserIdFromToken(token) || studentId;
+    const token = req.headers.authorization?.replace(/^Bearer\s+/i, "");
+    if (!token) {
+      return res.status(401).json({ success: false, error: "Authentication required" });
+    }
+    const studentId = extractUserIdFromToken(token);
+    if (!studentId) {
+      return res.status(401).json({ success: false, error: "Invalid token" });
     }
     const { lessonId } = req.body;
+    if (!lessonId) {
+      return res.status(400).json({ success: false, error: "lessonId is required" });
+    }
     
-    // Check if already completed
+    // Check if already completed (deduplication)
     const existing = await db.select().from(schema.completed_lessons).where(
       and(
         eq(schema.completed_lessons.studentId, studentId),
@@ -2403,7 +2462,7 @@ app.post("/api/student/completed-lessons", async (req, res) => {
       });
     }
     
-    res.json({ success: true });
+    res.json({ success: true, message: "Lesson marked completed" });
     
     // Log audit async
     getUserById(studentId).then(user => {
@@ -2417,18 +2476,36 @@ app.post("/api/student/completed-lessons", async (req, res) => {
 app.get("/api/student/submissions", async (req, res) => {
   try {
     const db = await getDb();
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    let studentId = "student-1";
-    if (token) {
-      studentId = extractUserIdFromToken(token) || studentId;
+    const token = req.headers.authorization?.replace(/^Bearer\s+/i, "");
+    if (!token) {
+      return res.status(401).json({ success: false, error: "Authentication required" });
+    }
+    const tokenUserId = extractUserIdFromToken(token);
+    if (!tokenUserId) {
+      return res.status(401).json({ success: false, error: "Invalid token" });
     }
 
-    // Allow overriding via query parameters (e.g. for parents)
-    if (req.query.studentId && typeof req.query.studentId === "string") {
-      studentId = req.query.studentId;
+    let targetStudentId = tokenUserId;
+
+    // Multi-user authorization check if overriding via query parameters
+    if (req.query.studentId && typeof req.query.studentId === "string" && req.query.studentId !== tokenUserId) {
+      const requester = await getUserById(tokenUserId);
+      const isTeacherOrAdmin = requester?.role === "TEACHER" || requester?.role === "ADMIN";
+      let isAuthorizedParent = false;
+      if (requester?.role === "PARENT") {
+        const student = await db.select().from(schema.students).where(eq(schema.students.id, req.query.studentId));
+        if (student.length > 0 && student[0].parentEmail && requester.email && student[0].parentEmail.toLowerCase() === requester.email.toLowerCase()) {
+          isAuthorizedParent = true;
+        }
+      }
+
+      if (!isTeacherOrAdmin && !isAuthorizedParent) {
+        return res.status(403).json({ success: false, error: "Unauthorized access to student submissions" });
+      }
+      targetStudentId = req.query.studentId;
     }
 
-    const studentSubmissions = await db.select().from(schema.submissions).where(eq(schema.submissions.studentId, studentId));
+    const studentSubmissions = await db.select().from(schema.submissions).where(eq(schema.submissions.studentId, targetStudentId));
 
     // Fetch and append graded exam results
     const examResultsList = await db.select({
@@ -2446,16 +2523,16 @@ app.get("/api/student/submissions", async (req, res) => {
     .from(schema.exam_results)
     .innerJoin(schema.exams, eq(schema.exam_results.examId, schema.exams.id))
     .innerJoin(schema.students, eq(schema.exam_results.studentId, schema.students.id))
-    .where(eq(schema.exam_results.studentId, studentId));
+    .where(eq(schema.exam_results.studentId, targetStudentId));
 
-    const formattedExamResults = examResultsList.map(er => ({
+    const formattedExamResults = examResultsList.map((er: any) => ({
       id: er.id || "exam_sub_" + Date.now() + "_" + Math.random(),
       studentId: er.studentId,
       studentName: er.studentName,
       classId: er.classId,
       assignmentId: null,
       assessmentId: er.assessmentId,
-      type: "ASSESSMENT", // map to ASSESSMENT so that UI processes it as a test
+      type: "ASSESSMENT",
       content: "",
       submittedAt: er.submittedAt,
       status: er.status || "REVIEWED",
@@ -2473,16 +2550,78 @@ app.get("/api/student/submissions", async (req, res) => {
 app.post("/api/student/submissions", async (req, res) => {
   try {
     const db = await getDb();
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    let studentId = "student-1";
-    if (token) {
-      studentId = extractUserIdFromToken(token) || studentId;
+    const token = req.headers.authorization?.replace(/^Bearer\s+/i, "");
+    if (!token) {
+      return res.status(401).json({ success: false, error: "Authentication required" });
+    }
+    const studentId = extractUserIdFromToken(token);
+    if (!studentId) {
+      return res.status(401).json({ success: false, error: "Invalid token" });
     }
 
     const { assignmentId, assessmentId, type, content, studentName, classId, score, status, fileName, fileUrl } = req.body;
+    const numScore = score !== undefined && score !== null ? Number(score) : null;
+
+    // Check for existing assignment submission to avoid duplicate records
+    if (assignmentId) {
+      const existingAssignmentSub = await db.select().from(schema.submissions).where(
+        and(
+          eq(schema.submissions.studentId, studentId),
+          eq(schema.submissions.assignmentId, assignmentId)
+        )
+      );
+
+      if (existingAssignmentSub.length > 0) {
+        const existingId = existingAssignmentSub[0].id;
+        await db.update(schema.submissions).set({
+          content: content || existingAssignmentSub[0].content,
+          score: numScore !== null ? numScore : existingAssignmentSub[0].score,
+          status: status || existingAssignmentSub[0].status || "SUBMITTED",
+          submittedAt: new Date(),
+          feedback: req.body.feedback || existingAssignmentSub[0].feedback,
+          fileName: fileName || existingAssignmentSub[0].fileName,
+          fileUrl: fileUrl || existingAssignmentSub[0].fileUrl,
+        }).where(eq(schema.submissions.id, existingId));
+
+        await recalculateStudentPerformance(db, studentId);
+        if (studentId) await checkAndPromoteStudent(studentId);
+
+        return res.json({ success: true, submission: { ...existingAssignmentSub[0], score: numScore, status: status || "SUBMITTED" } });
+      }
+    }
+
+    // Check for existing curriculum lesson submission to avoid duplicate records
+    if (assessmentId && (type === "CURRICULUM" || type === "curriculum_practice")) {
+      const existingCurriculumSub = await db.select().from(schema.submissions).where(
+        and(
+          eq(schema.submissions.studentId, studentId),
+          eq(schema.submissions.assessmentId, assessmentId)
+        )
+      );
+
+      if (existingCurriculumSub.length > 0) {
+        const existingId = existingCurriculumSub[0].id;
+        const currentScore = existingCurriculumSub[0].score;
+        const bestScore = (numScore !== null && currentScore !== null) 
+          ? Math.max(numScore, currentScore) 
+          : (numScore !== null ? numScore : currentScore);
+
+        await db.update(schema.submissions).set({
+          content: content || existingCurriculumSub[0].content,
+          score: bestScore,
+          status: (bestScore && bestScore >= 80) ? "COMPLETED" : (status || "PRACTICED"),
+          submittedAt: new Date(),
+        }).where(eq(schema.submissions.id, existingId));
+
+        await recalculateStudentPerformance(db, studentId);
+        if (studentId) await checkAndPromoteStudent(studentId);
+
+        return res.json({ success: true, submission: { ...existingCurriculumSub[0], score: bestScore } });
+      }
+    }
 
     const newSubmission = {
-      id: "sub_" + Date.now(),
+      id: "sub_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
       studentId,
       studentName: studentName || "Student",
       classId: classId || "class_1",
@@ -2492,7 +2631,7 @@ app.post("/api/student/submissions", async (req, res) => {
       content: content || "",
       submittedAt: new Date(),
       status: status || "SUBMITTED",
-      score: score !== undefined && score !== null ? Number(score) : null,
+      score: numScore,
       feedback: req.body.feedback || null,
       fileName: fileName || null,
       fileUrl: fileUrl || null,
@@ -2500,8 +2639,8 @@ app.post("/api/student/submissions", async (req, res) => {
 
     await db.insert(schema.submissions).values(newSubmission);
     
-    // Recalculate performance score dynamically
-    await recalculatePerformanceScores(db);
+    // Recalculate performance score only for this student
+    await recalculateStudentPerformance(db, studentId);
     
     // Check for promotion
     if (studentId) {
@@ -4722,25 +4861,99 @@ app.get("/api/student/certificates", async (req, res) => {
   }
 });
 
+function computeStudyStatsFromMap(hoursMap: Record<string, number>) {
+  const current = new Date();
+  const day = current.getDay();
+  const distanceToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(current);
+  monday.setDate(current.getDate() + distanceToMonday);
+
+  const weeklyStudyHours = [0, 0, 0, 0, 0, 0, 0];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const dateStr = d.toISOString().split("T")[0];
+    const seconds = hoursMap[dateStr] || 0;
+    weeklyStudyHours[i] = Math.round((seconds / 3600) * 100) / 100;
+  }
+
+  const year = current.getFullYear();
+  const month = current.getMonth();
+  let totalSecondsMonth = 0;
+  if (hoursMap && typeof hoursMap === "object") {
+    Object.keys(hoursMap).forEach(dateStr => {
+      const d = new Date(dateStr);
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        totalSecondsMonth += hoursMap[dateStr] || 0;
+      }
+    });
+  }
+  const monthlyStudyHours = Math.round((totalSecondsMonth / 3600) * 10) / 10;
+
+  return { weeklyStudyHours, monthlyStudyHours };
+}
+
+app.post("/api/student/study-time", async (req, res) => {
+  try {
+    const db = await getDb();
+    const token = req.headers.authorization?.replace(/^Bearer\s+/i, "");
+    if (!token) {
+      return res.status(401).json({ success: false, error: "Authentication required" });
+    }
+    const studentId = extractUserIdFromToken(token);
+    if (!studentId) {
+      return res.status(401).json({ success: false, error: "Invalid token" });
+    }
+    const { secondsToAdd } = req.body;
+    const seconds = Math.max(0, Math.min(3600, Number(secondsToAdd) || 0)); // sensible bounds per ping
+
+    const studentRecord = await db.select().from(schema.students).where(eq(schema.students.id, studentId));
+    if (studentRecord.length === 0) {
+      return res.status(404).json({ success: false, error: "Student not found" });
+    }
+
+    const student = studentRecord[0];
+    let studyMap: Record<string, number> = {};
+    if (student.studyTimeByDay) {
+      try {
+        studyMap = typeof student.studyTimeByDay === "string" ? JSON.parse(student.studyTimeByDay) : student.studyTimeByDay;
+      } catch (e) {
+        studyMap = {};
+      }
+    }
+    if (!studyMap || typeof studyMap !== "object") studyMap = {};
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    studyMap[todayStr] = (studyMap[todayStr] || 0) + seconds;
+
+    await db.update(schema.students).set({
+      studyTimeByDay: JSON.stringify(studyMap)
+    }).where(eq(schema.students.id, studentId));
+
+    const stats = computeStudyStatsFromMap(studyMap);
+    res.json({ success: true, ...stats });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
 app.get("/api/student/dashboard", async (req, res) => {
   try {
     const db = await getDb();
-    const token = req.headers.authorization?.replace("Bearer ", "");
-
-    // Extract user id from mock JWT token
-    let userId = "student-1";
-    let tokenName = "";
-    if (token) {
-      userId = extractUserIdFromToken(token) || userId;
+    const token = req.headers.authorization?.replace(/^Bearer\s+/i, "");
+    if (!token) {
+      return res.status(401).json({ success: false, error: "Authentication required" });
     }
 
+    const userId = extractUserIdFromToken(token);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: "Invalid token" });
+    }
+
+    let tokenName = "";
     // Try to find user in mockUsers if not in DB
     const foundInMock = mockUsers.find(u => u.id === userId);
     if (foundInMock) tokenName = foundInMock.name;
-
-    // Recalculate attendance rates and performance scores for all students to keep things updated
-    await recalculateAttendanceRates(db);
-    await recalculatePerformanceScores(db);
 
     const studentRecord = await db.select().from(schema.students).where(eq(schema.students.id, userId));
     const dbClasses = await db.select().from(schema.classes);
@@ -4829,8 +5042,9 @@ app.get("/api/student/dashboard", async (req, res) => {
       subjects.forEach(s => enrolledSubjects.add(s.toLowerCase().trim()));
     });
 
-    // Filter relevant curriculums for overall progression
+    // Filter relevant curriculums for overall progression (excluding diagnostic tests)
     const relevantCurriculums = dbCurriculum.filter(curr => {
+      if (curr.isDiagnostic === 1) return false;
       if (!curr.gradeLevel) return false;
       
       const normalizedCurrGrade = curr.gradeLevel.toLowerCase().trim();
@@ -4865,7 +5079,7 @@ app.get("/api/student/dashboard", async (req, res) => {
 
     // Get all completed lessons for this student
     const dbCompleted = await db.select().from(schema.completed_lessons).where(eq(schema.completed_lessons.studentId, userId));
-    const completedLessonIds = new Set(dbCompleted.map(cl => cl.lessonId));
+    const completedLessonIds = new Set(dbCompleted.map((cl: any) => cl.lessonId));
 
     const completedLessons = relevantCurriculums.filter(curr => {
       // 1. Check if explicitly marked completed
@@ -4873,7 +5087,7 @@ app.get("/api/student/dashboard", async (req, res) => {
 
       // 2. Fallback to submissions checking
       const currSubmissions = dbSubmissions.filter(
-        s => (
+        (s: any) => (
           s.type === "CURRICULUM" || 
           s.type === "CURRICULICUM" || 
           s.type === "curriculum_practice" || 
@@ -4885,10 +5099,10 @@ app.get("/api/student/dashboard", async (req, res) => {
       if (currSubmissions.length === 0) return false;
 
       // Check if any submission has a score
-      const submissionsWithScore = currSubmissions.filter(s => s.score !== null && s.score !== undefined);
+      const submissionsWithScore = currSubmissions.filter((s: any) => s.score !== null && s.score !== undefined);
       
       if (submissionsWithScore.length > 0) {
-        const maxScore = Math.max(...submissionsWithScore.map(s => s.score || 0));
+        const maxScore = Math.max(...submissionsWithScore.map((s: any) => s.score || 0));
         return maxScore >= 80;
       }
       
@@ -4917,7 +5131,7 @@ app.get("/api/student/dashboard", async (req, res) => {
         } catch (e) {}
       }
       if (Array.isArray(loginHistory)) {
-        loginHistory.forEach(d => {
+        loginHistory.forEach((d: any) => {
           if (d) {
             activeDates.add(d);
           }
@@ -4926,7 +5140,7 @@ app.get("/api/student/dashboard", async (req, res) => {
     }
     
     // Add submissions
-    dbSubmissions.forEach(sub => {
+    dbSubmissions.forEach((sub: any) => {
       if (sub.submittedAt) {
         const dateStr = new Date(sub.submittedAt).toISOString().split("T")[0];
         activeDates.add(dateStr);
@@ -4935,7 +5149,7 @@ app.get("/api/student/dashboard", async (req, res) => {
 
     // Add attendance
     const dbAttendance = await db.select().from(schema.attendance);
-    dbAttendance.forEach(att => {
+    dbAttendance.forEach((att: any) => {
       if (att.statuses && att.date) {
         let statusesObj: any = {};
         if (typeof att.statuses === "string") {
@@ -4965,7 +5179,7 @@ app.get("/api/student/dashboard", async (req, res) => {
 
     if (learningStreakDays === 0) learningStreakDays = 1;
 
-    // Calculate dynamic XP
+    // Calculate dynamic XP safely with assignment deduplication
     let streakXp = 0;
     for (let day = 1; day <= learningStreakDays; day++) {
       if (day % 7 === 0) {
@@ -4977,8 +5191,12 @@ app.get("/api/student/dashboard", async (req, res) => {
     const loginXp = 150;
     const completedLessonsCount = completedLessons.length;
     const curriculumXp = completedLessonsCount * 100;
-    const dbSubmissionsAssignmentsOnly = dbSubmissions.filter(s => s.assignmentId && s.status === "SUBMITTED");
-    const assignmentsXp = dbSubmissionsAssignmentsOnly.length * 150;
+    const submittedUniqueAssignmentIds = new Set(
+      dbSubmissions
+        .filter((s: any) => s.assignmentId && (s.status === "SUBMITTED" || s.status === "REVIEWED" || s.status === "COMPLETED"))
+        .map((s: any) => s.assignmentId)
+    );
+    const assignmentsXp = submittedUniqueAssignmentIds.size * 150;
     const totalXp = loginXp + streakXp + curriculumXp + assignmentsXp;
 
     const dbCertificates = await db.select().from(schema.certificates).where(eq(schema.certificates.studentId, userId));
@@ -5089,8 +5307,9 @@ app.get("/api/student/dashboard", async (req, res) => {
             code = String(1000 + (num % 9000));
           }
 
-          // Calculate progress percentage dynamically for this subject
+          // Calculate progress percentage dynamically for this subject (excluding diagnostic tests)
           const subjectCurriculums = dbCurriculum.filter(curr => {
+            if (curr.isDiagnostic === 1) return false;
             const isSubMatch = curr.subject && subjectName && curr.subject.toLowerCase() === subjectName.toLowerCase();
             
             // Robust grade matching
@@ -5240,6 +5459,18 @@ app.get("/api/student/dashboard", async (req, res) => {
       overallMasteryScore = Math.round((overallCompletionPercentage * 0.3) + (80 * 0.7));
     }
 
+    let studyTimeByDay: Record<string, number> = {};
+    if (studentRecord.length > 0 && studentRecord[0].studyTimeByDay) {
+      try {
+        studyTimeByDay = typeof studentRecord[0].studyTimeByDay === "string"
+          ? JSON.parse(studentRecord[0].studyTimeByDay)
+          : studentRecord[0].studyTimeByDay;
+      } catch (e) {
+        studyTimeByDay = {};
+      }
+    }
+    const studyStats = computeStudyStatsFromMap(studyTimeByDay || {});
+
     let dashboardData = { 
       ...MOCK_DASHBOARD_DATA,
       studentName: tokenNameOrStudent,
@@ -5252,11 +5483,14 @@ app.get("/api/student/dashboard", async (req, res) => {
         : null) || [],
       subjects: activeSubjects,
       statistics: {
-        ...MOCK_DASHBOARD_DATA.statistics,
         overallCompletionPercentage,
-        learningStreakDays,
-        totalXp,
+        currentAcademicYear: "2026-2027",
+        weeklyStudyHours: studyStats.weeklyStudyHours,
+        monthlyStudyHours: studyStats.monthlyStudyHours,
+        learningTrend: "UP" as const,
         masteryScore: overallMasteryScore,
+        totalXp,
+        learningStreakDays,
         loginHistory: (studentRecord.length > 0 && studentRecord[0].loginHistory)
           ? (typeof studentRecord[0].loginHistory === "string" 
               ? JSON.parse(studentRecord[0].loginHistory) 

@@ -4,55 +4,64 @@ import { getStudyHoursForCurrentWeek, getStudyHoursForCurrentMonth } from "./stu
 
 const API_BASE = "/api/student/dashboard";
 
-function loadLocalDashboardData(): StudentDashboardData {
+function loadLocalDashboardData(): StudentDashboardData | null {
   const cached = localStorage.getItem("ebm_dashboard_data_cache");
-  let localData = MOCK_DASHBOARD_DATA;
-  if (cached) {
-    try {
-      localData = JSON.parse(cached);
-    } catch (e) {}
+  if (!cached) return null;
+  try {
+    const localData = JSON.parse(cached);
+    if (localData && localData.statistics) {
+      const localWeek = getStudyHoursForCurrentWeek();
+      const localMonth = getStudyHoursForCurrentMonth();
+      if (localWeek.some((h) => h > 0)) {
+        localData.statistics.weeklyStudyHours = localWeek;
+      }
+      if (localMonth > 0) {
+        localData.statistics.monthlyStudyHours = localMonth;
+      }
+    }
+    return localData;
+  } catch (e) {
+    return null;
   }
-  
-  if (localData && localData.statistics) {
-    localData.statistics.weeklyStudyHours = getStudyHoursForCurrentWeek();
-    localData.statistics.monthlyStudyHours = getStudyHoursForCurrentMonth();
-  }
-  
-  return localData;
 }
 
-export async function getDashboardData(): Promise<{success: boolean, data?: StudentDashboardData, message?: string}> {
+export async function getDashboardData(): Promise<{ success: boolean; data?: StudentDashboardData; message?: string }> {
   try {
     const token = localStorage.getItem("ebm_token");
     const response = await fetch(API_BASE, {
       headers: {
-        "Authorization": `Bearer ${token}`
-      }
+        Authorization: token ? `Bearer ${token}` : "",
+      },
     });
 
     if (!response.ok) {
-      if (response.status === 404) {
-        return { success: true, data: loadLocalDashboardData() };
+      const cached = loadLocalDashboardData();
+      if (cached) {
+        return { success: true, data: cached, message: "Cached data (offline)" };
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP ${response.status}: Failed to fetch student data`);
     }
 
-    const data = await response.json();
-    const serverData = data.data || MOCK_DASHBOARD_DATA;
-    
-    // Enrich with real-time tracked study hours from local storage
-    if (serverData && serverData.statistics) {
-      serverData.statistics.weeklyStudyHours = getStudyHoursForCurrentWeek();
-      serverData.statistics.monthlyStudyHours = getStudyHoursForCurrentMonth();
+    const json = await response.json();
+    if (!json.success || !json.data) {
+      throw new Error(json.error || "Failed to retrieve student records");
     }
+
+    const serverData: StudentDashboardData = json.data;
     
-    // Cache the latest server data locally
-    localStorage.setItem("ebm_dashboard_data_cache", JSON.stringify(serverData));
-    
+    // Cache the latest verified server data locally
+    try {
+      localStorage.setItem("ebm_dashboard_data_cache", JSON.stringify(serverData));
+    } catch (e) {}
+
     return { success: true, data: serverData };
-  } catch (error) {
-    console.warn("Failed to fetch dashboard data, using local storage/mock fallback:", error);
-    return { success: true, data: loadLocalDashboardData() };
+  } catch (error: any) {
+    console.warn("Failed to fetch dashboard data:", error);
+    const cached = loadLocalDashboardData();
+    if (cached) {
+      return { success: true, data: cached, message: "Using locally cached progress" };
+    }
+    return { success: false, message: error.message || "Could not load learning records" };
   }
 }
 

@@ -3,7 +3,7 @@ import { useDashboardStore } from "./dashboard.store";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { MobileNavigation } from "./MobileNavigation";
-import { incrementStudyTime } from "./studyTracker";
+import { incrementStudyTimeLocally, syncStudyTimeWithServer } from "./studyTracker";
 import { Award, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -19,12 +19,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     fetchData();
   }, [fetchData]);
 
-  // Real-time study hours active session tracking
+  // Active study session tracking - syncs on 60-second intervals to prevent render loops
   useEffect(() => {
-    const interval = setInterval(() => {
-      const { weeklyHours, monthlyHours } = incrementStudyTime(1);
-      updateStudyHoursLocally(weeklyHours, monthlyHours);
-    }, 1000);
+    const interval = setInterval(async () => {
+      const serverStats = await syncStudyTimeWithServer(60);
+      if (serverStats) {
+        updateStudyHoursLocally(serverStats.weeklyHours, serverStats.monthlyHours);
+      } else {
+        const local = incrementStudyTimeLocally(60);
+        updateStudyHoursLocally(local.weeklyHours, local.monthlyHours);
+      }
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [updateStudyHoursLocally]);

@@ -215,6 +215,9 @@ async function initializeDb() {
       await connection.query("ALTER TABLE `students` ADD COLUMN `onboardingComplete` int DEFAULT 0");
     } catch (e) {}
     try {
+      await connection.query("ALTER TABLE `students` ADD COLUMN `studyTimeByDay` json");
+    } catch (e) {}
+    try {
       await connection.query("ALTER TABLE `students` ADD COLUMN \`gradeLevel\` varchar(100) NOT NULL DEFAULT 'Grade 10'");
     } catch (e) {}
     try {
