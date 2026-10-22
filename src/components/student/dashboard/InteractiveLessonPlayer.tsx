@@ -499,7 +499,7 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
     });
     
     const percentage = Math.round((correctCount / questions.length) * 100);
-    const isCompleted = percentage >= 95;
+    const isCompleted = percentage >= 80;
     return { correctCount, percentage, isCompleted };
   }, [questions, answers, hasQuestions, aiEvaluations]);
 

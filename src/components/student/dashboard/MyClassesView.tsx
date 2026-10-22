@@ -223,15 +223,24 @@ export function MyClassesView() {
       // 3. Fetch Student Submissions
       const submissionsRes = await fetch("/api/student/submissions", { headers });
       const submissionsData = await submissionsRes.json();
-      if (submissionsData.success) {
-        setSubmissions(submissionsData.submissions);
+      let combinedSubmissions: any[] = [];
+      if (submissionsData.success && Array.isArray(submissionsData.submissions)) {
+        combinedSubmissions = submissionsData.submissions;
+        setSubmissions(combinedSubmissions);
       }
 
       const completedRes = await fetch("/api/student/completed-lessons", { headers });
       const completedData = await completedRes.json();
-      if (completedData.success && completedData.completedLessons) {
-        setCompletedLessons(completedData.completedLessons.map((cl: any) => cl.lessonId));
-      }
+      const completedFromDb: string[] = (completedData.success && Array.isArray(completedData.completedLessons))
+        ? completedData.completedLessons.map((cl: any) => cl.lessonId)
+        : [];
+
+      const completedFromSubmissions: string[] = combinedSubmissions
+        .filter((s: any) => (s.score >= 80 || s.status === "COMPLETED") && s.assessmentId)
+        .map((s: any) => s.assessmentId);
+
+      const allCompleted = Array.from(new Set([...completedFromDb, ...completedFromSubmissions]));
+      setCompletedLessons(allCompleted);
     } catch (err) {
       console.error("Failed to fetch student classes and assignments data:", err);
     } finally {
@@ -1143,6 +1152,7 @@ export function MyClassesView() {
           lesson={viewingLesson}
           onClose={() => setViewingLesson(null)}
           onSubmit={(id, title) => {
+            setCompletedLessons(prev => Array.from(new Set([...prev, id])));
             fetchAllData(); // Reload submissions list to reflect completed status and score
             reloadDashboard(); // Refresh global student dashboard store to sync grade, stats and promotion eligibility
             setViewingLesson(null);

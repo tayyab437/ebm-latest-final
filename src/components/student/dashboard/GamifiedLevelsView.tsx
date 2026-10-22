@@ -187,13 +187,23 @@ export function GamifiedLevelsView({
     updateNodePositions();
   }, [selectedNode]);
 
+  const isLessonComplete = (lessonId: string) => {
+    if (completedLessons && completedLessons.includes(lessonId)) return true;
+    const subs = submissions.filter(
+      (s) => (s.type === "CURRICULUM" || s.type === "curriculum_practice") && s.assessmentId === lessonId
+    );
+    if (subs.length === 0) return false;
+    const max = Math.max(...subs.map(s => s.score || 0));
+    return max >= 80 || subs.some(s => s.status === "COMPLETED");
+  };
+
   // Calculate user stats for this specific subject
   const totalLessons = lessons.length;
-  const lessonsCompleted = lessons.filter(curr => completedLessons.includes(curr.id)).length;
+  const lessonsCompleted = lessons.filter(curr => isLessonComplete(curr.id)).length;
   const progressPercent = totalLessons > 0 ? Math.round((lessonsCompleted / totalLessons) * 100) : 0;
   
   // Find current active level (first incomplete lesson)
-  const currentActiveIndex = lessons.findIndex(curr => !completedLessons.includes(curr.id));
+  const currentActiveIndex = lessons.findIndex(curr => !isLessonComplete(curr.id));
   const activeLevelIndex = currentActiveIndex === -1 ? (lessons.length > 0 ? lessons.length - 1 : 0) : currentActiveIndex;
 
   // Render continuous curved ribbon path for the levels
@@ -524,21 +534,16 @@ export function GamifiedLevelsView({
                 ? Math.max(...lessonSubmissions.map(s => s.score || 0)) 
                 : null;
               
-              const isCompleted = maxScore !== null && maxScore >= 95;
-              const isPracticed = maxScore !== null && maxScore < 95;
+              const isCompleted = isLessonComplete(lesson.id);
+              const isPracticed = !isCompleted && maxScore !== null && maxScore > 0;
               
               // Gamified lock logic: a level is unlocked if it is the first level,
-              // or if the previous level is completed (score >= 95).
+              // or if the previous level is completed (mastery >= 80% or marked completed).
               // Let's make it highly playful and satisfying. If user completed previous, unlock next.
-              // For safety and not blocking eager students, let's also allow any lesson that has a score or is unlocked in sequence.
               let isLocked = false;
               if (idx > 0) {
                 const prevLesson = lessons[idx - 1];
-                const prevSubmissions = submissions.filter(
-                  (s) => (s.type === "CURRICULUM" || s.type === "curriculum_practice") && s.assessmentId === prevLesson.id
-                );
-                const prevMaxScore = prevSubmissions.length > 0 ? Math.max(...prevSubmissions.map(s => s.score || 0)) : null;
-                const prevCompleted = prevMaxScore !== null && prevMaxScore >= 95;
+                const prevCompleted = isLessonComplete(prevLesson.id);
                 
                 // Lock if previous is not completed AND student hasn't attempted this current lesson before
                 if (!prevCompleted && lessonSubmissions.length === 0) {
