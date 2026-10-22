@@ -2583,8 +2583,8 @@ app.post("/api/student/submissions", async (req, res) => {
           fileUrl: fileUrl || existingAssignmentSub[0].fileUrl,
         }).where(eq(schema.submissions.id, existingId));
 
-        await recalculateStudentPerformance(db, studentId);
-        if (studentId) await checkAndPromoteStudent(studentId);
+        recalculateStudentPerformance(db, studentId).catch(() => {});
+        if (studentId) checkAndPromoteStudent(studentId).catch(() => {});
 
         return res.json({ success: true, submission: { ...existingAssignmentSub[0], score: numScore, status: status || "SUBMITTED" } });
       }
@@ -2613,8 +2613,8 @@ app.post("/api/student/submissions", async (req, res) => {
           submittedAt: new Date(),
         }).where(eq(schema.submissions.id, existingId));
 
-        await recalculateStudentPerformance(db, studentId);
-        if (studentId) await checkAndPromoteStudent(studentId);
+        recalculateStudentPerformance(db, studentId).catch(() => {});
+        if (studentId) checkAndPromoteStudent(studentId).catch(() => {});
 
         return res.json({ success: true, submission: { ...existingCurriculumSub[0], score: bestScore } });
       }
@@ -2640,11 +2640,11 @@ app.post("/api/student/submissions", async (req, res) => {
     await db.insert(schema.submissions).values(newSubmission);
     
     // Recalculate performance score only for this student
-    await recalculateStudentPerformance(db, studentId);
+    recalculateStudentPerformance(db, studentId).catch(() => {});
     
     // Check for promotion
     if (studentId) {
-      await checkAndPromoteStudent(studentId);
+      checkAndPromoteStudent(studentId).catch(() => {});
     }
 
     res.json({ success: true, submission: newSubmission });
