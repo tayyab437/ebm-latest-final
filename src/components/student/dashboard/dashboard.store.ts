@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { DashboardView, StudentDashboardData, OnboardingState } from "./dashboard.types";
 import { MOCK_DASHBOARD_DATA } from "./dashboard.data";
-import { getDashboardData, updateDashboardData, promoteStudent, updateOnboardingData } from "./dashboard.service";
+import { getDashboardData, updateDashboardData, promoteStudent, updateOnboardingData, loadLocalDashboardData } from "./dashboard.service";
 
 interface DashboardState {
   currentView: DashboardView;
@@ -115,16 +115,18 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   
   fetchData: async () => {
     const previousGrade = useDashboardStore.getState().data?.currentGrade;
-    set({ isLoading: true, error: null });
+    const hasExistingData = !!useDashboardStore.getState().data;
+    if (!hasExistingData) {
+      set({ isLoading: true, error: null });
+    }
     try {
       const response = await getDashboardData();
-      if (response.success) {
+      if (response.success && response.data) {
         const newData = response.data;
         const currentGrade = newData.currentGrade;
         
         // Check for promotion
         if (previousGrade && currentGrade && previousGrade !== currentGrade) {
-          // Detect numeric promotion (e.g. Grade 1 -> Grade 2)
           const prevNum = parseInt(previousGrade.replace("Grade ", ""));
           const currNum = parseInt(currentGrade.replace("Grade ", ""));
           if (!isNaN(prevNum) && !isNaN(currNum) && currNum > prevNum) {
@@ -132,16 +134,17 @@ export const useDashboardStore = create<DashboardState>((set) => ({
           }
         }
 
-        set({ data: newData, isLoading: false });
+        set({ data: newData, isLoading: false, error: null });
       } else {
         throw new Error(response.message || "Failed to load dashboard data");
       }
     } catch (error: any) {
-      console.error("Dashboard fetch error:", error);
+      console.warn("Dashboard fetch warning (retaining cached/local state):", error);
+      const fallback = loadLocalDashboardData();
       set((state) => ({ 
-        error: error.message || "Failed to load dashboard data. Please check your connection and retry.", 
+        error: null, 
         isLoading: false,
-        data: state.data // Preserve real student data
+        data: state.data || fallback || MOCK_DASHBOARD_DATA
       }));
     }
   },

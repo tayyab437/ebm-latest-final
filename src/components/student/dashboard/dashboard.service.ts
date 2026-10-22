@@ -4,7 +4,7 @@ import { getStudyHoursForCurrentWeek, getStudyHoursForCurrentMonth } from "./stu
 
 const API_BASE = "/api/student/dashboard";
 
-function loadLocalDashboardData(): StudentDashboardData | null {
+export function loadLocalDashboardData(): StudentDashboardData | null {
   const cached = localStorage.getItem("ebm_dashboard_data_cache");
   if (!cached) return null;
   try {

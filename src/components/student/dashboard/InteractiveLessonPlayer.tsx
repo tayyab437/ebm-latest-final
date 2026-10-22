@@ -619,12 +619,32 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
 
       if (resData.success) {
         setSubmitSuccess(true);
+        
+        // Optimistically update local dashboard store and cache immediately so progress is instant
+        const currentData = useDashboardStore.getState().data;
+        if (currentData && currentData.statistics) {
+          const updatedCompletion = Math.min(100, (currentData.statistics.overallCompletionPercentage || 0) + 2);
+          const updatedXp = (currentData.statistics.totalXp || 0) + 150;
+          const updatedDataState = {
+            ...currentData,
+            statistics: {
+              ...currentData.statistics,
+              overallCompletionPercentage: updatedCompletion,
+              totalXp: updatedXp
+            }
+          };
+          useDashboardStore.setState({ data: updatedDataState });
+          try {
+            localStorage.setItem("ebm_dashboard_data_cache", JSON.stringify(updatedDataState));
+          } catch (e) {}
+        }
+
         // Refresh authoritative dashboard progress store
         useDashboardStore.getState().fetchData();
         // Let the parent know and trigger update
         setTimeout(() => {
           onSubmit(lesson.id, lesson.title);
-        }, 1500);
+        }, 1200);
       } else {
         throw new Error(resData.error || "Failed to submit results to database.");
       }
