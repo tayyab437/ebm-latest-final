@@ -27,7 +27,7 @@ export function DashboardHeader() {
   const dateString = today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
   return (
-    <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/50 px-4 md:px-6 h-16 flex items-center justify-between shrink-0">
+    <header className="sticky top-0 z-40 bg-white border-b border-slate-200/80 px-4 md:px-6 h-16 flex items-center justify-between shrink-0 shadow-2xs">
       {/* Mobile Toggle & Welcome */}
       <div className="flex items-center gap-4">
         <button 
@@ -115,10 +115,10 @@ export function DashboardHeader() {
           {isNotificationsOpen && (
             <div 
               id="notifications-dropdown-panel"
-              className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl border border-slate-200/65 shadow-xl z-[90] overflow-hidden animate-fade-in text-left"
+              className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl border border-slate-200/90 shadow-2xl z-[100] isolate overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-left"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Notifications</span>
                   {unreadCount > 0 && (
@@ -140,9 +140,9 @@ export function DashboardHeader() {
               </div>
 
               {/* List */}
-              <div className="max-h-[320px] overflow-y-auto divide-y divide-slate-100 custom-scrollbar">
+              <div className="max-h-[320px] overflow-y-auto divide-y divide-slate-100 custom-scrollbar bg-white">
                 {notificationsList.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                  <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white">
                     <div className="p-3 bg-slate-50 rounded-full mb-3 text-slate-300">
                       <Check className="h-6 w-6" />
                     </div>
@@ -172,7 +172,7 @@ export function DashboardHeader() {
                         key={notif.id} 
                         className={clsx(
                           "p-4 transition-colors flex gap-3 items-start relative group",
-                          notif.read ? "bg-white hover:bg-slate-50/30" : "bg-amber-50/20 hover:bg-amber-50/40"
+                          notif.read ? "bg-white hover:bg-slate-50" : "bg-amber-50/90 hover:bg-amber-100/90 border-l-4 border-l-amber-500"
                         )}
                       >
                         {/* Status Icon */}
