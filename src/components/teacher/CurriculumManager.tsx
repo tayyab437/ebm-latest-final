@@ -181,7 +181,11 @@ export function CurriculumManager() {
   const [newQuestionType, setNewQuestionType] = useState<"MCQ" | "SHORT" | "FIB" | "ACTIVITY">("MCQ");
   const [newQuestionOptions, setNewQuestionOptions] = useState<string[]>(["", ""]);
   const [newQuestionAnswer, setNewQuestionAnswer] = useState("");
+  const [newSectionTitle, setNewSectionTitle] = useState("");
+  const [newQuestionNumber, setNewQuestionNumber] = useState("");
+  const [newQuestionContext, setNewQuestionContext] = useState("");
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [editingSectionHeader, setEditingSectionHeader] = useState<{ oldTitle: string; currentTitle: string } | null>(null);
   const [saveStatus, setSaveStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   // Quiz interactive practice state
@@ -364,6 +368,26 @@ export function CurriculumManager() {
     setIsModalOpen(true);
   };
 
+  // Bulk update section title across all questions sharing oldSectionTitle
+  const handleUpdateSectionTitle = (oldSectionTitle: string, newTitle: string) => {
+    const trimmed = newTitle.trim();
+    if (!trimmed) return;
+    setFormQuestions((prev) =>
+      prev.map((q) => {
+        const currentSec = q.sectionTitle || q.section || "";
+        if (currentSec === oldSectionTitle) {
+          return {
+            ...q,
+            sectionTitle: trimmed,
+            section: trimmed,
+          };
+        }
+        return q;
+      })
+    );
+    setEditingSectionHeader(null);
+  };
+
   // Add/Update Question in Form List
   const handleAddQuestionToForm = () => {
     if (!newQuestionText.trim()) return;
@@ -376,6 +400,10 @@ export function CurriculumManager() {
                 ...q,
                 question: newQuestionText.trim(),
                 type: newQuestionType,
+                sectionTitle: newSectionTitle.trim() || undefined,
+                section: newSectionTitle.trim() || undefined,
+                questionNumber: newQuestionNumber.trim() || undefined,
+                context: newQuestionContext.trim() || undefined,
                 options: (newQuestionType === "MCQ" || newQuestionType === "FIB") ? newQuestionOptions.filter((o) => o.trim() !== "") : undefined,
                 correctAnswer: newQuestionAnswer.trim(),
               }
@@ -388,6 +416,10 @@ export function CurriculumManager() {
         id: "q_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
         question: newQuestionText.trim(),
         type: newQuestionType,
+        sectionTitle: newSectionTitle.trim() || undefined,
+        section: newSectionTitle.trim() || undefined,
+        questionNumber: newQuestionNumber.trim() || undefined,
+        context: newQuestionContext.trim() || undefined,
         options: (newQuestionType === "MCQ" || newQuestionType === "FIB") ? newQuestionOptions.filter((o) => o.trim() !== "") : undefined,
         correctAnswer: newQuestionAnswer.trim()
       };
@@ -396,6 +428,9 @@ export function CurriculumManager() {
 
     // Reset sub-editor fields
     setNewQuestionText("");
+    setNewSectionTitle("");
+    setNewQuestionNumber("");
+    setNewQuestionContext("");
     setNewQuestionOptions(["", ""]);
     setNewQuestionAnswer("");
   };
@@ -403,6 +438,9 @@ export function CurriculumManager() {
   const handleEditQuestionInForm = (q: Question) => {
     setNewQuestionText(q.question);
     setNewQuestionType(q.type);
+    setNewSectionTitle(q.sectionTitle || q.section || "");
+    setNewQuestionNumber(q.questionNumber || "");
+    setNewQuestionContext(q.context || "");
     setNewQuestionOptions(q.options || ["", ""]);
     setNewQuestionAnswer(q.correctAnswer || "");
     setEditingQuestionId(q.id);
@@ -411,12 +449,15 @@ export function CurriculumManager() {
   const handleCancelEditQuestion = () => {
     setEditingQuestionId(null);
     setNewQuestionText("");
+    setNewSectionTitle("");
+    setNewQuestionNumber("");
+    setNewQuestionContext("");
     setNewQuestionOptions(["", ""]);
     setNewQuestionAnswer("");
   };
 
   const handleQuestionEditorKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleAddQuestionToForm();
     }
@@ -427,6 +468,9 @@ export function CurriculumManager() {
     if (editingQuestionId === id) {
       setEditingQuestionId(null);
       setNewQuestionText("");
+      setNewSectionTitle("");
+      setNewQuestionNumber("");
+      setNewQuestionContext("");
       setNewQuestionOptions(["", ""]);
       setNewQuestionAnswer("");
     }
@@ -2190,16 +2234,26 @@ export function CurriculumManager() {
                               </div>
 
                               <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                                {/* Question Text */}
-                                <div className="md:col-span-8">
-                                  <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Question Text</label>
+                                {/* Section Title & Question Number */}
+                                <div className="md:col-span-6">
+                                  <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Section Title / Header</label>
                                   <input
                                     type="text"
-                                    value={newQuestionText}
-                                    onChange={(e) => setNewQuestionText(e.target.value)}
-                                    onKeyDown={handleQuestionEditorKeyDown}
-                                    className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200"
-                                    placeholder="e.g. What is 25 + 15?"
+                                    value={newSectionTitle}
+                                    onChange={(e) => setNewSectionTitle(e.target.value)}
+                                    className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 font-medium"
+                                    placeholder="e.g. Part A: Quick Addition"
+                                  />
+                                </div>
+
+                                <div className="md:col-span-2">
+                                  <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Q. No.</label>
+                                  <input
+                                    type="text"
+                                    value={newQuestionNumber}
+                                    onChange={(e) => setNewQuestionNumber(e.target.value)}
+                                    className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 font-mono font-bold"
+                                    placeholder="e.g. 1"
                                   />
                                 </div>
 
@@ -2216,6 +2270,31 @@ export function CurriculumManager() {
                                     <option value="FIB">Fill in the Blanks (FIB)</option>
                                     <option value="ACTIVITY">Drawing / Practical Activity</option>
                                   </select>
+                                </div>
+
+                                {/* Question Text */}
+                                <div className="md:col-span-12">
+                                  <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Question Text *</label>
+                                  <input
+                                    type="text"
+                                    value={newQuestionText}
+                                    onChange={(e) => setNewQuestionText(e.target.value)}
+                                    onKeyDown={handleQuestionEditorKeyDown}
+                                    className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200"
+                                    placeholder="e.g. What is 25 + 15?"
+                                  />
+                                </div>
+
+                                {/* Context / Reference Material Textarea */}
+                                <div className="md:col-span-12">
+                                  <label className="block text-[10px] font-bold text-slate-500 mb-0.5">Reference Context / Data Table / Passage (Optional)</label>
+                                  <textarea
+                                    rows={2}
+                                    value={newQuestionContext}
+                                    onChange={(e) => setNewQuestionContext(e.target.value)}
+                                    className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 font-mono text-[11px]"
+                                    placeholder="e.g. Fruit  Number\nApple  4\nBanana  3"
+                                  />
                                 </div>
 
                                 {newQuestionType === "FIB" && (
@@ -2277,7 +2356,7 @@ export function CurriculumManager() {
                                     value={newQuestionAnswer}
                                     onChange={(e) => setNewQuestionAnswer(e.target.value)}
                                     onKeyDown={handleQuestionEditorKeyDown}
-                                    className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200"
+                                    className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200 font-bold"
                                     placeholder="e.g. 40 or Blue Blocks"
                                   />
                                 </div>
@@ -2287,14 +2366,14 @@ export function CurriculumManager() {
                                 <button
                                   type="button"
                                   onClick={handleAddQuestionToForm}
-                                  className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-lg transition-colors border border-amber-600 shadow-xs"
+                                  className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-lg transition-colors border border-amber-600 shadow-xs cursor-pointer"
                                 >
                                   <Save className="h-3.5 w-3.5" /> Save Changes
                                 </button>
                                 <button
                                   type="button"
                                   onClick={handleCancelEditQuestion}
-                                  className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-lg transition-colors border border-slate-200"
+                                  className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-lg transition-colors border border-slate-200 cursor-pointer"
                                 >
                                   Cancel
                                 </button>
@@ -2310,17 +2389,69 @@ export function CurriculumManager() {
                         return (
                           <React.Fragment key={q.id}>
                             {showSectionHeader && (
-                              <div className="pt-2 pb-1">
-                                <span className="text-[10px] font-black text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded uppercase tracking-wide">
-                                  {currentSection}
-                                </span>
+                              <div className="pt-3 pb-1.5">
+                                {editingSectionHeader?.oldTitle === currentSection ? (
+                                  <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 p-2 rounded-xl">
+                                    <span className="text-[10px] font-black uppercase text-indigo-800 shrink-0">Edit Section:</span>
+                                    <input
+                                      type="text"
+                                      value={editingSectionHeader.currentTitle}
+                                      onChange={(e) => setEditingSectionHeader({ ...editingSectionHeader, currentTitle: e.target.value })}
+                                      className="flex-1 text-xs p-1.5 bg-white border border-indigo-300 rounded font-bold text-indigo-900 focus:outline-none"
+                                      autoFocus
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => handleUpdateSectionTitle(editingSectionHeader.oldTitle, editingSectionHeader.currentTitle)}
+                                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded shadow-xs cursor-pointer flex items-center gap-1"
+                                    >
+                                      <Check className="h-3.5 w-3.5" /> Save
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingSectionHeader(null)}
+                                      className="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded cursor-pointer"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-between bg-gradient-to-r from-indigo-50 via-slate-50 to-white border border-indigo-100/80 px-3 py-1.5 rounded-xl shadow-2xs group">
+                                    <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wide flex items-center gap-1.5">
+                                      <BookOpen className="h-3.5 w-3.5 text-indigo-600" />
+                                      {currentSection}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingSectionHeader({ oldTitle: currentSection, currentTitle: currentSection })}
+                                      className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 bg-white hover:bg-indigo-100/60 border border-indigo-200 px-2 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+                                      title="Rename this Section Title across all questions in this section"
+                                    >
+                                      <Edit2 className="h-3 w-3" /> Edit Section Title
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             )}
-                            <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl flex items-start gap-3 justify-between">
+
+                            {q.context && (qIdx === 0 || formQuestions[qIdx - 1]?.context !== q.context) && (
+                              <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-2.5 my-1.5 space-y-1">
+                                <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                  <span className="flex items-center gap-1 text-slate-700">
+                                    <FileText className="h-3 w-3 text-indigo-600" /> Reference Context / Table Data
+                                  </span>
+                                </div>
+                                <div className="font-mono text-[11px] whitespace-pre-wrap bg-white p-2 rounded border border-slate-200 text-slate-800">
+                                  {q.context}
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl flex items-start gap-3 justify-between hover:border-blue-200 transition-colors">
                               <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-1.5 mb-1 text-[10px]">
-                                  <span className="font-bold text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded text-[9px]">
-                                    Q{qIdx + 1}
+                                <div className="flex items-center gap-1.5 mb-1 text-[10px] flex-wrap">
+                                  <span className="font-bold text-slate-500 bg-slate-200 px-1.5 py-0.5 rounded text-[9px] font-mono">
+                                    {q.questionNumber ? `Q#${q.questionNumber}` : `Q${qIdx + 1}`}
                                   </span>
                                   <span className="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[9px]">
                                     {q.type}
@@ -2331,8 +2462,8 @@ export function CurriculumManager() {
                                     </span>
                                   )}
                                   {q.correctAnswer && (
-                                    <span className="text-emerald-700 font-semibold">
-                                      Correct Answer: {q.correctAnswer}
+                                    <span className="text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded text-[9px] border border-emerald-200">
+                                      Key: {q.correctAnswer}
                                     </span>
                                   )}
                                 </div>
@@ -2370,7 +2501,7 @@ export function CurriculumManager() {
                                 <button
                                   type="button"
                                   onClick={() => handleEditQuestionInForm(q)}
-                                  className="p-1.5 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                  className="p-1.5 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
                                   title="Edit Question"
                                 >
                                   <Edit2 className="h-4 w-4" />
@@ -2378,7 +2509,7 @@ export function CurriculumManager() {
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveQuestionFromForm(q.id)}
-                                  className="p-1.5 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                  className="p-1.5 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                                   title="Delete Question"
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -2406,16 +2537,26 @@ export function CurriculumManager() {
                       </span>
 
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                        {/* Question Text */}
-                        <div className="md:col-span-8">
-                          <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Question Label</label>
+                        {/* Section Title & Question Number */}
+                        <div className="md:col-span-6">
+                          <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Section Title / Header (Optional)</label>
                           <input
                             type="text"
-                            value={newQuestionText}
-                            onChange={(e) => setNewQuestionText(e.target.value)}
-                            onKeyDown={handleQuestionEditorKeyDown}
-                            placeholder="e.g. What is 25 + 15?"
+                            value={newSectionTitle}
+                            onChange={(e) => setNewSectionTitle(e.target.value)}
+                            placeholder="e.g. Part A: Quick Addition"
                             className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Q. No.</label>
+                          <input
+                            type="text"
+                            value={newQuestionNumber}
+                            onChange={(e) => setNewQuestionNumber(e.target.value)}
+                            placeholder="e.g. 1"
+                            className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none font-mono"
                           />
                         </div>
 
@@ -2431,6 +2572,31 @@ export function CurriculumManager() {
                             <option value="SHORT">Short text input</option>
                             <option value="FIB">Fill in the Blanks (FIB)</option>
                           </select>
+                        </div>
+
+                        {/* Question Text */}
+                        <div className="md:col-span-12">
+                          <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Question Text *</label>
+                          <input
+                            type="text"
+                            value={newQuestionText}
+                            onChange={(e) => setNewQuestionText(e.target.value)}
+                            onKeyDown={handleQuestionEditorKeyDown}
+                            placeholder="e.g. What is 25 + 15?"
+                            className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none"
+                          />
+                        </div>
+
+                        {/* Context / Reference Textarea */}
+                        <div className="md:col-span-12">
+                          <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Reference Context / Data Table / Passage (Optional)</label>
+                          <textarea
+                            rows={2}
+                            value={newQuestionContext}
+                            onChange={(e) => setNewQuestionContext(e.target.value)}
+                            placeholder="e.g. Fruit  Number\nApple  4\nBanana  3"
+                            className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none font-mono text-[11px]"
+                          />
                         </div>
 
                         {newQuestionType === "FIB" && (
@@ -2466,7 +2632,7 @@ export function CurriculumManager() {
                                       onClick={() => {
                                         setNewQuestionOptions(prev => prev.filter((_, i) => i !== idx));
                                       }}
-                                      className="absolute right-2 text-slate-400 hover:text-slate-600"
+                                      className="absolute right-2 text-slate-400 hover:text-slate-600 cursor-pointer"
                                     >
                                       <X className="h-3.5 w-3.5" />
                                     </button>
@@ -2476,7 +2642,7 @@ export function CurriculumManager() {
                               <button
                                 type="button"
                                 onClick={() => setNewQuestionOptions(prev => [...prev, ""])}
-                                className="px-2 py-1.5 border border-dashed border-blue-300 rounded text-xs text-blue-600 font-bold bg-white hover:bg-blue-50/50 flex items-center justify-center gap-1"
+                                className="px-2 py-1.5 border border-dashed border-blue-300 rounded text-xs text-blue-600 font-bold bg-white hover:bg-blue-50/50 flex items-center justify-center gap-1 cursor-pointer"
                               >
                                 <Plus className="h-3 w-3" /> Add Option
                               </button>
@@ -2493,7 +2659,7 @@ export function CurriculumManager() {
                             onChange={(e) => setNewQuestionAnswer(e.target.value)}
                             onKeyDown={handleQuestionEditorKeyDown}
                             placeholder="e.g. 40 or Blue Blocks"
-                            className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none"
+                            className="w-full text-xs p-2 bg-white rounded border border-slate-200 focus:outline-none font-bold"
                           />
                         </div>
                       </div>
@@ -2502,7 +2668,7 @@ export function CurriculumManager() {
                         <button
                           type="button"
                           onClick={handleAddQuestionToForm}
-                          className="flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 font-bold text-xs rounded-lg transition-colors border"
+                          className="flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors border border-blue-700 shadow-xs cursor-pointer"
                         >
                           <Plus className="h-4 w-4" /> Add Question to Curriculum
                         </button>
