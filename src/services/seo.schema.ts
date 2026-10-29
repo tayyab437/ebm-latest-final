@@ -374,29 +374,37 @@ export const ROUTE_REGISTRY: Record<string, RouteMetaConfig> = {
 /**
  * Generates the master Organization entity
  */
-export const getOrganizationSchema = () => ({
-  "@type": "EducationalOrganization",
-  "@id": ORGANIZATION_ID,
-  name: "Ejaz Bukhari Method",
-  alternateName: "EBM",
-  url: `${BASE_URL}/`,
-  logo: `${BASE_URL}/favicon.ico`,
-  description:
-    "EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools.",
-  sameAs: [
-    "https://www.facebook.com/syedejazbukhari/",
-    "https://www.instagram.com/syedejaz_bukhari/"
-  ],
-  contactPoint: [
-    {
-      "@type": "ContactPoint",
-      telephone: "+92-333-4541572",
-      contactType: "admissions and customer support",
-      email: "syedejazbukari@gmail.com",
-      availableLanguage: ["English", "Urdu"]
-    }
-  ]
-});
+export const getOrganizationSchema = () => {
+  const isClient = typeof window !== "undefined";
+  const branding = isClient ? ((window as any).__INITIAL_BRANDING__ || null) : null;
+  const logoUrl = branding?.logoImageUrl 
+    ? (branding.logoImageUrl.startsWith("http") ? branding.logoImageUrl : `${BASE_URL}${branding.logoImageUrl}`)
+    : `${BASE_URL}/uploads/branding-logo.png`;
+
+  return {
+    "@type": "EducationalOrganization",
+    "@id": ORGANIZATION_ID,
+    name: "Ejaz Bukhari Method",
+    alternateName: "EBM",
+    url: `${BASE_URL}/`,
+    logo: logoUrl,
+    description:
+      "EBM is a personalized learning platform for students from Grade 1 to O/A Levels, combining structured learning, skill development, personalized guidance, and AI-enhanced educational tools.",
+    sameAs: [
+      "https://www.facebook.com/syedejazbukhari/",
+      "https://www.instagram.com/syedejaz_bukhari/"
+    ],
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: "+92-333-4541572",
+        contactType: "admissions and customer support",
+        email: "syedejazbukari@gmail.com",
+        availableLanguage: ["English", "Urdu"]
+      }
+    ]
+  };
+};
 
 /**
  * Generates the master WebSite entity

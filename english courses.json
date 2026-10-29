@@ -1,0 +1,2517 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EBM Digital Learning Master Prompt & English Course Ingestion Specification",
+  "version": "2.4.0",
+  "description": "Master prompt instructions, architecture specification, schema constraints, and 52 production-ready curriculum upload scenarios for English courses across Kindergarten, Grades 1-12, ESL, Cambridge O-Level, and Cambridge A-Level.",
+  
+  "master_prompt": {
+    "role": "Senior Educational Curriculum Architect & EBM Assessment Engineer",
+    "mission": "Generate, validate, and upload rigorous, pedagogically sound, and interactive English curriculum courses into the Ejaz Bukhari Method (EBM) digital learning database. Every course must integrate narrative engagement, explicit skill focus, real-world connections, differentiated question types, and resilient multi-option answer keys to support both deterministic grading and AI semantic evaluation.",
+    "core_principles": [
+      "No Placeholder Content: All passages, reading excerpts, questions, and explanations must be complete, high-quality, and instructional.",
+      "Resilient Answer Keys: Include exact matching answers, accepted variations (synonyms, American vs British spelling, contraction variants), and clear explanations.",
+      "80% Mastery Standard: Every course must be designed around EBM's 80% mastery benchmark to ensure student progression and node unlocking in the Gamified Levels View.",
+      "Multi-Format Pedagogy: Integrate MCQs, Fill-In-The-Blanks (FIB), Short Answer (Inference/Analysis), and Interactive Activity tasks across Bloom's Taxonomy.",
+      "Cambridge & K-12 Alignment: Support progressive standards from phonemic awareness in early years to rhetorical and stylistic analysis in O/A Levels."
+    ]
+  },
+
+  "database_schema_specification": {
+    "target_table": "curriculum",
+    "fields": {
+      "id": {
+        "type": "string",
+        "format": "varchar(100)",
+        "description": "Unique curriculum ID (e.g., 'curr_eng_g1_phonics_01' or generated 'curr_' + timestamp).",
+        "required": true
+      },
+      "classId": {
+        "type": "string | null",
+        "format": "varchar(100)",
+        "description": "Specific class identifier (e.g., 'class_grade_1', 'class_o_level') or null for grade-wide availability.",
+        "required": false
+      },
+      "title": {
+        "type": "string",
+        "format": "varchar(255)",
+        "description": "Clear, student-facing lesson/course title.",
+        "required": true
+      },
+      "subject": {
+        "type": "string",
+        "format": "varchar(100)",
+        "enum": ["ENGLISH"],
+        "description": "Must be strictly 'ENGLISH' to route correctly into English learning pathways and cards.",
+        "required": true
+      },
+      "gradeLevel": {
+        "type": "string",
+        "format": "varchar(100)",
+        "enum": [
+          "Kindergarten",
+          "Grade 1",
+          "Grade 2",
+          "Grade 3",
+          "Grade 4",
+          "Grade 5",
+          "Grade 6",
+          "Grade 7",
+          "Grade 8",
+          "Grade 9",
+          "Grade 10",
+          "Grade 11",
+          "Grade 12",
+          "O-Level",
+          "A-Level"
+        ],
+        "description": "Academic tier for curriculum mapping, certificate generation, and auto-promotion.",
+        "required": true
+      },
+      "type": {
+        "type": "string",
+        "format": "varchar(50)",
+        "enum": ["COMPREHENSION", "PRACTICE_QUESTION", "DIAGNOSTIC", "WRITING_LAB"],
+        "description": "Pedagogical modality.",
+        "default": "COMPREHENSION"
+      },
+      "unitTitle": {
+        "type": "string",
+        "format": "varchar(255)",
+        "description": "Curricular unit grouping (e.g., 'Unit 2: Narrative Reading & Inferences').",
+        "required": true
+      },
+      "skillFocus": {
+        "type": "string",
+        "format": "text",
+        "description": "Core competencies targeted (e.g., 'Main Idea, Direct Quotations, Inference, Context Clues').",
+        "required": true
+      },
+      "lifeConnection": {
+        "type": "string",
+        "format": "text",
+        "description": "Real-world emotional, practical, or ethical connection explaining why this skill matters in daily life.",
+        "required": true
+      },
+      "content": {
+        "type": "string",
+        "format": "text",
+        "description": "Full lesson content, reading passage, narrative excerpt, or grammar concept explanation in clean Markdown.",
+        "required": true
+      },
+      "questions": {
+        "type": "array",
+        "format": "json",
+        "description": "Array of question objects.",
+        "required": true,
+        "items": {
+          "id": "string",
+          "questionNumber": "string",
+          "sectionTitle": "string",
+          "context": "string (optional stimulus/excerpt)",
+          "question": "string",
+          "type": "MCQ | SHORT | FIB | ACTIVITY",
+          "options": "string[] (required if MCQ)",
+          "correctAnswer": "string",
+          "acceptedAnswers": "string[]",
+          "explanation": "string"
+        }
+      },
+      "duration": {
+        "type": "integer",
+        "description": "Estimated completion duration in minutes (typically 15 to 45).",
+        "default": 30
+      },
+      "thumbnailUrl": {
+        "type": "string",
+        "format": "text",
+        "description": "Unsplash or CDN imagery URL representing English literacy, reading, or the lesson theme.",
+        "default": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80"
+      },
+      "isDiagnostic": {
+        "type": "integer",
+        "enum": [0, 1],
+        "description": "0 for standard progression lessons; 1 for diagnostic assessments that do not block gamified map progression.",
+        "default": 0
+      },
+      "price": {
+        "type": "string | null",
+        "description": "Optional pricing or enrollment tag (e.g., 'Free', 'Included', '$25').",
+        "default": "Included"
+      },
+      "whatsappNumber": {
+        "type": "string | null",
+        "description": "Support or counselor WhatsApp contact for student onboarding inquiries.",
+        "default": "+923304541573"
+      }
+    }
+  },
+
+  "upload_methods": {
+    "method_1_api_direct_json": {
+      "endpoint": "POST /api/curriculum/parse",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer <TEACHER_OR_ADMIN_JWT_TOKEN>"
+      },
+      "payload_structure": {
+        "filetype": "json",
+        "content": "<STRINGIFIED_OR_OBJECT_JSON>",
+        "classId": "optional_override_class_id",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 4"
+      },
+      "response": {
+        "success": true,
+        "item": "<CREATED_CURRICULUM_OBJECT>"
+      }
+    },
+    "method_2_api_raw_text_ai_parser": {
+      "endpoint": "POST /api/curriculum/parse",
+      "description": "Accepts raw text or docx containing passage text and an Answer Key block; Gemini auto-extracts metadata and questions.",
+      "payload_structure": {
+        "filetype": "txt",
+        "comprehensionText": "### SECTION 1: COMPREHENSION WITH QUESTIONS AND MCQS\n...\n### SECTION 2: ANSWER KEY\n..."
+      }
+    },
+    "method_3_teacher_dashboard_ui": {
+      "route": "/teacher/curriculum",
+      "steps": [
+        "1. Log in with teacher or admin credentials.",
+        "2. Open the Curriculum / Lesson Management hub.",
+        "3. Click 'Upload New Curriculum' or 'JSON Import'.",
+        "4. Paste the JSON scenario or upload the .json file.",
+        "5. Review auto-parsed questions and verify answer keys.",
+        "6. Click 'Publish to Class' to immediately make it live for students."
+      ]
+    }
+  },
+
+  "scenarios": [
+    {
+      "id": "scenario_01",
+      "category": "Kindergarten & Early Literacy",
+      "scenario_name": "Phonics: Letter Sounds and CVC Word Families (-at family)",
+      "pedagogical_target": "Phonemic awareness, initial sound substitution, and rhyming decoding.",
+      "payload": {
+        "title": "Phonics Fun: The '-at' Word Family",
+        "subject": "ENGLISH",
+        "gradeLevel": "Kindergarten",
+        "unitTitle": "Unit 1: Early Sound Exploration",
+        "skillFocus": "Decoding CVC words, rhyming recognition, letter-sound correspondence",
+        "lifeConnection": "Helps young learners read signs, storybooks, and pet names in their everyday world.",
+        "duration": 15,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80",
+        "isDiagnostic": 0,
+        "content": "# The Cat on the Mat\n\nLook at the big black cat! The cat has a tiny hat. The cat sat on a soft red mat. Along came a small brown rat. The cat saw the rat and sat still. They had a friendly chat on the mat!",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Word Family Identification",
+            "question": "Which word from the story belongs to the '-at' word family?",
+            "type": "MCQ",
+            "options": ["dog", "cat", "sun", "pig"],
+            "correctAnswer": "cat",
+            "acceptedAnswers": ["cat", "Hat", "Mat", "Rat"],
+            "explanation": "'Cat' ends with the '-at' sound."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part A: Word Family Identification",
+            "question": "Where did the cat sit? The cat sat on the _____.",
+            "type": "FIB",
+            "correctAnswer": "mat",
+            "acceptedAnswers": ["mat", "red mat", "a mat"],
+            "explanation": "The story tells us: 'The cat sat on a soft red mat.'"
+          },
+          {
+            "questionNumber": "3",
+            "sectionTitle": "Part B: Interactive Sound Blending",
+            "question": "If you replace the letter 'c' in 'cat' with the letter 'b', what new word do you make?",
+            "type": "SHORT",
+            "correctAnswer": "bat",
+            "acceptedAnswers": ["bat", "Bat"],
+            "explanation": "b + at = bat."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_02",
+      "category": "Kindergarten & Early Literacy",
+      "scenario_name": "High-Frequency Sight Words (the, see, like, we)",
+      "pedagogical_target": "Instant visual word recognition and basic reading fluency.",
+      "payload": {
+        "title": "Sight Words in Action: We Like to See",
+        "subject": "ENGLISH",
+        "gradeLevel": "Kindergarten",
+        "unitTitle": "Unit 2: Sight Word Foundations",
+        "skillFocus": "Instant recognition of core Dolch pre-primer sight words",
+        "lifeConnection": "Spotting common words on classroom posters, road signs, and bedtime stories.",
+        "duration": 15,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80",
+        "content": "We like the park. We see the big green tree. We see the yellow birds. We like to run and play together.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Sight Word Hunt",
+            "question": "Complete the sentence from the reading: 'We _____ the big green tree.'",
+            "type": "MCQ",
+            "options": ["see", "hear", "bite", "fly"],
+            "correctAnswer": "see",
+            "acceptedAnswers": ["see", "See"],
+            "explanation": "The story says 'We see the big green tree.'"
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Sentence Completion",
+            "question": "Spell the sight word used to describe a group that includes you: '_____ like to run.'",
+            "type": "SHORT",
+            "correctAnswer": "We",
+            "acceptedAnswers": ["We", "we"],
+            "explanation": "'We' refers to the speaker and others together."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_03",
+      "category": "Grade 1 Foundational Literacy",
+      "scenario_name": "Capitalization & End Punctuation (Period & Question Mark)",
+      "pedagogical_target": "Sentence boundary awareness, capital letters for sentence starts, and punctuation marks.",
+      "payload": {
+        "title": "Sentence Superheroes: Capital Letters & Full Stops",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 1",
+        "unitTitle": "Unit 1: Sentence Building",
+        "skillFocus": "Identifying capitalization rules and end marks (. and ?)",
+        "lifeConnection": "Writing clean notes and birthday cards that are easy for friends and family to understand.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80",
+        "content": "A complete sentence always starts with a capital letter. When you tell something, end it with a period (.). When you ask something, end it with a question mark (?).\n\nExample 1: The sun is shining.\nExample 2: Where is my blue notebook?",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Punctuation Selection",
+            "question": "Which punctuation mark should go at the end of this sentence: 'Can you help me find my backpack'",
+            "type": "MCQ",
+            "options": ["?", ".", "!", ","],
+            "correctAnswer": "?",
+            "acceptedAnswers": ["?", "question mark", "Question mark"],
+            "explanation": "This sentence is asking something, so it requires a question mark."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Sentence Correction",
+            "question": "Fix the capitalization error in this sentence: 'my puppy loves to chase butterflies.'",
+            "type": "SHORT",
+            "correctAnswer": "My puppy loves to chase butterflies.",
+            "acceptedAnswers": [
+              "My puppy loves to chase butterflies.",
+              "My puppy loves to chase butterflies",
+              "My"
+            ],
+            "explanation": "Every sentence must start with a capital letter: 'My'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_04",
+      "category": "Grade 1 Foundational Literacy",
+      "scenario_name": "Reading Comprehension: 'Sammy the Helpful Squirrel'",
+      "pedagogical_target": "Direct recall, character identification, and setting recognition in narrative text.",
+      "payload": {
+        "title": "Sammy the Helpful Squirrel",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 1",
+        "unitTitle": "Unit 2: Narrative Comprehension",
+        "skillFocus": "Who, What, Where comprehension recall",
+        "lifeConnection": "Teaching the value of teamwork and sharing with neighbors in your community.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=600&q=80",
+        "content": "Sammy is a busy squirrel who lives in an oak tree. When autumn arrives, Sammy gathers acorns. His friend Bella the bunny lost her winter carrots. Sammy shared half of his acorns with Bella. Bella smiled and thanked Sammy for his warm kindness.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Story Facts",
+            "question": "Where does Sammy the squirrel live?",
+            "type": "MCQ",
+            "options": ["In an oak tree", "Under a bridge", "In a barn", "In a lake"],
+            "correctAnswer": "In an oak tree",
+            "acceptedAnswers": ["In an oak tree", "oak tree", "an oak tree"],
+            "explanation": "The text states: 'Sammy is a busy squirrel who lives in an oak tree.'"
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Character Actions",
+            "question": "What did Sammy share with Bella the bunny?",
+            "type": "SHORT",
+            "correctAnswer": "Acorns",
+            "acceptedAnswers": ["Acorns", "acorns", "his acorns", "half of his acorns"],
+            "explanation": "Sammy shared his acorns with his friend Bella."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_05",
+      "category": "Grade 2 Grammar & Vocabulary",
+      "scenario_name": "Nouns: Common vs Proper Nouns",
+      "pedagogical_target": "Distinguishing generic persons/places/things from specific capitalized proper names.",
+      "payload": {
+        "title": "Nouns Explorer: Common and Proper Names",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 2",
+        "unitTitle": "Unit 1: The World of Nouns",
+        "skillFocus": "Common vs. Proper noun classification and capitalization",
+        "lifeConnection": "Writing your address, your friends' names, and school titles accurately on documents.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80",
+        "content": "A **noun** is a naming word for a person, place, animal, or thing.\n- **Common nouns** name any general person, place, or thing (e.g., city, teacher, river).\n- **Proper nouns** name a specific person, place, or thing and ALWAYS begin with a capital letter (e.g., London, Mrs. Davis, Nile River).",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Classification",
+            "question": "Which of the following is a proper noun?",
+            "type": "MCQ",
+            "options": ["country", "Pakistan", "mountain", "student"],
+            "correctAnswer": "Pakistan",
+            "acceptedAnswers": ["Pakistan"],
+            "explanation": "Pakistan is the specific name of a country, so it is a proper noun."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Identification in Sentences",
+            "question": "Identify the proper noun in this sentence: 'David visits the library every Tuesday.'",
+            "type": "SHORT",
+            "correctAnswer": "David",
+            "acceptedAnswers": ["David", "David and Tuesday", "Tuesday", "David, Tuesday"],
+            "explanation": "'David' is a specific person's name and 'Tuesday' is a specific day."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_06",
+      "category": "Grade 2 Grammar & Vocabulary",
+      "scenario_name": "Action Verbs & Subject Agreement in Present Tense",
+      "pedagogical_target": "Recognizing physical and mental action words; matching singular vs plural subjects.",
+      "payload": {
+        "title": "Action Verbs: Bringing Sentences to Life",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 2",
+        "unitTitle": "Unit 2: Verbs & Tenses",
+        "skillFocus": "Action verb identification and singular/plural subject agreement (s / es endings)",
+        "lifeConnection": "Describing sports, hobbies, and family activities clearly.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=600&q=80",
+        "content": "A verb shows action. When the subject is one person or thing (singular), we usually add -s to the verb in the present tense.\n- One bird **sings**.\n- Two birds **sing**.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Verb Identification",
+            "question": "Choose the verb in this sentence: 'The kangaroo jumps over the wooden fence.'",
+            "type": "MCQ",
+            "options": ["kangaroo", "jumps", "wooden", "fence"],
+            "correctAnswer": "jumps",
+            "acceptedAnswers": ["jumps"],
+            "explanation": "'Jumps' is the action being performed."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Agreement",
+            "question": "Choose the correct verb form: 'She _____ (read/reads) a mystery story every evening.'",
+            "type": "SHORT",
+            "correctAnswer": "reads",
+            "acceptedAnswers": ["reads", "Reads"],
+            "explanation": "With the singular subject 'She', we use 'reads'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_07",
+      "category": "Grade 2 Reading Comprehension",
+      "scenario_name": "Classic Fable: 'The Tortoise and the Hare'",
+      "pedagogical_target": "Extracting theme, moral lessons, sequence of events, and character traits.",
+      "payload": {
+        "title": "Fable Studies: The Tortoise and the Hare",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 2",
+        "unitTitle": "Unit 3: Fables & Lessons",
+        "skillFocus": "Identifying theme, sequence of events, and character contrast",
+        "lifeConnection": "Understanding that persistence, steady effort, and humility succeed over boastful haste.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80",
+        "content": "The Hare always bragged about how fast he could run. Tired of hearing him boast, the slow-moving Tortoise challenged him to a race. The Hare dashed ahead and, feeling confident, took a nap under a shady tree. The Tortoise kept walking step by step without stopping. When the Hare woke up, the Tortoise had crossed the finish line first!",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Comprehension Recall",
+            "question": "Why did the Hare stop to nap during the race?",
+            "type": "MCQ",
+            "options": [
+              "He was overconfident and thought he had plenty of time",
+              "He twisted his ankle on a rock",
+              "The Tortoise told him to rest",
+              "It began raining heavily"
+            ],
+            "correctAnswer": "He was overconfident and thought he had plenty of time",
+            "acceptedAnswers": [
+              "He was overconfident and thought he had plenty of time",
+              "He was overconfident",
+              "He thought he had plenty of time"
+            ],
+            "explanation": "The Hare believed the Tortoise was so slow that he could sleep and still easily win."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Moral Deduction",
+            "question": "What is the famous lesson or moral of this fable? (Hint: Slow and steady...)",
+            "type": "SHORT",
+            "correctAnswer": "Slow and steady wins the race",
+            "acceptedAnswers": [
+              "Slow and steady wins the race",
+              "Slow and steady wins the race.",
+              "Persistence beats speed",
+              "Never give up"
+            ],
+            "explanation": "The fable teaches that continuous, calm effort achieves goals where boastfulness fails."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_08",
+      "category": "Grade 3 Vocabulary & Morphology",
+      "scenario_name": "Descriptive Adjectives & Sensory Details",
+      "pedagogical_target": "Identifying touch, taste, sound, sight, and smell descriptive words.",
+      "payload": {
+        "title": "Vivid Vocabulary: Sensory Adjectives",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 3",
+        "unitTitle": "Unit 1: Sensory Language",
+        "skillFocus": "Using sensory details to enrich descriptions",
+        "lifeConnection": "Enables children to write engaging journal entries and vivid stories.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80",
+        "content": "Adjectives describe nouns. Sensory adjectives tell us how things look, sound, smell, taste, or feel.\n- Look: **shimmering**, **gloomy**\n- Sound: **piercing**, **whispering**\n- Taste/Smell: **tangy**, **fragrant**\n- Touch: **coarse**, **silky**",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Sensory Categorization",
+            "question": "Which sensory adjective describes how a lemon tastes?",
+            "type": "MCQ",
+            "options": ["sour", "fluffy", "musical", "transparent"],
+            "correctAnswer": "sour",
+            "acceptedAnswers": ["sour", "Sour"],
+            "explanation": "Sour describes taste."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Sentence Improvement",
+            "question": "Identify the two adjectives in this sentence: 'The stormy wind shook the ancient oak tree.'",
+            "type": "SHORT",
+            "correctAnswer": "stormy and ancient",
+            "acceptedAnswers": ["stormy, ancient", "stormy and ancient", "stormy ancient"],
+            "explanation": "'Stormy' describes the wind and 'ancient' describes the tree."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_09",
+      "category": "Grade 3 Grammar",
+      "scenario_name": "Irregular Plural Nouns (child/children, tooth/teeth)",
+      "pedagogical_target": "Mastering non-standard plural noun transformations without adding -s.",
+      "payload": {
+        "title": "Mastering Irregular Plural Nouns",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 3",
+        "unitTitle": "Unit 2: Noun Variations",
+        "skillFocus": "Forming irregular plural nouns",
+        "lifeConnection": "Prevents common grammatical mistakes when speaking and writing in school and exams.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80",
+        "content": "Most nouns become plural by adding -s or -es (cat -> cats, box -> boxes). However, **irregular plural nouns** change their spelling completely or stay the same!\n- child -> **children**\n- tooth -> **teeth**\n- foot -> **feet**\n- mouse -> **mice**\n- sheep -> **sheep**",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Form Selection",
+            "question": "What is the correct plural form of the word 'child'?",
+            "type": "MCQ",
+            "options": ["childs", "childrens", "children", "childes"],
+            "correctAnswer": "children",
+            "acceptedAnswers": ["children"],
+            "explanation": "The plural of 'child' is 'children'."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Plural Conversion",
+            "question": "Write the plural form of 'foot': 'He bought shoes for both his _____.'",
+            "type": "FIB",
+            "correctAnswer": "feet",
+            "acceptedAnswers": ["feet", "Feet"],
+            "explanation": "The plural of 'foot' is 'feet'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_10",
+      "category": "Grade 3 Reading Comprehension",
+      "scenario_name": "Inference and Context Clues: 'The Mystery Footprints'",
+      "pedagogical_target": "Reading between the lines using textual clues and prior knowledge.",
+      "payload": {
+        "title": "Detective Reading: The Mystery Footprints",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 3",
+        "unitTitle": "Unit 3: Inferential Comprehension",
+        "skillFocus": "Drawing logical inferences from subtle story clues",
+        "lifeConnection": "Sharpens analytical thinking and observation in everyday problem-solving.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&w=600&q=80",
+        "content": "When Maya stepped into the garden at dawn, the ground was blanketed with crisp white frost. Near the tomato patch, she noticed curious tracks: three webbed toes pressed into the soft dirt leading directly toward the garden pond. A single gray feather drifted near the water's edge, and a soft 'quack' echoed from the reeds.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Evidence Inference",
+            "question": "Based on the clues in the passage, what creature made the footprints?",
+            "type": "MCQ",
+            "options": ["A dog", "A duck", "A rabbit", "A bear"],
+            "correctAnswer": "A duck",
+            "acceptedAnswers": ["A duck", "duck", "Duck"],
+            "explanation": "Webbed toes, a feather near a pond, and a 'quack' sound prove it was a duck."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Detail Extraction",
+            "question": "What time of day did Maya discover the footprints?",
+            "type": "SHORT",
+            "correctAnswer": "At dawn",
+            "acceptedAnswers": ["dawn", "At dawn", "in the morning", "early morning"],
+            "explanation": "The opening sentence mentions Maya stepped into the garden 'at dawn'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_11",
+      "category": "Grade 4 Non-Fiction Comprehension",
+      "scenario_name": "Science Explanatory Text: 'The Secret Architecture of Honeybees'",
+      "pedagogical_target": "Main idea, technical vocabulary in context, cause-and-effect relationships.",
+      "payload": {
+        "title": "Non-Fiction Focus: The Secret Architecture of Honeybees",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 4",
+        "unitTitle": "Unit 1: Informational Text Analysis",
+        "skillFocus": "Expository comprehension, cause and effect, technical vocabulary",
+        "lifeConnection": "Appreciating nature, biological ecosystems, and mathematics in architecture.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1470115636492-6d2b56f9146d?auto=format&fit=crop&w=600&q=80",
+        "content": "Inside a beehive, honeybees build wax honeycombs using hexagonal (six-sided) cells. Scientists and mathematicians have discovered that the hexagon is the most efficient geometric shape in existence. It requires the least amount of wax to produce while providing the maximum volume for storing honey and nectar. If bees built circular cells, gaps of wasted space would remain between each cell.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Main Idea",
+            "question": "Why do honeybees build hexagonal cells instead of circles?",
+            "type": "MCQ",
+            "options": [
+              "Hexagons use the least wax while holding the maximum honey with zero wasted space",
+              "Bees cannot fly in circles",
+              "Circles melt too quickly in the summer heat",
+              "The queen bee forces them to make six corners"
+            ],
+            "correctAnswer": "Hexagons use the least wax while holding the maximum honey with zero wasted space",
+            "acceptedAnswers": [
+              "Hexagons use the least wax while holding the maximum honey with zero wasted space",
+              "They use the least wax and leave no wasted space"
+            ],
+            "explanation": "Hexagons provide optimal structural efficiency without wasted gaps."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Vocabulary in Context",
+            "question": "How many sides does a hexagonal shape have?",
+            "type": "SHORT",
+            "correctAnswer": "6",
+            "acceptedAnswers": ["6", "six", "Six", "6 sides"],
+            "explanation": "The text explains: 'hexagonal (six-sided) cells'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_12",
+      "category": "Grade 4 Morphology & Vocabulary",
+      "scenario_name": "Prefixes (un-, re-, dis-) and Suffixes (-ful, -less)",
+      "pedagogical_target": "Root word modification, antonym formation, and semantic shifts.",
+      "payload": {
+        "title": "Word Mechanics: Prefixes and Suffixes",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 4",
+        "unitTitle": "Unit 2: Morphological Awareness",
+        "skillFocus": "Using affixes to determine word meanings",
+        "lifeConnection": "Enables learners to deduce the meaning of unfamiliar words while reading independently.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80",
+        "content": "- A **prefix** is attached to the beginning of a root word to change its meaning (e.g., *un-* means not: *unhappy*; *re-* means again: *rewrite*).\n- A **suffix** is attached to the end of a root word (e.g., *-ful* means full of: *careful*; *-less* means without: *careless*).",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Suffix Analysis",
+            "question": "What does the word 'fearless' mean?",
+            "type": "MCQ",
+            "options": ["Full of fear", "Without fear", "Afraid of darkness", "Fearful again"],
+            "correctAnswer": "Without fear",
+            "acceptedAnswers": ["Without fear", "brave", "without any fear"],
+            "explanation": "The suffix '-less' means without, so fearless means without fear."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Prefix Application",
+            "question": "Add the correct prefix to 'appear' to mean 'vanish from sight': 'The magician made the coin _____.'",
+            "type": "FIB",
+            "correctAnswer": "disappear",
+            "acceptedAnswers": ["disappear", "Disappear"],
+            "explanation": "Adding 'dis-' creates 'disappear'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_13",
+      "category": "Grade 5 Grammar & Syntax",
+      "scenario_name": "Coordinating & Subordinating Conjunctions (FANBOYS, because, although)",
+      "pedagogical_target": "Compound and complex sentence construction and avoiding run-ons/comma splices.",
+      "payload": {
+        "title": "Sentence Architecture: Mastering Conjunctions",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 5",
+        "unitTitle": "Unit 1: Complex Sentence Structures",
+        "skillFocus": "Coordinating (FANBOYS) and Subordinating Conjunctions",
+        "lifeConnection": "Writing mature essays and coherent arguments with logical transitions.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=600&q=80",
+        "content": "Conjunctions join words, phrases, or clauses.\n- **Coordinating Conjunctions** join independent clauses: **F**or, **A**nd, **N**or, **B**ut, **O**r, **Y**et, **S**o (FANBOYS).\n- **Subordinating Conjunctions** connect an independent clause to a dependent clause: *because, although, since, whereas, whenever*.\n  - Example: *Although it was raining, the team completed their practice.*",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Conjunction Selection",
+            "question": "Choose the best conjunction: 'Ali studied diligently every night, _____ he earned the highest score on the exam.'",
+            "type": "MCQ",
+            "options": ["so", "but", "or", "nor"],
+            "correctAnswer": "so",
+            "acceptedAnswers": ["so", "So"],
+            "explanation": "'So' shows a cause-and-effect relationship."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Complex Sentence Combining",
+            "question": "Combine these two sentences into one using 'although':\nSentence 1: The hike was steep and exhausting.\nSentence 2: The hikers reached the mountain summit.",
+            "type": "SHORT",
+            "correctAnswer": "Although the hike was steep and exhausting, the hikers reached the mountain summit.",
+            "acceptedAnswers": [
+              "Although the hike was steep and exhausting, the hikers reached the mountain summit.",
+              "The hikers reached the mountain summit although the hike was steep and exhausting.",
+              "Although the hike was steep and exhausting, the hikers reached the summit."
+            ],
+            "explanation": "A subordinating clause starting with 'Although' followed by a comma connects smoothly with the main clause."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_14",
+      "category": "Grade 5 Historical Biography Comprehension",
+      "scenario_name": "Historical Narrative: 'The Persistence of the Wright Brothers'",
+      "pedagogical_target": "Chronological sequencing, evaluating primary/secondary evidence, author purpose.",
+      "payload": {
+        "title": "History in Flight: The Persistence of the Wright Brothers",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 5",
+        "unitTitle": "Unit 2: Historical Biographies",
+        "skillFocus": "Chronology, identifying obstacles, summarizing historical achievements",
+        "lifeConnection": "Inspires resilience in scientific invention and overcoming public skepticism.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1519074069444-1ba4eae16431?auto=format&fit=crop&w=600&q=80",
+        "content": "On December 17, 1903, at Kitty Hawk, North Carolina, Orville and Wilbur Wright achieved what many engineers thought impossible: the first powered, controlled, sustained flight in human history. Prior to this historic moment, the brothers faced years of aerodynamic failures, glider crashes, and public ridicule. Instead of quitting, they built their own wind tunnel to rigorously test over two hundred wing shapes, proving that meticulous testing triumphs over guesswork.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Fact Verification",
+            "question": "What tool did the Wright brothers construct to test over 200 wing shapes?",
+            "type": "MCQ",
+            "options": ["A wind tunnel", "A steam turbine", "A radar dish", "A helicopter model"],
+            "correctAnswer": "A wind tunnel",
+            "acceptedAnswers": ["A wind tunnel", "wind tunnel", "their own wind tunnel"],
+            "explanation": "The text states: 'they built their own wind tunnel to rigorously test over two hundred wing shapes'."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Author's Message",
+            "question": "What was the author's primary purpose in writing this passage?",
+            "type": "SHORT",
+            "correctAnswer": "To highlight how persistence and scientific testing led the Wright brothers to invent flight.",
+            "acceptedAnswers": [
+              "To highlight how persistence and scientific testing led the Wright brothers to invent flight.",
+              "To explain how the Wright brothers achieved powered flight through persistence.",
+              "To inspire perseverance through the story of the Wright brothers."
+            ],
+            "explanation": "The author emphasizes systematic testing, resilience, and their breakthrough."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_15",
+      "category": "Grade 6 Figurative Language & Poetry",
+      "scenario_name": "Metaphors, Similes & Imagery in Poetry",
+      "pedagogical_target": "Distinguishing comparisons with 'like'/'as' vs direct equating; sensory visualization.",
+      "payload": {
+        "title": "The Poet's Lens: Similes, Metaphors & Imagery",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 6",
+        "unitTitle": "Unit 1: Figurative Language",
+        "skillFocus": "Differentiating similes and metaphors and decoding figurative meaning",
+        "lifeConnection": "Adds emotional resonance and creativity to everyday communication and speeches.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=600&q=80",
+        "content": "Figurative language goes beyond literal word meanings.\n- A **simile** compares two different things using the words *like* or *as* (e.g., *Her laughter was like music on a summer afternoon*).\n- A **metaphor** states that one thing IS another without using *like* or *as* (e.g., *The classroom was a bustling beehive of creativity*).",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Device Identification",
+            "question": "'The moonlight was a silver blanket draped across the sleeping ocean.' What literary device is used here?",
+            "type": "MCQ",
+            "options": ["Metaphor", "Simile", "Onomatopoeia", "Alliteration"],
+            "correctAnswer": "Metaphor",
+            "acceptedAnswers": ["Metaphor", "metaphor"],
+            "explanation": "It equates the moonlight directly to a silver blanket without 'like' or 'as'."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Deeper Interpretation",
+            "question": "What does the metaphor 'The classroom was a bustling beehive' convey about the students?",
+            "type": "SHORT",
+            "correctAnswer": "The students were active, busy, and working productively together.",
+            "acceptedAnswers": [
+              "The students were active, busy, and working productively together.",
+              "They were very busy and working hard.",
+              "The classroom was full of productive activity."
+            ],
+            "explanation": "Beehives represent industrious, organized collective activity."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_16",
+      "category": "Grade 6 Scientific Article Analysis",
+      "scenario_name": "Informational Synthesis: 'The Global Shift to Renewable Energy'",
+      "pedagogical_target": "Data interpretation, identifying claims and supporting evidence in environmental essays.",
+      "payload": {
+        "title": "Environmental Literacy: The Clean Energy Transition",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 6",
+        "unitTitle": "Unit 2: Argumentative and Scientific Non-Fiction",
+        "skillFocus": "Claim vs. evidence, tone analysis, context-based terminology",
+        "lifeConnection": "Enables informed discussions on sustainability, climate solutions, and science policies.",
+        "duration": 35,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=600&q=80",
+        "content": "Fossil fuels such as coal, oil, and gas have powered human civilization for over two centuries, but their combustion releases millions of tons of greenhouse gases annually into Earth's atmosphere. To mitigate rising temperatures, nations are accelerating the adoption of renewable energy technologies—predominantly photovoltaic solar arrays and high-capacity wind turbines. While initial infrastructure capital costs remain high, renewable sources offer infinite energy with zero direct operating emissions.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Vocabulary Deduction",
+            "question": "What does the word 'mitigate' most closely mean in the context of the passage?",
+            "type": "MCQ",
+            "options": ["To lessen or reduce the severity of", "To celebrate publicly", "To increase dramatically", "To ignore completely"],
+            "correctAnswer": "To lessen or reduce the severity of",
+            "acceptedAnswers": ["To lessen or reduce the severity of", "reduce", "lessen"],
+            "explanation": "To mitigate rising temperatures means to reduce their harmful impact."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Textual Evidence",
+            "question": "According to the passage, what is one major obstacle to adopting renewable energy?",
+            "type": "SHORT",
+            "correctAnswer": "High initial infrastructure capital costs.",
+            "acceptedAnswers": [
+              "High initial infrastructure capital costs.",
+              "High initial infrastructure costs",
+              "High capital costs",
+              "Expensive setup costs"
+            ],
+            "explanation": "The text notes: 'While initial infrastructure capital costs remain high...'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_17",
+      "category": "Grade 7 Grammar & Style",
+      "scenario_name": "Active vs. Passive Voice in Academic Writing",
+      "pedagogical_target": "Agent identification, verb phrase structure (be + past participle), and stylistic choice.",
+      "payload": {
+        "title": "Stylistic Precision: Active and Passive Voice",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 7",
+        "unitTitle": "Unit 1: Voice and Rhetorical Style",
+        "skillFocus": "Transforming passive sentences into vigorous active constructions",
+        "lifeConnection": "Essential for clear, persuasive writing in university applications and professional reports.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=600&q=80",
+        "content": "- In the **active voice**, the subject performs the action: *The research team discovered a new compound.*\n- In the **passive voice**, the subject receives the action: *A new compound was discovered by the research team.*\nActive voice generally makes writing more concise, direct, and energetic.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Voice Identification",
+            "question": "Identify which sentence is written in the active voice:",
+            "type": "MCQ",
+            "options": [
+              "The architect designed the sustainable skyscraper.",
+              "The sustainable skyscraper was designed by the architect.",
+              "A speech was delivered by the student council president.",
+              "The antique clock was repaired by my grandfather."
+            ],
+            "correctAnswer": "The architect designed the sustainable skyscraper.",
+            "acceptedAnswers": [
+              "The architect designed the sustainable skyscraper."
+            ],
+            "explanation": "The subject 'The architect' directly performs the action 'designed'."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Voice Transformation",
+            "question": "Rewrite this passive sentence in the active voice: 'The championship trophy was lifted by the enthusiastic players.'",
+            "type": "SHORT",
+            "correctAnswer": "The enthusiastic players lifted the championship trophy.",
+            "acceptedAnswers": [
+              "The enthusiastic players lifted the championship trophy.",
+              "The enthusiastic players lifted the championship trophy",
+              "The players lifted the championship trophy."
+            ],
+            "explanation": "Place the doer ('The enthusiastic players') as the subject of the verb 'lifted'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_18",
+      "category": "Grade 7 Narrative Structure",
+      "scenario_name": "Direct vs. Indirect (Reported) Speech",
+      "pedagogical_target": "Tense back-shifting, pronoun changes, and quotation punctuation rules.",
+      "payload": {
+        "title": "Dialogue Mastery: Direct and Reported Speech",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 7",
+        "unitTitle": "Unit 2: Narrative Mechanics",
+        "skillFocus": "Converting spoken quotations into reported speech with accurate tense shifts",
+        "lifeConnection": "Vital for journalistic quoting, minutes of meetings, and narrative fiction dialogue.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&w=600&q=80",
+        "content": "- **Direct Speech** quotes exact spoken words inside speech marks: *Zainab said, \"I am preparing for the science olympiad.\"*\n- **Reported Speech** reports what was said without exact quotes, requiring tense backshifting and pronoun adjustments: *Zainab said that she was preparing for the science olympiad.*",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Tense Shift Rules",
+            "question": "When converting present continuous ('am working') into reported speech in past context, what does it become?",
+            "type": "MCQ",
+            "options": ["was working", "will work", "has worked", "works"],
+            "correctAnswer": "was working",
+            "acceptedAnswers": ["was working"],
+            "explanation": "Present continuous shifts back to past continuous."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Conversion",
+            "question": "Convert into reported speech: Hassan said, \"I will attend the chemistry seminar tomorrow.\"",
+            "type": "SHORT",
+            "correctAnswer": "Hassan said that he would attend the chemistry seminar the following day.",
+            "acceptedAnswers": [
+              "Hassan said that he would attend the chemistry seminar the following day.",
+              "Hassan said that he would attend the chemistry seminar the next day.",
+              "Hassan said he would attend the chemistry seminar the next day."
+            ],
+            "explanation": "'Will' changes to 'would', 'I' to 'he', and 'tomorrow' to 'the following day' or 'the next day'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_19",
+      "category": "Grade 8 Advanced Punctuation",
+      "scenario_name": "Semicolons, Colons, Em-Dashes & Parentheses",
+      "pedagogical_target": "Sophisticated sentence boundary management, list introduction, and appositive amplification.",
+      "payload": {
+        "title": "Advanced Syntax: Colons, Semicolons & Em-Dashes",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 8",
+        "unitTitle": "Unit 1: Advanced Punctuation",
+        "skillFocus": "Using colons, semicolons, and dashes to vary rhythm and syntax",
+        "lifeConnection": "Distinguishes high-scoring academic essays and prestigious scholarship entries.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80",
+        "content": "- **Semicolon (;)**: Connects two closely related independent clauses without a coordinating conjunction (e.g., *The storm damaged the electrical lines; the city was plunged into darkness.*)\n- **Colon (:)**: Introduces a list, explanation, or emphatic conclusion following a complete independent clause.\n- **Em-Dash (—)**: Creates dramatic emphasis, sudden shifts in thought, or clarifies parenthetical elements.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Semicolon Usage",
+            "question": "Which sentence correctly employs a semicolon?",
+            "type": "MCQ",
+            "options": [
+              "The library remained open late; students needed extra quiet time before final examinations.",
+              "Because the library was open late; many students studied there.",
+              "The students gathered; books, pencils, and laptops.",
+              "Although it was raining; the game continued."
+            ],
+            "correctAnswer": "The library remained open late; students needed extra quiet time before final examinations.",
+            "acceptedAnswers": [
+              "The library remained open late; students needed extra quiet time before final examinations."
+            ],
+            "explanation": "A semicolon must separate two grammatically complete independent clauses."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Colon Punctuation",
+            "question": "Insert the missing punctuation mark: 'The committee came to a single unanimous conclusion _____ the proposal must be approved immediately.'",
+            "type": "SHORT",
+            "correctAnswer": ":",
+            "acceptedAnswers": [":", "colon", "Colon"],
+            "explanation": "A colon introduces an explanation or summary following a complete sentence."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_20",
+      "category": "Grade 8 Rhetorical Analysis",
+      "scenario_name": "Rhetorical Appeals: Ethos, Pathos, and Logos in Speeches",
+      "pedagogical_target": "Analyzing persuasive techniques in public oratory and editorial writing.",
+      "payload": {
+        "title": "The Art of Persuasion: Ethos, Pathos & Logos",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 8",
+        "unitTitle": "Unit 2: Rhetoric & Public Oratory",
+        "skillFocus": "Identifying Aristotle's three pillars of persuasion in historical and contemporary speeches",
+        "lifeConnection": "Empowers students to detect political manipulation, advertising tactics, and bias.",
+        "duration": 35,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80",
+        "content": "- **Ethos**: Appeal to credibility, ethics, authority, and character.\n- **Pathos**: Appeal to emotions, empathy, fear, or sympathy.\n- **Logos**: Appeal to logic, empirical data, statistics, and deductive reasoning.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Appeal Identification",
+            "question": "'As a pediatrician with over twenty-five years in clinical practice, I can assure parents that this vaccine is safe.' Which appeal is primarily used?",
+            "type": "MCQ",
+            "options": ["Ethos", "Pathos", "Logos", "Hyperbole"],
+            "correctAnswer": "Ethos",
+            "acceptedAnswers": ["Ethos", "ethos"],
+            "explanation": "The speaker establishes authority and professional credibility."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Logos Analysis",
+            "question": "What type of evidence does an orator rely on when employing Logos?",
+            "type": "SHORT",
+            "correctAnswer": "Statistics, facts, logical proofs, and verifiable data.",
+            "acceptedAnswers": [
+              "Statistics, facts, logical proofs, and verifiable data.",
+              "Facts and statistics",
+              "Logic, data, and evidence",
+              "Logic and facts"
+            ],
+            "explanation": "Logos relies on objective truth, facts, and logical structure."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_21",
+      "category": "Grade 9 Literary Analysis",
+      "scenario_name": "Unseen Prose Analysis: Characterization & Atmosphere in Fiction",
+      "pedagogical_target": "Analyzing how authors craft psychological tension, setting details, and subtext.",
+      "payload": {
+        "title": "Unseen Fiction Analysis: Setting Atmosphere and Suspense",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 9",
+        "unitTitle": "Unit 1: Prose Fiction Study",
+        "skillFocus": "Writer's effect, lexical choices, atmosphere building, and subtext",
+        "lifeConnection": "Deepens empathy by exploring complex human motives and emotions.",
+        "duration": 35,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80",
+        "content": "The grandfather clock in the dim hallway ticked with an aggressive, hollow persistence. Julian stood frozen at the landing, listening to the floorboards groan below. A cold draught swept beneath the study door, carrying the scent of damp wool and extinguished candlewax. He reached into his coat pocket; the brass key felt unnervingly frigid against his fingertips, yet it was the only object binding him to the truth.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Writer's Craft",
+            "question": "What atmosphere is created by the description of the grandfather clock ticking with 'an aggressive, hollow persistence'?",
+            "type": "MCQ",
+            "options": [
+              "A tense, ominous, and unsettling atmosphere",
+              "A joyful, cheerful party mood",
+              "A humorous, playful tone",
+              "A relaxed, tranquil ambiance"
+            ],
+            "correctAnswer": "A tense, ominous, and unsettling atmosphere",
+            "acceptedAnswers": [
+              "A tense, ominous, and unsettling atmosphere",
+              "tense and ominous",
+              "suspenseful and eerie"
+            ],
+            "explanation": "Words like 'aggressive' and 'hollow' amplify urgency, tension, and unease."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Sensory Imagery",
+            "question": "Quote two sensory details that describe how the environment feels or smells in the hallway.",
+            "type": "SHORT",
+            "correctAnswer": "cold draught, damp wool, extinguished candlewax, frigid brass key",
+            "acceptedAnswers": [
+              "cold draught, damp wool",
+              "damp wool, extinguished candlewax",
+              "cold draught, extinguished candlewax",
+              "damp wool and extinguished candlewax"
+            ],
+            "explanation": "These sensory descriptions appeal to smell and touch to evoke abandonment and unease."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_22",
+      "category": "Grade 9 Composition & Pragmatics",
+      "scenario_name": "Formal Letter of Complaint vs. Informal Email",
+      "pedagogical_target": "Register, audience adaptation, conventional layouts, and diplomatic assertiveness.",
+      "payload": {
+        "title": "Register & Tone: The Formal Letter of Complaint",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 9",
+        "unitTitle": "Unit 2: Practical Communication",
+        "skillFocus": "Writing with formal register, professional vocabulary, and diplomatic firmness",
+        "lifeConnection": "Resolving customer disputes, communicating with municipal bodies, and professional email etiquette.",
+        "duration": 35,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=600&q=80",
+        "content": "A formal letter of complaint requires:\n1. A clear salutation (*Dear Sir or Madam* or *Dear Mr. Evans*).\n2. Objective statement of facts with dates and invoice numbers.\n3. Clear explanation of inconvenience or financial loss.\n4. Reasonable request for remedy (e.g., replacement or refund).\n5. Appropriate valediction (*Yours faithfully* if unaddressed; *Yours sincerely* if addressed by name).",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Valediction Rules",
+            "question": "If you open a formal letter with 'Dear Sir or Madam', how must you close it?",
+            "type": "MCQ",
+            "options": ["Yours faithfully", "Yours sincerely", "Best wishes", "Cheers"],
+            "correctAnswer": "Yours faithfully",
+            "acceptedAnswers": ["Yours faithfully", "Yours faithfully,"],
+            "explanation": "When the recipient's name is unknown, standard British/Cambridge convention requires 'Yours faithfully'."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Register Adjustment",
+            "question": "Revise this informal sentence into professional formal English: 'Your delivery guy was super late and broke my stuff, so give me my cash back.'",
+            "type": "SHORT",
+            "correctAnswer": "I am writing to express my dissatisfaction with the delayed delivery and damaged items, and I request a full refund.",
+            "acceptedAnswers": [
+              "I am writing to express my dissatisfaction with the delayed delivery and damaged items, and I request a full refund.",
+              "Due to the delayed delivery and damaged merchandise, I kindly request a full refund.",
+              "I am requesting a full refund due to the delayed delivery and damaged goods."
+            ],
+            "explanation": "Replaces slang ('super late', 'stuff', 'cash') with professional, respectful terminology."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_23",
+      "category": "Cambridge O-Level (1123 Syllabus)",
+      "scenario_name": "Directed Writing: Formal Speech to the School Board",
+      "pedagogical_target": "Speech conventions, rhetorical hooks, tripartite structures, and student advocacy.",
+      "payload": {
+        "title": "Cambridge O-Level Directed Writing: Public Advocacy Speech",
+        "subject": "ENGLISH",
+        "gradeLevel": "O-Level",
+        "unitTitle": "Unit 1: Cambridge 1123 Directed Writing",
+        "skillFocus": "Tone, rhetorical questions, structure, call to action, and addressing specific bullet points",
+        "lifeConnection": "Developing leadership, public speaking, and institutional diplomacy.",
+        "duration": 45,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=600&q=80",
+        "content": "You are the head student at Oakridge Academy. The governing board plans to replace the school library with an electronic-only resource room. You must write a formal speech to convince the board to retain physical books alongside modern digital workstations.\n\nYou must include:\n- The emotional and cognitive benefits of reading printed books.\n- The hazards of excessive screen fatigue on student wellness.\n- A viable compromise model balancing physical volumes with digital portals.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Speech Structural Openers",
+            "question": "Which opening sentence is most effective for an address to the School Governing Board?",
+            "type": "MCQ",
+            "options": [
+              "Respected Principal, distinguished members of the Board, and fellow students: today I stand before you to speak on an issue vital to our academic heritage.",
+              "Hey everyone, listen up because I've got something crazy to complain about.",
+              "Books are good and tablets are bad, so please don't change anything.",
+              "To whom it may concern, I am writing this speech to tell you what I think."
+            ],
+            "correctAnswer": "Respected Principal, distinguished members of the Board, and fellow students: today I stand before you to speak on an issue vital to our academic heritage.",
+            "acceptedAnswers": [
+              "Respected Principal, distinguished members of the Board, and fellow students: today I stand before you to speak on an issue vital to our academic heritage."
+            ],
+            "explanation": "Acknowledges the audience respectfully and sets a dignified, persuasive tone."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Rhetorical Device Construction",
+            "question": "Draft an impactful rhetorical question emphasizing the value of physical libraries over digital screens.",
+            "type": "SHORT",
+            "correctAnswer": "Can a cold, glowing screen ever replicate the sensory immersion, focus, and quiet solace of holding a physical book?",
+            "acceptedAnswers": [
+              "Can a cold, glowing screen ever replicate the sensory immersion, focus, and quiet solace of holding a physical book?",
+              "Can a tablet screen ever truly replace the deep focus and wonder of holding a real book in our hands?",
+              "Do we truly wish to sacrifice tactile human learning for endless digital screen fatigue?"
+            ],
+            "explanation": "A strong rhetorical question challenges the audience to consider the human value of physical books."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_24",
+      "category": "Cambridge O-Level (1123 Syllabus)",
+      "scenario_name": "Summary Writing: Extracting Key Notes from a Non-Fiction Passage",
+      "pedagogical_target": "Extracting 10 relevant points, synthesizing in own words, and staying within 120 words.",
+      "payload": {
+        "title": "Cambridge 1123 Summary Mastery: Concise Synthesis",
+        "subject": "ENGLISH",
+        "gradeLevel": "O-Level",
+        "unitTitle": "Unit 2: Summary Skills",
+        "skillFocus": "Selecting relevant factual points, eliminating repetition, paraphrasing, and word count discipline",
+        "lifeConnection": "Crucial for writing executive briefs, legal abstracts, and research summaries.",
+        "duration": 40,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80",
+        "content": "Deep-sea coral reefs, known as cold-water reefs, thrive in dark, frigid waters up to 2,000 meters beneath the ocean surface. Unlike shallow tropical corals that rely on photosynthetic algae, deep-sea corals capture organic food particles drifting downwards in underwater currents. These reefs serve as vital nursery grounds for commercial fish species, sheltering juvenile cod and rockfish. However, they are exceedingly fragile. Bottom-trawling commercial fishing nets crush entire ancient structures in seconds. Furthermore, ocean acidification weakens their calcium carbonate skeletons, making regeneration agonizingly slow.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Point Selection",
+            "question": "Which of the following is a direct threat to deep-sea corals mentioned in the passage?",
+            "type": "MCQ",
+            "options": [
+              "Bottom-trawling fishing nets and ocean acidification",
+              "Too much direct tropical sunlight",
+              "An explosion in the population of photosynthetic algae",
+              "Excessive freshwater influx from melting glaciers"
+            ],
+            "correctAnswer": "Bottom-trawling fishing nets and ocean acidification",
+            "acceptedAnswers": [
+              "Bottom-trawling fishing nets and ocean acidification",
+              "Bottom-trawling and ocean acidification"
+            ],
+            "explanation": "The passage highlights physical destruction by nets and chemical weakening through acidification."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Paraphrase Note",
+            "question": "Paraphrase how deep-sea corals feed without copying phrases directly from the text.",
+            "type": "SHORT",
+            "correctAnswer": "They trap floating food particles carried by deep oceanic currents.",
+            "acceptedAnswers": [
+              "They trap floating food particles carried by deep oceanic currents.",
+              "They catch edible matter drifting in ocean currents.",
+              "They filter food particles brought by underwater currents."
+            ],
+            "explanation": "Paraphrases 'capture organic food particles drifting downwards in underwater currents'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_25",
+      "category": "Cambridge O-Level (1123 Syllabus)",
+      "scenario_name": "Writer's Effect: Deconstructing Imagery and Evocative Verbs",
+      "pedagogical_target": "Explaining the literal meaning, figurative connotations, and author's purpose in prose.",
+      "payload": {
+        "title": "Writer's Effect: Deciphering Atmosphere and Connotation",
+        "subject": "ENGLISH",
+        "gradeLevel": "O-Level",
+        "unitTitle": "Unit 3: Textual Analysis & Writer's Effect",
+        "skillFocus": "Unpacking figurative associations, connotations, and reader impact",
+        "lifeConnection": "Enables critical reading of media and advertising narratives.",
+        "duration": 40,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=600&q=80",
+        "content": "The locomotive roared into the deserted mountain station like an iron beast starving for coal. Steam hissed aggressively from its rusted joints, spewing gray plumes that choked the platform. The wheels shrieked against the icy tracks, spraying violent amber sparks into the black night air.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Effect of 'Iron Beast'",
+            "question": "What is the primary effect of the phrase 'like an iron beast starving for coal'?",
+            "type": "MCQ",
+            "options": [
+              "It personifies the train as a predatory, menacing creature with unstoppable, destructive energy.",
+              "It indicates that the train was quiet and clean.",
+              "It shows that the passengers were hungry.",
+              "It suggests the mountain station was full of wild animals."
+            ],
+            "correctAnswer": "It personifies the train as a predatory, menacing creature with unstoppable, destructive energy.",
+            "acceptedAnswers": [
+              "It personifies the train as a predatory, menacing creature with unstoppable, destructive energy."
+            ],
+            "explanation": "Portrays mechanical power as an aggressive, primal monster."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Auditory Impact",
+            "question": "Explain the connotation and sensory impact of the word 'shrieked' in describing the metal wheels.",
+            "type": "SHORT",
+            "correctAnswer": "Connotes extreme friction, high-pitched agony, and abrasive loudness that jars the reader's senses.",
+            "acceptedAnswers": [
+              "Connotes extreme friction, high-pitched agony, and abrasive loudness that jars the reader's senses.",
+              "It suggests a piercing, painful, screeching metallic noise.",
+              "It emphasizes ear-splitting friction and distress."
+            ],
+            "explanation": "'Shrieked' conveys piercing friction, loud agony, and tension."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_26",
+      "category": "Cambridge A-Level Language (9093)",
+      "scenario_name": "Textual Analysis: Audience, Purpose, Register, and Lexical Fields",
+      "pedagogical_target": "Analyzing how grammatical choices and lexical cohesion fulfill communicative aims.",
+      "payload": {
+        "title": "Cambridge 9093 Language Analysis: Form, Meaning & Modality",
+        "subject": "ENGLISH",
+        "gradeLevel": "A-Level",
+        "unitTitle": "Unit 1: Language Concepts & Frameworks",
+        "skillFocus": "Lexical fields, syntactical positioning, deontic vs epistemic modality, discourse markers",
+        "lifeConnection": "Equips students for legal analysis, corporate communications, and political linguistics.",
+        "duration": 45,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=600&q=80",
+        "content": "**Text A: Extract from an Antarctic Expedition Sponsorship Prospectus**\n'We cordially invite corporate patrons to partner with the 2027 Endurance Odyssey. Venturing across the merciless ice shelf of Queen Maud Land demands unyielding fortitude, unparalleled engineering, and visionary resolve. By aligning your esteemed enterprise with our environmental research cohort, your brand demonstrates a resolute commitment to planetary stewardship and human frontier exploration.'",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Modality & Register",
+            "question": "What is the primary register and tenor of Text A?",
+            "type": "MCQ",
+            "options": [
+              "Formal, aspirational, and high-register corporate persuasion",
+              "Informal, colloquial, and conversational",
+              "Satirical and mocking",
+              "Technical laboratory manual style"
+            ],
+            "correctAnswer": "Formal, aspirational, and high-register corporate persuasion",
+            "acceptedAnswers": [
+              "Formal, aspirational, and high-register corporate persuasion",
+              "Formal and persuasive"
+            ],
+            "explanation": "Uses elevated lexis ('cordially invite', 'esteemed enterprise', 'resolute commitment') to appeal to prestige."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Lexical Field Analysis",
+            "question": "Identify the dominant lexical field in the phrase 'merciless ice shelf... unyielding fortitude... visionary resolve'.",
+            "type": "SHORT",
+            "correctAnswer": "Heroism, challenge, adversity, and stoic endurance.",
+            "acceptedAnswers": [
+              "Heroism, challenge, adversity, and stoic endurance.",
+              "Adversity and endurance",
+              "Heroic exploration and struggle",
+              "Challenge and fortitude"
+            ],
+            "explanation": "Frames the Antarctic expedition as a classic heroic struggle against nature."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_27",
+      "category": "Cambridge A-Level Language (9093)",
+      "scenario_name": "Spoken Language: Analyzing Transcripts, Prosodic Features, and Turn-Taking",
+      "pedagogical_target": "Decoding pauses, false starts, backchanneling, overlaps, and cooperative maxims.",
+      "payload": {
+        "title": "Spoken Discourse: Analyzing Conversation Transcripts",
+        "subject": "ENGLISH",
+        "gradeLevel": "A-Level",
+        "unitTitle": "Unit 2: Spoken Language Mechanics",
+        "skillFocus": "Prosody, micropauses (.), false starts, adjacency pairs, hedge words, cooperative principle",
+        "lifeConnection": "Enables critical understanding of interview dynamics, negotiations, and courtroom discourse.",
+        "duration": 45,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80",
+        "content": "**Key to transcription symbols:**\n(.) = micro-pause (under 0.5s); (2.0) = pause length in seconds; // = overlapping speech; [italics] = emphatic stress.\n\n**Transcript:**\n**Host:** Dr. Harris (.) you've published groundbreaking findings on neuroplasticity (.) but some critics suggest the trial sample was // far too small\n**Dr. Harris:** // Well (1.0) *obviously* one must acknowledge that clinical cohorts (0.5) er (0.5) require ongoing replication. But if you look at the longitudinal EEG data (.) the correlation is undeniable.\n**Host:** Mhm (.) and yet clinical outcomes were varied?",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Discourse Markers",
+            "question": "What communicative function does the discourse marker 'Well' serve at the start of Dr. Harris's turn?",
+            "type": "MCQ",
+            "options": [
+              "It acts as a qualifying hesitation marker signaling a carefully mitigated counter-argument.",
+              "It indicates that he is feeling thirsty.",
+              "It signals complete surrender and defeat.",
+              "It closes the interview completely."
+            ],
+            "correctAnswer": "It acts as a qualifying hesitation marker signaling a carefully mitigated counter-argument.",
+            "acceptedAnswers": [
+              "It acts as a qualifying hesitation marker signaling a carefully mitigated counter-argument.",
+              "Mitigated counter-argument and hesitation marker"
+            ],
+            "explanation": "'Well' allows the speaker to pivot from an uncomfortable challenge toward a defensive response."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Backchanneling Analysis",
+            "question": "What linguistic term describes the Host's utterance 'Mhm' during the exchange?",
+            "type": "SHORT",
+            "correctAnswer": "Backchanneling (or backchannel support)",
+            "acceptedAnswers": [
+              "Backchanneling",
+              "Backchannel",
+              "backchannel support",
+              "minimal response"
+            ],
+            "explanation": "Signaling attentive listening without interrupting the speaker's main turn."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_28",
+      "category": "Cambridge A-Level Literature (9695)",
+      "scenario_name": "Shakespearean Drama: Macbeth Soliloquy Analysis (Act V, Scene 5)",
+      "pedagogical_target": "Blank verse, iambic pentameter, nihilistic metaphor, dramatic irony, existential despair.",
+      "payload": {
+        "title": "Shakespearean Tragedy: Macbeth's 'Tomorrow, and tomorrow' Soliloquy",
+        "subject": "ENGLISH",
+        "gradeLevel": "A-Level",
+        "unitTitle": "Unit 3: Dramatic Poetry & Tragedy",
+        "skillFocus": "Soliloquy dissection, meter variations, fatalism, existential theatrical metaphors",
+        "lifeConnection": "Explores the psychological consequences of unchecked ambition and existential meaning.",
+        "duration": 45,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=600&q=80",
+        "content": "**MACBETH:**\nTo-morrow, and to-morrow, and to-morrow,\nCreeps in this petty pace from day to day\nTo the last syllable of recorded time,\nAnd all our yesterdays have lighted fools\nThe way to dusty death. Out, out, brief candle!\nLife's but a walking shadow, a poor player\nThat struts and frets his hour upon the stage\nAnd then is heard no more: it is a tale\nTold by an idiot, full of sound and fury,\nSignifying nothing.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Theatrical Metaphor",
+            "question": "What philosophical worldview does Macbeth express through the metaphor of life as 'a poor player that struts and frets his hour upon the stage'?",
+            "type": "MCQ",
+            "options": [
+              "Existential nihilism: human existence is brief, artificial, meaningless, and forgotten immediately.",
+              "Joyful theatrical celebration of heroic nobility.",
+              "A religious promise of spiritual salvation after tragedy.",
+              "A critique of Elizabethan theater ticket pricing."
+            ],
+            "correctAnswer": "Existential nihilism: human existence is brief, artificial, meaningless, and forgotten immediately.",
+            "acceptedAnswers": [
+              "Existential nihilism: human existence is brief, artificial, meaningless, and forgotten immediately.",
+              "Nihilism and the meaninglessness of life",
+              "Life is brief, hollow, and insignificant"
+            ],
+            "explanation": "Macbeth reduces human struggle to a hollow theatrical illusion signifying nothing."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Rhythm & Diction",
+            "question": "What is the metaphorical significance of 'Out, out, brief candle!'?",
+            "type": "SHORT",
+            "correctAnswer": "The candle flame represents the fragile, fleeting, and easily extinguished nature of human life.",
+            "acceptedAnswers": [
+              "The candle flame represents the fragile, fleeting, and easily extinguished nature of human life.",
+              "The candle symbolizes human life which can be snuffed out instantly.",
+              "It represents the fragility and brevity of mortal existence."
+            ],
+            "explanation": "Light and candle fire symbolize life, while blowing it out represents death."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_29",
+      "category": "ESL / Second Language Foundations",
+      "scenario_name": "Everyday Greetings, Introductions & Modal Verbs (Can, May, Would)",
+      "pedagogical_target": "Social politeness formulas, modal verbs for permission/requests in conversational English.",
+      "payload": {
+        "title": "Conversational Fluency: Polite Inquiries & Modal Verbs",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 4",
+        "unitTitle": "Unit 1: Social Communication in English",
+        "skillFocus": "Using modal auxiliary verbs (can, could, may, would) for polite requests",
+        "lifeConnection": "Navigating airports, ordering at restaurants, and communicating respectfully with teachers.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80",
+        "content": "In English, using modal verbs makes requests sound polite and courteous rather than demanding.\n- Demanding: *Give me water.*\n- Polite: *Could I please have a glass of water?*\n- Formal: *May I ask a question?*",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Modal Selection",
+            "question": "Which sentence sounds most polite when asking for assistance in a library?",
+            "type": "MCQ",
+            "options": [
+              "Could you please show me where the biology textbooks are kept?",
+              "Show me the biology books now.",
+              "I want biology books immediately.",
+              "Where are biology books stored, answer me."
+            ],
+            "correctAnswer": "Could you please show me where the biology textbooks are kept?",
+            "acceptedAnswers": [
+              "Could you please show me where the biology textbooks are kept?"
+            ],
+            "explanation": "'Could you please' softens the request into polite inquiry."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Polite Formulation",
+            "question": "Complete the polite request: '_____ you mind opening the classroom window, please?' (Hint: Modal verb starting with W)",
+            "type": "FIB",
+            "correctAnswer": "Would",
+            "acceptedAnswers": ["Would", "would"],
+            "explanation": "'Would you mind' is the idiomatic polite construction followed by an -ing verb."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_30",
+      "category": "ESL / Second Language Foundations",
+      "scenario_name": "Prepositions of Time & Place (at, in, on, under, between)",
+      "pedagogical_target": "Spatial coordinates, clock times, days, and months without L1 interference.",
+      "payload": {
+        "title": "Spatial & Temporal Prepositions: In, On, At",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 5",
+        "unitTitle": "Unit 2: Prepositional Mechanics",
+        "skillFocus": "Prepositions of time (at 5:00, on Monday, in July) and place (at home, on the table, in the room)",
+        "lifeConnection": "Scheduling appointments, giving street directions, and avoiding cross-cultural confusion.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80",
+        "content": "- **At**: Specific clock times (*at 3:30 PM*) or precise locations (*at the bus stop*).\n- **On**: Days of the week (*on Wednesday*), dates (*on October 12th*), or surfaces (*on the desk*).\n- **In**: Months, years, seasons (*in summer, in 2026*), or enclosed boundaries (*in the garden*).",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Temporal Rules",
+            "question": "Select the correct preposition: 'The mathematics tournament takes place _____ Saturday morning.'",
+            "type": "MCQ",
+            "options": ["on", "in", "at", "by"],
+            "correctAnswer": "on",
+            "acceptedAnswers": ["on", "On"],
+            "explanation": "Days of the week always take 'on'."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Spatial Fill",
+            "question": "Fill in the blank: 'The flight arrives in Islamabad _____ exactly 4:00 PM.'",
+            "type": "FIB",
+            "correctAnswer": "at",
+            "acceptedAnswers": ["at", "At"],
+            "explanation": "Specific clock times always use 'at'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_31",
+      "category": "ESL Advanced Idiomatic Mastery",
+      "scenario_name": "Idiomatic Expressions & Common Phrasal Verbs in Context",
+      "pedagogical_target": "Decoding non-literal phrases like 'break the ice', 'look forward to', 'run out of'.",
+      "payload": {
+        "title": "Idiomatic Fluency: Decoding Everyday Expressions",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 7",
+        "unitTitle": "Unit 3: Idioms and Phrasal Verbs",
+        "skillFocus": "Non-literal semantic decoding and phrasal verb particle usage",
+        "lifeConnection": "Understanding native English podcasts, workplace banter, and conversational nuances.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80",
+        "content": "An **idiom** is an expression whose figurative meaning cannot be understood from the literal words alone.\n- *Bite the bullet*: To face an unavoidable difficult situation with courage.\n- *Break the ice*: To initiate social conversation and relieve awkwardness.\n- *Look forward to*: To anticipate an event with genuine excitement.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Idiom Meaning",
+            "question": "If someone tells you 'Don't put all your eggs in one basket', what advice are they offering?",
+            "type": "MCQ",
+            "options": [
+              "Do not risk all your resources or hopes on a single venture.",
+              "Always buy multiple cartons of eggs at the market.",
+              "Keep your poultry safe from predators.",
+              "Cook breakfast quickly without dropping food."
+            ],
+            "correctAnswer": "Do not risk all your resources or hopes on a single venture.",
+            "acceptedAnswers": [
+              "Do not risk all your resources or hopes on a single venture.",
+              "Diversify your risks",
+              "Don't risk everything on one plan"
+            ],
+            "explanation": "It advises diversification of effort and risk."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Phrasal Verb Particle",
+            "question": "Complete the phrasal verb: 'We are truly looking forward _____ seeing our grandparents this weekend.'",
+            "type": "FIB",
+            "correctAnswer": "to",
+            "acceptedAnswers": ["to", "To"],
+            "explanation": "The idiom is 'look forward to'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_32",
+      "category": "Business & Career English",
+      "scenario_name": "Executive Summary & Professional Memorandum Composition",
+      "pedagogical_target": "Conciseness, bulleted action items, executive tone, and professional accountability.",
+      "payload": {
+        "title": "Corporate English: The Executive Memorandum",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 11",
+        "unitTitle": "Unit 1: Professional & Workplace English",
+        "skillFocus": "Synthesizing operational updates into action-oriented corporate memos",
+        "lifeConnection": "Prepares students for internships, boardroom presentations, and entrepreneurial ventures.",
+        "duration": 35,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
+        "content": "**MEMORANDUM**\n**TO:** Departmental Leads\n**FROM:** Operations Director\n**DATE:** October 26, 2026\n**SUBJECT:** Q4 Campus Digitalization Milestone\n\nThis memorandum summarizes our transition to paperless examinations across all faculties. Over 92% of assessments were successfully delivered online this quarter, reducing administrative overhead by 34%. All departmental heads must submit remaining proctoring logs by Friday at 5:00 PM.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Memo Structure",
+            "question": "What is the primary operational objective of an executive memorandum?",
+            "type": "MCQ",
+            "options": [
+              "To transmit essential information and action items concisely within an organization",
+              "To tell an entertaining fictional story",
+              "To sell retail products to consumers",
+              "To publish academic research footnotes"
+            ],
+            "correctAnswer": "To transmit essential information and action items concisely within an organization",
+            "acceptedAnswers": [
+              "To transmit essential information and action items concisely within an organization"
+            ],
+            "explanation": "Memos provide direct, internal operational clarity."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Actionable Deadline",
+            "question": "What mandatory action is required of departmental heads by Friday at 5:00 PM?",
+            "type": "SHORT",
+            "correctAnswer": "Submit remaining proctoring logs.",
+            "acceptedAnswers": [
+              "Submit remaining proctoring logs.",
+              "Submit proctoring logs",
+              "Submitting proctoring logs"
+            ],
+            "explanation": "The text explicitly states: 'submit remaining proctoring logs by Friday at 5:00 PM'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_33",
+      "category": "Media Literacy & Critical Discourse",
+      "scenario_name": "Headline Bias, Sensationalism & Fallacy Detection",
+      "pedagogical_target": "Spotting loaded words, clickbait syntax, false dichotomies, and confirmation bias.",
+      "payload": {
+        "title": "Critical Media Literacy: Deconstructing Headline Bias",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 8",
+        "unitTitle": "Unit 3: Media & Critical Thinking",
+        "skillFocus": "Detecting sensationalism, emotional manipulation, and slanted reporting",
+        "lifeConnection": "Prevents deception from online misinformation, fake news, and algorithmic clickbait.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=600&q=80",
+        "content": "Headlines are crafted to attract reader attention. However, journalistic integrity requires distinguishing between **neutral reporting** and **sensationalist framing**.\n- Neutral: *Council Votes to Increase Public Parking Rates by 5%*\n- Loaded/Sensational: *Outrageous Tax Grab: Greedy City Officials Plunder Motorists' Pockets!*",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Loaded Language",
+            "question": "Which words in the sensationalist example above reveal emotional bias and editorial slant?",
+            "type": "MCQ",
+            "options": [
+              "'Outrageous', 'Greedy', and 'Plunder'",
+              "'Council', 'Public', and 'Rates'",
+              "'City', 'Parking', and 'Motorists'",
+              "'Increase', 'By', and 'Percent'"
+            ],
+            "correctAnswer": "'Outrageous', 'Greedy', and 'Plunder'",
+            "acceptedAnswers": [
+              "'Outrageous', 'Greedy', and 'Plunder'",
+              "Outrageous, Greedy, Plunder"
+            ],
+            "explanation": "These loaded emotive words attack intent rather than neutrally reporting the vote."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Fallacy Identification",
+            "question": "What informal logical fallacy occurs when an author presents only two extreme options while ignoring moderate alternatives?",
+            "type": "SHORT",
+            "correctAnswer": "False dilemma (or false dichotomy / either-or fallacy)",
+            "acceptedAnswers": [
+              "False dilemma",
+              "False dichotomy",
+              "Either-or fallacy",
+              "Black and white fallacy"
+            ],
+            "explanation": "A false dilemma forces the audience into an oversimplified binary choice."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_34",
+      "category": "Advanced Grammar & Mechanics",
+      "scenario_name": "Conditionals (Zero, First, Second, Third, and Mixed)",
+      "pedagogical_target": "Real vs unreal hypotheses, past counterfactuals, and modal verb matching.",
+      "payload": {
+        "title": "Syntax Lab: Mastering All Five Conditional Forms",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 10",
+        "unitTitle": "Unit 2: Conditional Syntax",
+        "skillFocus": "Zero, First, Second, Third, and Mixed Conditionals",
+        "lifeConnection": "Expressing scientific truths, negotiations, regrets, and hypothetical scenarios.",
+        "duration": 35,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80",
+        "content": "- **Zero**: Scientific facts (*If water reaches 100°C, it boils.*)\n- **First**: Likely future (*If it rains tomorrow, we will reschedule the match.*)\n- **Second**: Hypothetical present/future (*If I had a million dollars, I would establish a wildlife sanctuary.*)\n- **Third**: Past counterfactual regret (*If we had left earlier, we would have caught the morning train.*)\n- **Mixed**: Past action with present result (*If she had studied medicine, she would be a doctor today.*)",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Conditional Matching",
+            "question": "'If the emergency team had received the alert sooner, they would have prevented the flood damage.' Which conditional type is this?",
+            "type": "MCQ",
+            "options": ["Third Conditional", "Zero Conditional", "First Conditional", "Second Conditional"],
+            "correctAnswer": "Third Conditional",
+            "acceptedAnswers": ["Third Conditional", "Third conditional", "3rd conditional"],
+            "explanation": "Past perfect ('had received') + would have + past participle ('would have prevented') constitutes the Third Conditional."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Sentence Formulation",
+            "question": "Complete the Second Conditional sentence: 'If I _____ (know) her email address, I would invite her to our symposium.'",
+            "type": "FIB",
+            "correctAnswer": "knew",
+            "acceptedAnswers": ["knew", "Knew"],
+            "explanation": "The Second Conditional requires the past simple form in the 'if' clause: 'knew'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_35",
+      "category": "Advanced Grammar & Mechanics",
+      "scenario_name": "Gerunds vs. Infinitives Following Dependent Verbs",
+      "pedagogical_target": "Verbal nouns (-ing) vs infinitive (to + verb); verbs that change meaning (stop, remember, forget).",
+      "payload": {
+        "title": "Verbal Distinctions: Gerunds versus Infinitives",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 8",
+        "unitTitle": "Unit 4: Advanced Verbals",
+        "skillFocus": "Gerunds (verb+ing as noun) vs infinitives (to+verb) and semantic changes",
+        "lifeConnection": "Writing accurate, idiomatic English in scholarly essays and creative literature.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80",
+        "content": "- A **gerund** acts as a noun: *Swimming is excellent cardiovascular exercise.*\n- An **infinitive** is *to + base verb*: *She wants to study astrophysics.*\n- Some verbs shift meaning completely depending on which follows:\n  - *He stopped smoking.* (He quit the habit.)\n  - *He stopped to smoke.* (He paused his activity in order to smoke.)",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Meaning Contrast",
+            "question": "What is the difference between 'I remembered locking the front door' and 'I remembered to lock the front door'?",
+            "type": "MCQ",
+            "options": [
+              "'Remembered locking' refers to recalling a past memory; 'remembered to lock' means not forgetting to do the duty.",
+              "They mean the exact same thing.",
+              "The first means the door remained unlocked.",
+              "The second implies someone else locked the door."
+            ],
+            "correctAnswer": "'Remembered locking' refers to recalling a past memory; 'remembered to lock' means not forgetting to do the duty.",
+            "acceptedAnswers": [
+              "'Remembered locking' refers to recalling a past memory; 'remembered to lock' means not forgetting to do the duty."
+            ],
+            "explanation": "Remember + gerund looks backward at a memory; remember + infinitive looks forward to an obligation."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Correct Form",
+            "question": "Select the correct verbal: 'Our instructor avoided _____ (to assign / assigning) homework over the holiday weekend.'",
+            "type": "SHORT",
+            "correctAnswer": "assigning",
+            "acceptedAnswers": ["assigning", "Assigning"],
+            "explanation": "The verb 'avoid' must be followed by a gerund: 'avoided assigning'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_36",
+      "category": "Diagnostic & Baseline Assessment",
+      "scenario_name": "Grade 1 Baseline Literacy & Phonics Diagnostic Test",
+      "pedagogical_target": "Assessing alphabet knowledge, rhyming, initial consonant blends, and basic sight words.",
+      "payload": {
+        "title": "Grade 1 Entry Diagnostic: Literacy & Sound Foundation",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 1",
+        "unitTitle": "Diagnostic Pre-Assessment",
+        "skillFocus": "Baseline evaluation of phonemic segmentation, short vowels, and sight words",
+        "lifeConnection": "Identifies early learning gaps so teachers can provide individualized reading support.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80",
+        "isDiagnostic": 1,
+        "price": "Free Diagnostic",
+        "content": "This diagnostic test measures your foundational reading skills. Listen to each question carefully and choose or write the best answer.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Diagnostic Section 1: Initial Sounds",
+            "question": "Which letter sound does the word 'Sun' begin with?",
+            "type": "MCQ",
+            "options": ["S", "M", "T", "B"],
+            "correctAnswer": "S",
+            "acceptedAnswers": ["S", "s"],
+            "explanation": "Sun begins with the /s/ sound."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Diagnostic Section 2: Rhyme Matching",
+            "question": "Which word rhymes with 'hop'?",
+            "type": "MCQ",
+            "options": ["top", "run", "cat", "cup"],
+            "correctAnswer": "top",
+            "acceptedAnswers": ["top"],
+            "explanation": "Top and hop share the '-op' ending rhyme."
+          },
+          {
+            "questionNumber": "3",
+            "sectionTitle": "Diagnostic Section 3: Word Reading",
+            "question": "Type the word for this number: '1'",
+            "type": "SHORT",
+            "correctAnswer": "one",
+            "acceptedAnswers": ["one", "One"],
+            "explanation": "The number 1 is spelled 'one'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_37",
+      "category": "Diagnostic & Baseline Assessment",
+      "scenario_name": "Grade 6 Mid-Year Reading Comprehension Diagnostic",
+      "pedagogical_target": "Testing main idea, vocabulary in context, inference, and figurative language mastery.",
+      "payload": {
+        "title": "Grade 6 Mid-Year Diagnostic: Reading & Language Skills",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 6",
+        "unitTitle": "Diagnostic Benchmark",
+        "skillFocus": "Diagnostic testing of reading fluency, inference, vocabulary, and grammar",
+        "lifeConnection": "Provides personalized learning pathways and ensures grade-level mastery.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80",
+        "isDiagnostic": 1,
+        "price": "Free Diagnostic",
+        "content": "The Siberian tiger is the largest feline predator on Earth. Living in the freezing taiga forests of the Russian Far East, its thick fur coat and dense layer of subcutaneous fat shield it from temperatures dropping below -40°C. Habitat fragmentation caused by logging and poaching poses an imminent risk to its survival.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Diagnostic Part 1: Environmental Adaptation",
+            "question": "What two physiological features protect the Siberian tiger from extreme cold?",
+            "type": "MCQ",
+            "options": [
+              "Thick fur coat and a dense layer of subcutaneous fat",
+              "Dark black stripes and hollow bones",
+              "Feathered wings and nocturnal eyesight",
+              "Large webbed feet and a scaly tail"
+            ],
+            "correctAnswer": "Thick fur coat and a dense layer of subcutaneous fat",
+            "acceptedAnswers": [
+              "Thick fur coat and a dense layer of subcutaneous fat",
+              "thick fur and fat layer"
+            ],
+            "explanation": "The passage highlights its thick fur and subcutaneous fat layer."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Diagnostic Part 2: Vocabulary Under Pressure",
+            "question": "What does the word 'imminent' mean in the final sentence?",
+            "type": "SHORT",
+            "correctAnswer": "About to happen very soon; impending.",
+            "acceptedAnswers": [
+              "About to happen very soon",
+              "impending",
+              "about to happen",
+              "occurring soon"
+            ],
+            "explanation": "'Imminent' indicates immediate, approaching danger."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_38",
+      "category": "Diagnostic & Baseline Assessment",
+      "scenario_name": "Cambridge O-Level (1123) Entry Readiness Assessment",
+      "pedagogical_target": "Evaluating readiness for O-Level narrative writing, summary synthesis, and formal register.",
+      "payload": {
+        "title": "Cambridge O-Level 1123 Diagnostic Readiness Benchmark",
+        "subject": "ENGLISH",
+        "gradeLevel": "O-Level",
+        "unitTitle": "Cambridge Baseline Diagnostic",
+        "skillFocus": "Readiness benchmark across vocabulary, inference, tone detection, and summary note-taking",
+        "lifeConnection": "Maps an accelerated study plan toward obtaining an A* in Cambridge examinations.",
+        "duration": 40,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=600&q=80",
+        "isDiagnostic": 1,
+        "price": "Free Diagnostic",
+        "content": "Archaeological excavations at the ancient Indus Valley site of Mohenjo-daro reveal sophisticated urban hygiene unmatched in the ancient bronze-age world. Residential brick structures featured individual bathrooms draining into covered terra-cotta street sewers. Standardized baked bricks demonstrate centralized trade governance across the civilization.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Diagnostic Section A: Evidence",
+            "question": "What evidence indicates centralized trade governance across the Indus Valley civilization?",
+            "type": "MCQ",
+            "options": [
+              "Standardized baked brick dimensions",
+              "Gold coins minted with royal faces",
+              "Giant bronze war chariots",
+              "Written declarations signed by kings"
+            ],
+            "correctAnswer": "Standardized baked brick dimensions",
+            "acceptedAnswers": [
+              "Standardized baked brick dimensions",
+              "standardized bricks"
+            ],
+            "explanation": "The text states: 'Standardized baked bricks demonstrate centralized trade governance'."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Diagnostic Section B: Syntactical Analysis",
+            "question": "Identify the passive verb phrase in this sentence: 'Residential brick structures were constructed with covered drainage systems.'",
+            "type": "SHORT",
+            "correctAnswer": "were constructed",
+            "acceptedAnswers": ["were constructed", "Were constructed"],
+            "explanation": "'were constructed' uses past tense of 'to be' + past participle."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_39",
+      "category": "Differentiated & Inclusive Learning",
+      "scenario_name": "Accommodated High-Interest Reading for Dyslexic Learners",
+      "pedagogical_target": "Decodable chunks, multi-sensory questions, generous spacing, high readability.",
+      "payload": {
+        "title": "Multi-Sensory Literacy: The Coral Reef Rescue",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 3",
+        "unitTitle": "Unit 4: Accessible Reading Expeditions",
+        "skillFocus": "Dyslexia-friendly decodable text, phonetic chunking, and tactile reading comprehension",
+        "lifeConnection": "Ensures every learner regardless of processing differences experiences reading success.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80",
+        "content": "# The Coral Reef Rescue\n\nDeep in the warm blue sea, tiny clownfish swim near the soft sea anemone.\n\nLeo is a bright orange clownfish. He helps clean the coral reef every single day.\n\nOne day, a plastic bag drifted near the reef. Leo swam fast to warn the giant green turtle. The turtle steered clear and smiled. Leo felt proud of his swift action!",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Friendly Comprehension",
+            "question": "What color is Leo the clownfish?",
+            "type": "MCQ",
+            "options": ["Bright orange", "Deep purple", "Solid black", "Silver gray"],
+            "correctAnswer": "Bright orange",
+            "acceptedAnswers": ["Bright orange", "orange"],
+            "explanation": "Leo is described as a 'bright orange clownfish'."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Helpful Action",
+            "question": "Who did Leo warn about the floating plastic bag?",
+            "type": "SHORT",
+            "correctAnswer": "The giant green turtle",
+            "acceptedAnswers": ["The giant green turtle", "turtle", "green turtle", "the turtle"],
+            "explanation": "Leo swam fast to warn the giant green turtle."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_40",
+      "category": "Interactive & Activity-Based Learning",
+      "scenario_name": "Creative Story-Building & Chronological Comic Sequencing",
+      "pedagogical_target": "Spatial-chronological thinking, narrative transitions (first, next, suddenly, finally).",
+      "payload": {
+        "title": "Story Architect: Narrative Sequencing & Transition Words",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 2",
+        "unitTitle": "Unit 4: Interactive Story Builders",
+        "skillFocus": "Chronological order and narrative sequencing transitions",
+        "lifeConnection": "Organizing daily thoughts, explaining sports plays, and giving step-by-step cooking recipes.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80",
+        "content": "Transition words show the order in which events take place:\n- **First**: How the story begins.\n- **Next / Then**: What happens as events develop.\n- **Suddenly**: An unexpected exciting surprise.\n- **Finally**: How everything is resolved peacefully at the end.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Order of Events",
+            "question": "Which transition word indicates the conclusion or final event in a story sequence?",
+            "type": "MCQ",
+            "options": ["Finally", "First", "Meanwhile", "Initially"],
+            "correctAnswer": "Finally",
+            "acceptedAnswers": ["Finally", "finally"],
+            "explanation": "'Finally' signals the closing step or outcome."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Activity Response",
+            "question": "Write the correct sequence of numbers (1, 2, 3) to order these actions:\n(A) Bilal ate the baked cookies.\n(B) Bilal mixed the flour and sugar.\n(C) Bilal put the cookie tray into the oven.",
+            "type": "SHORT",
+            "correctAnswer": "B, C, A",
+            "acceptedAnswers": ["B, C, A", "B,C,A", "B C A", "2, 3, 1"],
+            "explanation": "You first mix ingredients (B), bake them in the oven (C), and finally eat them (A)."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_41",
+      "category": "Cross-Disciplinary STEAM English",
+      "scenario_name": "Technical Reading: Deconstructing a Laboratory Investigation Report",
+      "pedagogical_target": "Hypothesis evaluation, variable identification (independent/dependent), objective tone.",
+      "payload": {
+        "title": "STEAM English: Reading Scientific Lab Reports",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 7",
+        "unitTitle": "Unit 4: Technical and Scientific Writing",
+        "skillFocus": "Hypothesis framing, passive laboratory reporting, empirical precision",
+        "lifeConnection": "Crucial for writing physics, chemistry, and biology experimental portfolios.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=600&q=80",
+        "content": "**Experiment Title: Rate of Osmosis Across a Semi-Permeable Membrane**\n**Abstract:** A hollow dialysis tube containing a 20% sucrose solution was submerged into a beaker of distilled water. Over a 45-minute interval, mass measurements were recorded at five-minute increments. Water molecules diffused into the tube along the osmotic concentration gradient, resulting in a net mass increase of 4.2 grams.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Scientific Variable",
+            "question": "What is the independent variable manipulated in this experiment?",
+            "type": "MCQ",
+            "options": [
+              "The duration of time (recorded every 5 minutes)",
+              "The color of the laboratory beaker",
+              "The brand of balance scale used",
+              "The room lighting intensity"
+            ],
+            "correctAnswer": "The duration of time (recorded every 5 minutes)",
+            "acceptedAnswers": [
+              "The duration of time (recorded every 5 minutes)",
+              "time",
+              "Time"
+            ],
+            "explanation": "Time was the controlled independent variable measured at 5-minute increments."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Technical Meaning",
+            "question": "What does the phrase 'net mass increase' indicate?",
+            "type": "SHORT",
+            "correctAnswer": "The overall final gain in weight after accounting for all variables.",
+            "acceptedAnswers": [
+              "The overall final gain in weight after accounting for all variables.",
+              "Total weight gained",
+              "The overall increase in weight"
+            ],
+            "explanation": "Net mass increase refers to the final difference in weight."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_42",
+      "category": "Creative & Narrative Writing",
+      "scenario_name": "Atmospheric World-Building & Sensory Immersion in Fantasy",
+      "pedagogical_target": "World-building exposition, vivid verbs, avoiding info-dumps, sensory pacing.",
+      "payload": {
+        "title": "Creative Craft: World-Building & Setting Exposition",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 8",
+        "unitTitle": "Unit 5: Creative Fiction Workshop",
+        "skillFocus": "Sensory world-building, pacing, showing rather than telling",
+        "lifeConnection": "Cultivates original imagination, storytelling confidence, and descriptive power.",
+        "duration": 35,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80",
+        "content": "Above the floating citadel of Aethelgard, twin copper moons cast an iridescent violet sheen over the obsidian spires. Skyships with canvas wings of spun silk drifted silently between the cloud towers, tethered to floating crystal docks. Far below, the perpetual cloud ocean churned like boiling silver, guarded by the great wind-beasts whose distant cries sounded like brass horns in the wind.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Show vs. Tell",
+            "question": "How does the author demonstrate that Aethelgard is an advanced, fantastical civilization without stating it directly?",
+            "type": "MCQ",
+            "options": [
+              "Through floating citadels, skyships with spun silk wings, and crystal docks tethered in the clouds.",
+              "By stating 'this was an advanced magical city'.",
+              "By listing the exact population numbers.",
+              "By explaining how citizens vote for their king."
+            ],
+            "correctAnswer": "Through floating citadels, skyships with spun silk wings, and crystal docks tethered in the clouds.",
+            "acceptedAnswers": [
+              "Through floating citadels, skyships with spun silk wings, and crystal docks tethered in the clouds."
+            ],
+            "explanation": "The author uses vivid architectural imagery rather than generic telling."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Simile Analysis",
+            "question": "What simile describes the sound made by the distant wind-beasts?",
+            "type": "SHORT",
+            "correctAnswer": "like brass horns in the wind",
+            "acceptedAnswers": [
+              "like brass horns in the wind",
+              "brass horns in the wind",
+              "like brass horns"
+            ],
+            "explanation": "The text states: 'whose distant cries sounded like brass horns in the wind'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_43",
+      "category": "Debate, Public Speaking & Logic",
+      "scenario_name": "Constructing Rebuttals & Fallacy Identification in Debates",
+      "pedagogical_target": "Refutation frameworks (They say / We concede or rebut / Because / Therefore).",
+      "payload": {
+        "title": "Debate Arena: Structuring Persuasive Rebuttals",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 9",
+        "unitTitle": "Unit 3: Argumentation & Parliamentary Debate",
+        "skillFocus": "Four-step rebuttal technique and identifying Strawman and Ad Hominem fallacies",
+        "lifeConnection": "Enables civilized disagreement, constructive feedback, and debate team success.",
+        "duration": 35,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80",
+        "content": "A high-scoring four-step rebuttal follows this formula:\n1. **Step 1 (They said)**: Quote or reference the opponent's claim concisely.\n2. **Step 2 (But we disagree)**: State your counter-claim clearly.\n3. **Step 3 (Because)**: Provide reasoning, empirical data, or analogies.\n4. **Step 4 (Therefore)**: Explain why your argument outweighs theirs in magnitude.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Fallacy Classification",
+            "question": "If a speaker attacks their opponent's character or appearance rather than addressing their argument, what fallacy is committed?",
+            "type": "MCQ",
+            "options": ["Ad Hominem", "Strawman", "Slippery Slope", "Bandwagon"],
+            "correctAnswer": "Ad Hominem",
+            "acceptedAnswers": ["Ad Hominem", "ad hominem"],
+            "explanation": "Ad Hominem translates to 'to the person', attacking the speaker instead of the issue."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Rebuttal Application",
+            "question": "What is the primary danger of a 'Strawman' argument in a debate?",
+            "type": "SHORT",
+            "correctAnswer": "It misrepresents or exaggerates the opponent's view to make it easier to attack.",
+            "acceptedAnswers": [
+              "It misrepresents or exaggerates the opponent's view to make it easier to attack.",
+              "Misrepresenting the argument to attack it easily.",
+              "Distorting the opponent's position."
+            ],
+            "explanation": "A strawman attacks a distorted, weak caricature of the opposing argument."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_44",
+      "category": "Historical Rhetoric & World Literature",
+      "scenario_name": "Historical Oratory: 'I Have a Dream' by Dr. Martin Luther King Jr.",
+      "pedagogical_target": "Anaphora, biblical allusion, parallel structure, and metaphorical imagery.",
+      "payload": {
+        "title": "Masterpiece of Rhetoric: Dr. King's March on Washington Speech",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 10",
+        "unitTitle": "Unit 3: Speeches That Shaped History",
+        "skillFocus": "Anaphora (repetition of phrase openers), extended metaphor, inclusive pronouns",
+        "lifeConnection": "Inspires advocacy for human rights, moral courage, and non-violent civic action.",
+        "duration": 40,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=600&q=80",
+        "content": "'I have a dream that one day this nation will rise up and live out the true meaning of its creed: We hold these truths to be self-evident, that all men are created equal... I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character. I have a dream today!'",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Rhetorical Repetition",
+            "question": "What literary term describes the intentional repetition of the opening phrase 'I have a dream' across successive sentences?",
+            "type": "MCQ",
+            "options": ["Anaphora", "Epistrophe", "Oxymoron", "Euphemism"],
+            "correctAnswer": "Anaphora",
+            "acceptedAnswers": ["Anaphora", "anaphora"],
+            "explanation": "Anaphora is the deliberate repetition of a phrase at the beginning of successive sentences."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Core Philosophical Metric",
+            "question": "According to Dr. King's vision, by what standard should his children be judged?",
+            "type": "SHORT",
+            "correctAnswer": "By the content of their character.",
+            "acceptedAnswers": [
+              "By the content of their character.",
+              "content of their character",
+              "by their character",
+              "the content of their character"
+            ],
+            "explanation": "He explicitly contrasts skin color with the 'content of their character'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_45",
+      "category": "Etymology & Morphological Roots",
+      "scenario_name": "Greek and Latin Roots in Scientific and Literary English",
+      "pedagogical_target": "Root analysis: bio, chrono, geo, tele, auto, scrib/script, phon, dict.",
+      "payload": {
+        "title": "Etymology Power: Greek & Latin Morphemes",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 7",
+        "unitTitle": "Unit 5: Root Word Archaeology",
+        "skillFocus": "Decoding multisyllabic vocabulary using classical Greek and Latin morphemes",
+        "lifeConnection": "Significantly boosts SAT, ACT, and Cambridge vocabulary scores.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80",
+        "content": "- **Chronos** (Greek) = Time (*chronological, synchronize*)\n- **Bio** (Greek) = Life (*biology, biosphere*)\n- **Dict** (Latin) = To speak or declare (*verdict, contradict, predict*)\n- **Scrib / Script** (Latin) = To write (*inscription, manuscript, prescribe*)",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Root Synthesis",
+            "question": "Based on the roots 'Bio' (life) and 'Graph' (to write), what does an 'autobiography' mean?",
+            "type": "MCQ",
+            "options": [
+              "A written account of a person's life written by that person themselves",
+              "A machine that draws geometric circles",
+              "A medical examination of blood cells",
+              "A fictional story about aliens"
+            ],
+            "correctAnswer": "A written account of a person's life written by that person themselves",
+            "acceptedAnswers": [
+              "A written account of a person's life written by that person themselves",
+              "a person's life written by themselves"
+            ],
+            "explanation": "Auto (self) + bio (life) + graphy (writing) = life story written by oneself."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Root Application",
+            "question": "What Latin root meaning 'to speak' is found in 'predict' and 'contradict'?",
+            "type": "SHORT",
+            "correctAnswer": "dict",
+            "acceptedAnswers": ["dict", "Dict"],
+            "explanation": "'Dict' means to say or declare."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_46",
+      "category": "Poetic Form & Structure",
+      "scenario_name": "The Sonnet: Petrarchan vs. Shakespearean Rhyme and Volta",
+      "pedagogical_target": "Iambic pentameter, 14-line structure, octave/sestet vs three quatrains/couplet, the volta.",
+      "payload": {
+        "title": "Poetic Architecture: The 14-Line Sonnet and the Volta",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 11",
+        "unitTitle": "Unit 2: Poetic Forms & Metrics",
+        "skillFocus": "Shakespearean (ABAB CDCD EFEF GG) vs Petrarchan (ABBAABBA CDECDE) and the dramatic turn (volta)",
+        "lifeConnection": "Teaches intense concentration of thought within strict artistic constraints.",
+        "duration": 40,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80",
+        "content": "A **Sonnet** is a fourteen-line poem composed in iambic pentameter.\n- **Shakespearean Sonnet**: Composed of three quatrains (4 lines each) followed by a rhyming couplet (GG). The *volta* (thematic turn) often arrives at line 9 or line 13.\n- **Petrarchan Sonnet**: Composed of an octave (8 lines) that introduces a dilemma, followed by a sestet (6 lines) that resolves it. The volta occurs at line 9.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Poetic Terminology",
+            "question": "What is the Italian term for the dramatic rhetorical turn or shift in mood in a sonnet?",
+            "type": "MCQ",
+            "options": ["Volta", "Stanza", "Couplet", "Caesura"],
+            "correctAnswer": "Volta",
+            "acceptedAnswers": ["Volta", "volta"],
+            "explanation": "'Volta' represents the turning point in thought or argument in a sonnet."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Rhyme Scheme",
+            "question": "What are the two final rhyming lines of a Shakespearean sonnet called?",
+            "type": "SHORT",
+            "correctAnswer": "A rhyming couplet (or heroic couplet)",
+            "acceptedAnswers": [
+              "A rhyming couplet",
+              "rhyming couplet",
+              "couplet",
+              "heroic couplet"
+            ],
+            "explanation": "The closing two lines that rhyme (GG) are known as a couplet."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_47",
+      "category": "Applied English & Communication",
+      "scenario_name": "Writing Productive Peer Reviews & Academic Critiques",
+      "pedagogical_target": "Constructive criticism, specific evidence citations, diplomatic growth feedback.",
+      "payload": {
+        "title": "Academic Peer Review: Constructive Literary Critiques",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 9",
+        "unitTitle": "Unit 4: Collaborative Writing & Peer Workshop",
+        "skillFocus": "Using the 'Praise, Probe, Polish' methodology to review fellow students' essays",
+        "lifeConnection": "Prepares students for workplace collaboration, code reviews, and managerial feedback.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80",
+        "content": "A high-quality academic peer review does not merely say 'great job' or 'needs work'. Instead, it uses **Praise, Probe, Polish**:\n1. **Praise**: Point out a specific line or paragraph that demonstrates strong evidence or compelling vocabulary.\n2. **Probe**: Ask thoughtful questions where the argument feels thin or needs elaboration.\n3. **Polish**: Suggest a concrete grammatical, organizational, or vocabulary improvement.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Constructive Feedback Evaluation",
+            "question": "Which comment represents actionable, constructive peer feedback?",
+            "type": "MCQ",
+            "options": [
+              "In paragraph two, your point about solar energy is strong, but quoting a specific statistic from the chart would make your conclusion more persuasive.",
+              "This essay was boring to read.",
+              "Everything is perfect, 10/10.",
+              "You wrote too many words."
+            ],
+            "correctAnswer": "In paragraph two, your point about solar energy is strong, but quoting a specific statistic from the chart would make your conclusion more persuasive.",
+            "acceptedAnswers": [
+              "In paragraph two, your point about solar energy is strong, but quoting a specific statistic from the chart would make your conclusion more persuasive."
+            ],
+            "explanation": "Identifies the exact paragraph, praises a specific element, and recommends a clear enhancement."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: The 3P Framework",
+            "question": "In the 'Praise, Probe, Polish' method, what does 'Probe' ask the reviewer to do?",
+            "type": "SHORT",
+            "correctAnswer": "Ask thoughtful questions to explore and clarify areas where the argument is unclear or thin.",
+            "acceptedAnswers": [
+              "Ask thoughtful questions to explore and clarify areas where the argument is unclear or thin.",
+              "Ask clarifying questions about the argument",
+              "Ask questions where the text needs more evidence"
+            ],
+            "explanation": "Probing invites the author to re-examine and strengthen their reasoning."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_48",
+      "category": "Vocabulary Building & Semantics",
+      "scenario_name": "Connotation vs. Denotation in Descriptive Prose",
+      "pedagogical_target": "Literal dictionary definitions vs emotional/cultural colorings (slim, skinny, emaciated).",
+      "payload": {
+        "title": "Nuanced Diction: Connotation and Denotation",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 7",
+        "unitTitle": "Unit 6: Diction and Precision",
+        "skillFocus": "Positive, neutral, and negative connotations sharing the same denotation",
+        "lifeConnection": "Prevents accidental insults and enables persuasive word choices in diplomacy.",
+        "duration": 25,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80",
+        "content": "- **Denotation**: The objective, literal dictionary definition of a word.\n- **Connotation**: The emotional, psychological, or social feeling a word evokes.\n  - *Economical* (Positive: wise with money)\n  - *Frugal* (Neutral: careful with spending)\n  - *Cheap / Stingy* (Negative: unwilling to share or spend)",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Connotation Analysis",
+            "question": "Which word carries a positive connotation when describing someone who is bold and willing to take risks?",
+            "type": "MCQ",
+            "options": ["Courageous", "Reckless", "Foolhardy", "Rash"],
+            "correctAnswer": "Courageous",
+            "acceptedAnswers": ["Courageous", "courageous"],
+            "explanation": "'Courageous' connotes noble bravery, whereas 'reckless' and 'foolhardy' imply foolish danger."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Terminology Definition",
+            "question": "What is the term for the strict dictionary definition of a word, independent of emotional feelings?",
+            "type": "SHORT",
+            "correctAnswer": "Denotation",
+            "acceptedAnswers": ["Denotation", "denotation"],
+            "explanation": "Denotation is the literal dictionary meaning."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_49",
+      "category": "Writing Mechanics & Grammar",
+      "scenario_name": "Dangling and Misplaced Modifiers",
+      "pedagogical_target": "Ensuring descriptive phrases attach logically and immediately to their intended nouns.",
+      "payload": {
+        "title": "Syntax Doctor: Curing Dangling and Misplaced Modifiers",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 9",
+        "unitTitle": "Unit 5: Advanced Editing & Mechanics",
+        "skillFocus": "Detecting and resolving dangling and misplaced participial modifiers",
+        "lifeConnection": "Eliminates embarrassing, unintentional humor in legal briefs and college essays.",
+        "duration": 30,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=600&q=80",
+        "content": "A modifier must sit right beside the word it describes. When it describes the wrong word, it is **misplaced**. When the word it describes is missing altogether, it **dangles**.\n- Hilarious Error: *Running across the highway, my hat blew off into the wind.* (This sounds like the hat was running!)\n- Corrected: *As I ran across the highway, my hat blew off into the wind.*",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Error Identification",
+            "question": "Which sentence contains a dangling modifier?",
+            "type": "MCQ",
+            "options": [
+              "Walking through the forest, the ancient ruins suddenly appeared before the hikers.",
+              "Walking through the forest, the hikers suddenly discovered the ancient ruins.",
+              "As the hikers walked through the forest, they discovered the ancient ruins.",
+              "The hikers discovered the ancient ruins while walking through the forest."
+            ],
+            "correctAnswer": "Walking through the forest, the ancient ruins suddenly appeared before the hikers.",
+            "acceptedAnswers": [
+              "Walking through the forest, the ancient ruins suddenly appeared before the hikers."
+            ],
+            "explanation": "The modifier 'Walking through the forest' attaches to 'ancient ruins', as if the ruins were walking."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Revision",
+            "question": "Fix this misplaced modifier: 'We served cookies to the guests on paper plates.' (Make sure the plates describe the cookies, not the guests!)",
+            "type": "SHORT",
+            "correctAnswer": "We served the guests cookies on paper plates. / We served cookies on paper plates to the guests.",
+            "acceptedAnswers": [
+              "We served cookies on paper plates to the guests.",
+              "We served cookies on paper plates to the guests",
+              "We served the guests cookies on paper plates."
+            ],
+            "explanation": "Placing 'on paper plates' right next to 'cookies' clarifies that the cookies were on plates."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_50",
+      "category": "World Literature & Universal Themes",
+      "scenario_name": "Comparative Literature: Allegory in Orwell's 'Animal Farm'",
+      "pedagogical_target": "Historical allegory, satire, political corruption, and language as a tool of control.",
+      "payload": {
+        "title": "Allegorical Masterworks: George Orwell's Animal Farm",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 10",
+        "unitTitle": "Unit 4: Political Satire & Allegory",
+        "skillFocus": "Allegory, satire, historical parallel to the Russian Revolution, subversion of language",
+        "lifeConnection": "Alerts citizens to the erosion of democratic freedoms through propaganda and revised history.",
+        "duration": 40,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80",
+        "content": "In *Animal Farm*, George Orwell crafts an allegorical fable wherein farm animals overthrow their human oppressor, Mr. Jones, aspiring to establish an egalitarian society. However, the pigs, led by Napoleon and Squealer, gradually seize autocratic control. They manipulate the Seven Commandments on the barn wall until the ultimate corrupt slogan remains: **'All animals are equal, but some animals are more equal than others.'**",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Allegorical Device",
+            "question": "What is an **allegory** in literature?",
+            "type": "MCQ",
+            "options": [
+              "A narrative that can be interpreted to reveal a hidden political, moral, or historical meaning beneath the surface story.",
+              "A poem with exactly fourteen lines and a rhyming couplet.",
+              "A story that takes place exclusively on an animal ranch.",
+              "A biography written without metaphors."
+            ],
+            "correctAnswer": "A narrative that can be interpreted to reveal a hidden political, moral, or historical meaning beneath the surface story.",
+            "acceptedAnswers": [
+              "A narrative that can be interpreted to reveal a hidden political, moral, or historical meaning beneath the surface story."
+            ],
+            "explanation": "An allegory uses characters and events as symbols for broader historical or philosophical truths."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: The Paradox of Power",
+            "question": "What logical figure of speech is embedded in the statement 'All animals are equal, but some animals are more equal than others'?",
+            "type": "SHORT",
+            "correctAnswer": "A paradox (or satirical contradiction)",
+            "acceptedAnswers": ["A paradox", "Paradox", "paradox", "satirical paradox", "contradiction"],
+            "explanation": "Equality cannot have degrees; 'more equal' is a satirical paradox exposing hypocrisy."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_51",
+      "category": "Early Years Phonics & Sight Words",
+      "scenario_name": "Phonics: Initial Blends (bl-, cl-, fl-, sl-)",
+      "pedagogical_target": "Two-letter consonant blends, word decoding, and picture-sound association.",
+      "payload": {
+        "title": "Phonics Explorers: The 'L-Blends' Family",
+        "subject": "ENGLISH",
+        "gradeLevel": "Grade 1",
+        "unitTitle": "Unit 3: Consonant Blends",
+        "skillFocus": "Decoding initial l-blends (bl, cl, fl, gl, pl, sl)",
+        "lifeConnection": "Helps children pronounce and spell everyday words accurately.",
+        "duration": 20,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80",
+        "content": "When two consonants appear together and both sounds are heard, they form a **blend**.\n- **bl**: **bl**ue, **bl**ack, **bl**ow\n- **cl**: **cl**ap, **cl**oud, **cl**ock\n- **fl**: **fl**ag, **fl**y, **fl**ower\n- **sl**: **sl**ide, **sl**eep, **sl**ow",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Blend Identification",
+            "question": "Which blend sound starts the word 'flower'?",
+            "type": "MCQ",
+            "options": ["fl", "bl", "cl", "sl"],
+            "correctAnswer": "fl",
+            "acceptedAnswers": ["fl", "Fl"],
+            "explanation": "'Flower' begins with the /fl/ blend."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Word Completion",
+            "question": "Fill in the missing blend: 'Look at the fluffy white _____oud in the sky.'",
+            "type": "FIB",
+            "correctAnswer": "cl",
+            "acceptedAnswers": ["cl", "Cl"],
+            "explanation": "cl + oud = cloud."
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_52",
+      "category": "O/A-Level Advanced Expository Synthesis",
+      "scenario_name": "Cambridge O/A-Level Master Synthesizer: Comparative Discursive Essay",
+      "pedagogical_target": "Synthesizing opposing viewpoints on AI in education into an objective, balanced thesis.",
+      "payload": {
+        "title": "Cambridge Discursive Master: The Future of AI in Education",
+        "subject": "ENGLISH",
+        "gradeLevel": "O-Level",
+        "unitTitle": "Unit 5: Discursive and Argumentative Synthesis",
+        "skillFocus": "Balanced discursive essay structure, counter-arguments, hedging language, nuanced conclusions",
+        "lifeConnection": "Prepares future policymakers and scholars to analyze emergent technology with wisdom.",
+        "duration": 45,
+        "thumbnailUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=600&q=80",
+        "content": "Artificial intelligence tutors offer round-the-clock personalized pacing, adaptive exercise selection, and instant grammatical remediation for students in under-resourced schools. Conversely, educational traditionalists caution that over-reliance on automated tutoring impairs metacognitive stamina, discourages handwritten reflection, and erodes vital human student-mentor relationships. A nuanced synthesis suggests AI should serve as an amplifier for human teachers, not a substitute.",
+        "questions": [
+          {
+            "questionNumber": "1",
+            "sectionTitle": "Part A: Discursive Balance",
+            "question": "What is the defining characteristic of a 'discursive' essay as opposed to a purely 'persuasive' essay?",
+            "type": "MCQ",
+            "options": [
+              "It examines multiple viewpoints objectively before arriving at a reasoned, balanced conclusion.",
+              "It argues only for one extreme side without acknowledging counter-arguments.",
+              "It is written in rhyming poetry.",
+              "It never presents any conclusion."
+            ],
+            "correctAnswer": "It examines multiple viewpoints objectively before arriving at a reasoned, balanced conclusion.",
+            "acceptedAnswers": [
+              "It examines multiple viewpoints objectively before arriving at a reasoned, balanced conclusion."
+            ],
+            "explanation": "Discursive writing explores balanced arguments before concluding."
+          },
+          {
+            "questionNumber": "2",
+            "sectionTitle": "Part B: Synthesized Thesis Formulation",
+            "question": "State the synthesized middle-ground position reached in the passage regarding artificial intelligence in classrooms.",
+            "type": "SHORT",
+            "correctAnswer": "AI should serve as an amplifier and assistive tool for human educators rather than their replacement.",
+            "acceptedAnswers": [
+              "AI should serve as an amplifier and assistive tool for human educators rather than their replacement.",
+              "AI should support teachers rather than replace them.",
+              "AI should amplify human educators rather than substitute them."
+            ],
+            "explanation": "The conclusion explicitly states AI should serve as an amplifier rather than a substitute."
+          }
+        ]
+      }
+    }
+  ],
+
+  "quality_assurance_checklist": [
+    "Verify 'subject' is set to 'ENGLISH'.",
+    "Verify 'gradeLevel' matches an enrolled grade (Kindergarten through Grade 12, O-Level, A-Level).",
+    "Ensure 'questions' array contains complete question stems, appropriate types (MCQ, FIB, SHORT, ACTIVITY), options for MCQs, and valid 'acceptedAnswers'.",
+    "Verify 'duration' is a positive integer in minutes.",
+    "Ensure that 'isDiagnostic' is 0 for curriculum progress lessons and 1 for entrance/baseline assessments.",
+    "Validate that student completion marks mastery at >= 80% to sync with the Gamified Space Quest learning map."
+  ]
+}

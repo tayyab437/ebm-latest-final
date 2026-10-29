@@ -4167,19 +4167,50 @@ let cachedBrandingResponse: any = null;
 let cachedWelcomeModalResponse: any = null;
 let cachedAnnouncementBarResponse: any = null;
 
-// GET branding configuration
-app.get("/api/branding", async (req, res) => {
-  res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300, stale-while-revalidate=600");
-  if (cachedBrandingResponse) {
-    return res.json(cachedBrandingResponse);
+// Helper to save base64 uploaded branding images (logo/favicon) to public/uploads/ for universal CDN/browser caching
+function saveBase64ToPublicUploads(dataUrlOrUrl: string | undefined | null, filePrefix: string): string {
+  if (!dataUrlOrUrl || typeof dataUrlOrUrl !== "string") return "";
+  const trimmed = dataUrlOrUrl.trim();
+  if (!trimmed.startsWith("data:image/")) {
+    return trimmed;
+  }
+  try {
+    const match = trimmed.match(/^data:image\/([a-zA-Z0-9\+\-]+);base64,(.+)$/);
+    if (!match) return trimmed;
+    let ext = match[1].toLowerCase();
+    if (ext === "svg+xml") ext = "svg";
+    else if (ext === "x-icon" || ext === "vnd.microsoft.icon") ext = "ico";
+    else if (ext === "jpeg") ext = "jpg";
+
+    const base64Data = match[2];
+    const buffer = Buffer.from(base64Data, "base64");
+    const uploadsDir = path.join(process.cwd(), "public", "uploads");
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    const fileName = `${filePrefix}.${ext}`;
+    const filePath = path.join(uploadsDir, fileName);
+    fs.writeFileSync(filePath, buffer);
+    console.log(`Saved branding asset ${filePrefix} to ${filePath} (${buffer.length} bytes)`);
+    return `/uploads/${fileName}?v=${Date.now()}`;
+  } catch (err) {
+    console.error("Error saving base64 asset to disk:", err);
+    return trimmed;
+  }
+}
+
+// Authoritative function to retrieve current branding configuration
+async function getAuthoritativeBranding(): Promise<any> {
+  if (cachedBrandingResponse?.branding && Object.keys(cachedBrandingResponse.branding).length > 0) {
+    return cachedBrandingResponse.branding;
   }
   try {
     const db = await getDb();
     const rows = await db.select().from(schema.branding_settings).where(eq(schema.branding_settings.id, "current"));
     
+    let branding: any = null;
     if (rows.length > 0) {
       const dbRow = rows[0];
-      
       let heroSlidesParsed = dbRow.heroSlides;
       while (typeof heroSlidesParsed === "string") {
         try {
@@ -4190,65 +4221,80 @@ app.get("/api/branding", async (req, res) => {
           break;
         }
       }
-      
       if (!Array.isArray(heroSlidesParsed)) {
         heroSlidesParsed = [];
       }
-      
-      const branding = {
-        logoText: dbRow.logoText,
-        logoType: dbRow.logoType,
-        logoIcon: dbRow.logoIcon,
-        logoImageUrl: dbRow.logoImageUrl,
-        faviconUrl: dbRow.faviconUrl,
-        heroBackgroundImage: (dbRow as any).heroBackgroundImage || "https://i.ibb.co/0yqDPG8r/Chat-GPT-Image-Aug-10-2026-02-06-45-PM.webp",
+
+      let logoImg = dbRow.logoImageUrl || "";
+      let favUrl = dbRow.faviconUrl || "";
+
+      // Fallback to static uploads if present on disk
+      if (!logoImg && fs.existsSync(path.join(process.cwd(), "public/uploads/branding-logo.png"))) {
+        logoImg = "/uploads/branding-logo.png";
+      }
+      if ((!favUrl || favUrl === "/favicon.svg") && fs.existsSync(path.join(process.cwd(), "public/uploads/branding-favicon.png"))) {
+        favUrl = "/uploads/branding-favicon.png";
+      }
+
+      branding = {
+        logoText: dbRow.logoText || "EBM Digital Learning",
+        logoType: (logoImg ? "image" : dbRow.logoType) || "image",
+        logoIcon: dbRow.logoIcon || "GraduationCap",
+        logoImageUrl: logoImg,
+        faviconUrl: favUrl || "/favicon.svg",
+        heroBackgroundImage: (dbRow as any).heroBackgroundImage || "/ebm-hero-bg-opt.webp",
         heroSlides: heroSlidesParsed,
         showThemeToggle: dbRow.showThemeToggle !== 0
       };
-      
-      cachedBrandingResponse = { success: true, branding };
-      return res.json(cachedBrandingResponse);
-    }
-    
-    // Fallback to local json file
-    const filePath = path.join(process.cwd(), "src/db/branding-settings.json");
-    if (!fs.existsSync(filePath)) {
-      cachedBrandingResponse = { success: true, branding: {} };
-      return res.json(cachedBrandingResponse);
-    }
-    const data = fs.readFileSync(filePath, "utf-8");
-    let fallbackBranding = JSON.parse(data);
-    if (fallbackBranding && fallbackBranding.heroSlides) {
-      let heroSlidesParsed = fallbackBranding.heroSlides;
-      while (typeof heroSlidesParsed === "string") {
+    } else {
+      // Fallback to local json file
+      const filePath = path.join(process.cwd(), "src/db/branding-settings.json");
+      let fallbackBranding: any = {};
+      if (fs.existsSync(filePath)) {
         try {
-          const next = JSON.parse(heroSlidesParsed);
-          if (next === heroSlidesParsed) break;
-          heroSlidesParsed = next;
-        } catch (e) {
-          break;
-        }
+          const data = fs.readFileSync(filePath, "utf-8");
+          fallbackBranding = JSON.parse(data);
+        } catch (_) {}
       }
-      if (!Array.isArray(heroSlidesParsed)) {
-        heroSlidesParsed = [];
-      }
-      fallbackBranding.heroSlides = heroSlidesParsed;
+      branding = {
+        logoText: fallbackBranding.logoText || "EBM Digital Learning",
+        logoType: fallbackBranding.logoType || (fallbackBranding.logoImageUrl ? "image" : "image"),
+        logoIcon: fallbackBranding.logoIcon || "GraduationCap",
+        logoImageUrl: fallbackBranding.logoImageUrl || (fs.existsSync(path.join(process.cwd(), "public/uploads/branding-logo.png")) ? "/uploads/branding-logo.png" : ""),
+        faviconUrl: fallbackBranding.faviconUrl || (fs.existsSync(path.join(process.cwd(), "public/uploads/branding-favicon.png")) ? "/uploads/branding-favicon.png" : "/favicon.svg"),
+        heroBackgroundImage: fallbackBranding.heroBackgroundImage || "/ebm-hero-bg-opt.webp",
+        heroSlides: fallbackBranding.heroSlides || [],
+        showThemeToggle: fallbackBranding.showThemeToggle !== false
+      };
     }
-    const finalBranding = {
-      heroBackgroundImage: "https://i.ibb.co/0yqDPG8r/Chat-GPT-Image-Aug-10-2026-02-06-45-PM.webp",
-      ...fallbackBranding
+
+    cachedBrandingResponse = { success: true, branding };
+    return branding;
+  } catch (err) {
+    console.error("Error retrieving authoritative branding:", err);
+    return {
+      logoText: "EBM Digital Learning",
+      logoType: "image",
+      logoIcon: "GraduationCap",
+      logoImageUrl: "/uploads/branding-logo.png",
+      faviconUrl: "/uploads/branding-favicon.png",
+      heroBackgroundImage: "/ebm-hero-bg-opt.webp",
+      heroSlides: [],
+      showThemeToggle: true
     };
-    cachedBrandingResponse = { success: true, branding: finalBranding };
-    return res.json(cachedBrandingResponse);
-  } catch (e: any) {
-    console.error("Error fetching branding settings:", e);
-    return res.status(500).json({ success: false, error: e.message });
   }
+}
+
+// GET branding configuration (public, fast cached response)
+app.get("/api/branding", async (req, res) => {
+  res.setHeader("Cache-Control", "no-cache, must-revalidate");
+  const branding = await getAuthoritativeBranding();
+  return res.json({ success: true, branding });
 });
 
 // UPDATE branding configuration (Admin)
 app.put("/api/admin/branding", async (req, res) => {
-  cachedBrandingResponse = null; // Invalidate cache
+  cachedBrandingResponse = null; // Invalidate cache immediately
   try {
     const db = await getDb();
     const { logoText, logoType, logoIcon, logoImageUrl, faviconUrl, heroBackgroundImage, heroSlides, showThemeToggle } = req.body;
@@ -4267,12 +4313,20 @@ app.put("/api/admin/branding", async (req, res) => {
       heroSlidesParsed = [];
     }
     
+    // Automatically save base64 uploads to static files in public/uploads/ for global 0ms delivery
+    const savedLogoUrl = saveBase64ToPublicUploads(logoImageUrl, "branding-logo");
+    const savedFaviconUrl = saveBase64ToPublicUploads(faviconUrl, "branding-favicon");
+
+    const effectiveLogoImage = savedLogoUrl || logoImageUrl || "";
+    const effectiveFavicon = savedFaviconUrl || faviconUrl || "/favicon.svg";
+    const effectiveLogoType = effectiveLogoImage ? "image" : (logoType || "icon");
+
     const brandingData = {
       logoText: logoText || "EBM Digital Learning",
-      logoType: logoType || "icon",
+      logoType: effectiveLogoType,
       logoIcon: logoIcon || "GraduationCap",
-      logoImageUrl: logoImageUrl || "",
-      faviconUrl: faviconUrl || "https://cdn-icons-png.flaticon.com/512/2201/2201552.png",
+      logoImageUrl: effectiveLogoImage,
+      faviconUrl: effectiveFavicon,
       heroBackgroundImage: heroBackgroundImage !== undefined ? heroBackgroundImage : "",
       heroSlides: heroSlidesParsed,
       showThemeToggle: showThemeToggle === false ? 0 : 1
@@ -4294,13 +4348,7 @@ app.put("/api/admin/branding", async (req, res) => {
         fs.mkdirSync(dirPath, { recursive: true });
       }
       const fileContent = {
-        logoText: logoText || "EBM Digital Learning",
-        logoType: logoType || "icon",
-        logoIcon: logoIcon || "GraduationCap",
-        logoImageUrl: logoImageUrl || "",
-        faviconUrl: faviconUrl || "https://cdn-icons-png.flaticon.com/512/2201/2201552.png",
-        heroBackgroundImage: heroBackgroundImage !== undefined ? heroBackgroundImage : "",
-        heroSlides: heroSlidesParsed,
+        ...brandingData,
         showThemeToggle: showThemeToggle !== false
       };
       fs.writeFileSync(filePath, JSON.stringify(fileContent, null, 2), "utf-8");
@@ -4308,9 +4356,12 @@ app.put("/api/admin/branding", async (req, res) => {
       console.error("Failed to write branding settings fallback file:", fsErr);
     }
     
-    logAudit("ADMIN", "ADMIN", "UPDATE_BRANDING", "Updated platform branding settings in database.");
+    // Refresh authoritative cache
+    cachedBrandingResponse = { success: true, branding: { ...brandingData, showThemeToggle: showThemeToggle !== false } };
     
-    return res.json({ success: true, branding: { ...req.body, heroBackgroundImage: brandingData.heroBackgroundImage, heroSlides: heroSlidesParsed } });
+    logAudit("ADMIN", "ADMIN", "UPDATE_BRANDING", "Updated platform branding settings in database and static uploads.");
+    
+    return res.json({ success: true, branding: cachedBrandingResponse.branding });
   } catch (e: any) {
     console.error("Error saving branding settings:", e);
     return res.status(500).json({ success: false, error: e.message });
@@ -9549,6 +9600,28 @@ async function injectSeoMetadata(rawHtml: string, reqPath: string, userAgent?: s
 
   if (extraJsonLd) {
     html = html.replace("</head>", `${extraJsonLd}\n  </head>`);
+  }
+
+  // Globally inject authoritative branding & favicon into HTML head for zero-flash universal delivery
+  try {
+    const branding = await getAuthoritativeBranding();
+    if (branding) {
+      if (branding.faviconUrl) {
+        const favUrl = escapeAttr(branding.faviconUrl);
+        const mime = favUrl.endsWith(".svg") ? "image/svg+xml" : (favUrl.endsWith(".png") ? "image/png" : (favUrl.endsWith(".ico") ? "image/x-icon" : "image/png"));
+        html = html.replace(/<link rel="icon"[^>]*\/>/i, `<link rel="icon" type="${mime}" href="${favUrl}" />`);
+        html = html.replace(/<link rel="shortcut icon"[^>]*\/>/i, `<link rel="shortcut icon" href="${favUrl}" />`);
+        html = html.replace(/<link rel="apple-touch-icon"[^>]*\/>/i, `<link rel="apple-touch-icon" href="${favUrl}" />`);
+      }
+      if (branding.logoImageUrl) {
+        const fullLogoUrl = branding.logoImageUrl.startsWith("http") ? branding.logoImageUrl : `${BASE_URL}${branding.logoImageUrl}`;
+        html = html.replace(/"logo":\s*"https:\/\/ejazbukharimethod\.com\/favicon\.svg"/g, `"logo": "${fullLogoUrl}"`);
+      }
+      const safeBrandingJson = JSON.stringify(branding).replace(/</g, "\\u003c");
+      html = html.replace("</head>", `  <script>window.__INITIAL_BRANDING__ = ${safeBrandingJson};</script>\n  </head>`);
+    }
+  } catch (brandErr) {
+    console.warn("Could not inject authoritative branding into SEO HTML:", brandErr);
   }
 
   // Detect automated search bots & AI discovery crawlers (Googlebot, Bingbot, LLM crawlers)

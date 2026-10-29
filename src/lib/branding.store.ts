@@ -2,6 +2,12 @@ import { create } from "zustand";
 import { GraduationCap, ShieldCheck, Sparkles, BookOpen, Crown, Star, Heart } from "lucide-react";
 import academicPortalMockup from "../assets/images/academic_portal_mockup_1784360050225.jpg";
 
+declare global {
+  interface Window {
+    __INITIAL_BRANDING__?: any;
+  }
+}
+
 export const BRANDING_ICONS: Record<string, React.ComponentType<any>> = {
   GraduationCap,
   ShieldCheck,
@@ -44,10 +50,10 @@ interface BrandingState {
 }
 
 const DEFAULT_LOGO_TEXT = "EBM Digital Learning";
-const DEFAULT_LOGO_TYPE = "icon";
+const DEFAULT_LOGO_TYPE = "image";
 const DEFAULT_LOGO_ICON = "GraduationCap";
-const DEFAULT_LOGO_IMAGE_URL = "";
-const DEFAULT_FAVICON_URL = "/favicon.svg";
+const DEFAULT_LOGO_IMAGE_URL = "/uploads/branding-logo.png";
+const DEFAULT_FAVICON_URL = "/uploads/branding-favicon.png";
 const DEFAULT_HERO_BG_IMAGE = "/ebm-hero-bg-opt.webp";
 
 const DEFAULT_HERO_SLIDES: HeroSlide[] = [
@@ -78,23 +84,31 @@ const DEFAULT_HERO_SLIDES: HeroSlide[] = [
 ];
 
 export const useBrandingStore = create<BrandingState>((set) => {
-  // Safe SSR/client check
   const isClient = typeof window !== "undefined";
+  const initBranding = isClient ? (window.__INITIAL_BRANDING__ || null) : null;
   
-  const storedLogoText = isClient ? localStorage.getItem("ebm_logo_text") ?? DEFAULT_LOGO_TEXT : DEFAULT_LOGO_TEXT;
-  const storedLogoType = isClient ? (localStorage.getItem("ebm_logo_type") ?? DEFAULT_LOGO_TYPE) as "icon" | "image" : DEFAULT_LOGO_TYPE;
-  const storedLogoIcon = isClient ? localStorage.getItem("ebm_logo_icon") ?? DEFAULT_LOGO_ICON : DEFAULT_LOGO_ICON;
-  const storedLogoImageUrl = isClient ? localStorage.getItem("ebm_logo_image_url") ?? DEFAULT_LOGO_IMAGE_URL : DEFAULT_LOGO_IMAGE_URL;
-  let storedFaviconUrl = isClient ? localStorage.getItem("ebm_favicon_url") ?? DEFAULT_FAVICON_URL : DEFAULT_FAVICON_URL;
+  const storedLogoText = initBranding?.logoText || (isClient ? localStorage.getItem("ebm_logo_text") : null) || DEFAULT_LOGO_TEXT;
+  const storedLogoType = (initBranding?.logoType || (isClient ? localStorage.getItem("ebm_logo_type") : null) || (initBranding?.logoImageUrl ? "image" : DEFAULT_LOGO_TYPE)) as "icon" | "image";
+  const storedLogoIcon = initBranding?.logoIcon || (isClient ? localStorage.getItem("ebm_logo_icon") : null) || DEFAULT_LOGO_ICON;
+  const storedLogoImageUrl = initBranding?.logoImageUrl || (isClient ? localStorage.getItem("ebm_logo_image_url") : null) || DEFAULT_LOGO_IMAGE_URL;
+  let storedFaviconUrl = initBranding?.faviconUrl || (isClient ? localStorage.getItem("ebm_favicon_url") : null) || DEFAULT_FAVICON_URL;
+  
   if (isClient && (storedFaviconUrl.includes("flaticon") || !storedFaviconUrl)) {
     storedFaviconUrl = DEFAULT_FAVICON_URL;
-    localStorage.setItem("ebm_favicon_url", DEFAULT_FAVICON_URL);
+    try {
+      localStorage.setItem("ebm_favicon_url", DEFAULT_FAVICON_URL);
+    } catch (_) {}
   }
-  const storedHeroBackgroundImage = isClient ? localStorage.getItem("ebm_hero_bg_image") ?? DEFAULT_HERO_BG_IMAGE : DEFAULT_HERO_BG_IMAGE;
-  const storedShowThemeToggle = isClient ? (localStorage.getItem("ebm_show_theme_toggle") !== "false") : true;
+  
+  const storedHeroBackgroundImage = initBranding?.heroBackgroundImage || (isClient ? localStorage.getItem("ebm_hero_bg_image") : null) || DEFAULT_HERO_BG_IMAGE;
+  const storedShowThemeToggle = initBranding?.showThemeToggle !== undefined 
+    ? !!initBranding.showThemeToggle 
+    : (isClient ? (localStorage.getItem("ebm_show_theme_toggle") !== "false") : true);
   
   let storedHeroSlides = DEFAULT_HERO_SLIDES;
-  if (isClient) {
+  if (initBranding?.heroSlides && Array.isArray(initBranding.heroSlides) && initBranding.heroSlides.length > 0) {
+    storedHeroSlides = initBranding.heroSlides;
+  } else if (isClient) {
     try {
       const stored = localStorage.getItem("ebm_hero_slides");
       if (stored) {
@@ -102,7 +116,7 @@ export const useBrandingStore = create<BrandingState>((set) => {
         while (typeof parsed === "string") {
           parsed = JSON.parse(parsed);
         }
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           storedHeroSlides = parsed;
         }
       }
@@ -114,7 +128,7 @@ export const useBrandingStore = create<BrandingState>((set) => {
   if (isClient && storedFaviconUrl) {
     setTimeout(() => {
       applyFavicon(storedFaviconUrl);
-    }, 100);
+    }, 50);
   }
 
   return {
@@ -149,37 +163,41 @@ export const useBrandingStore = create<BrandingState>((set) => {
 
         const next = { ...state, ...finalUpdates };
         if (isClient) {
-          if (updates.logoText !== undefined) localStorage.setItem("ebm_logo_text", next.logoText);
-          if (updates.logoType !== undefined) localStorage.setItem("ebm_logo_type", next.logoType);
-          if (updates.logoIcon !== undefined) localStorage.setItem("ebm_logo_icon", next.logoIcon);
-          if (updates.logoImageUrl !== undefined) localStorage.setItem("ebm_logo_image_url", next.logoImageUrl);
-          if (updates.faviconUrl !== undefined) {
-            localStorage.setItem("ebm_favicon_url", next.faviconUrl);
-            applyFavicon(next.faviconUrl);
-          }
-          if (updates.heroBackgroundImage !== undefined) {
-            localStorage.setItem("ebm_hero_bg_image", next.heroBackgroundImage);
-          }
-          if (processedHeroSlides !== undefined) {
-            localStorage.setItem("ebm_hero_slides", JSON.stringify(processedHeroSlides));
-          }
-          if (updates.showThemeToggle !== undefined) {
-            localStorage.setItem("ebm_show_theme_toggle", next.showThemeToggle ? "true" : "false");
-          }
+          try {
+            if (updates.logoText !== undefined) localStorage.setItem("ebm_logo_text", next.logoText);
+            if (updates.logoType !== undefined) localStorage.setItem("ebm_logo_type", next.logoType);
+            if (updates.logoIcon !== undefined) localStorage.setItem("ebm_logo_icon", next.logoIcon);
+            if (updates.logoImageUrl !== undefined) localStorage.setItem("ebm_logo_image_url", next.logoImageUrl);
+            if (updates.faviconUrl !== undefined) {
+              localStorage.setItem("ebm_favicon_url", next.faviconUrl);
+              applyFavicon(next.faviconUrl);
+            }
+            if (updates.heroBackgroundImage !== undefined) {
+              localStorage.setItem("ebm_hero_bg_image", next.heroBackgroundImage);
+            }
+            if (processedHeroSlides !== undefined) {
+              localStorage.setItem("ebm_hero_slides", JSON.stringify(processedHeroSlides));
+            }
+            if (updates.showThemeToggle !== undefined) {
+              localStorage.setItem("ebm_show_theme_toggle", next.showThemeToggle ? "true" : "false");
+            }
+          } catch (_) {}
         }
         return next;
       });
     },
     resetBranding: () => {
       if (isClient) {
-        localStorage.removeItem("ebm_logo_text");
-        localStorage.removeItem("ebm_logo_type");
-        localStorage.removeItem("ebm_logo_icon");
-        localStorage.removeItem("ebm_logo_image_url");
-        localStorage.removeItem("ebm_favicon_url");
-        localStorage.removeItem("ebm_hero_bg_image");
-        localStorage.removeItem("ebm_hero_slides");
-        localStorage.removeItem("ebm_show_theme_toggle");
+        try {
+          localStorage.removeItem("ebm_logo_text");
+          localStorage.removeItem("ebm_logo_type");
+          localStorage.removeItem("ebm_logo_icon");
+          localStorage.removeItem("ebm_logo_image_url");
+          localStorage.removeItem("ebm_favicon_url");
+          localStorage.removeItem("ebm_hero_bg_image");
+          localStorage.removeItem("ebm_hero_slides");
+          localStorage.removeItem("ebm_show_theme_toggle");
+        } catch (_) {}
       }
       set({
         logoText: DEFAULT_LOGO_TEXT,
@@ -198,29 +216,63 @@ export const useBrandingStore = create<BrandingState>((set) => {
   };
 });
 
+/**
+ * Universal global favicon applicator for all browsers, devices, and tabs
+ */
 export function applyFavicon(url: string) {
+  if (typeof window === "undefined" || !url) return;
+  try {
+    const cleanUrl = url && !url.includes("flaticon") ? url.trim() : DEFAULT_FAVICON_URL;
+    if (!cleanUrl) return;
+
+    let mimeType = "image/png";
+    if (cleanUrl.endsWith(".svg") || cleanUrl.startsWith("data:image/svg")) {
+      mimeType = "image/svg+xml";
+    } else if (cleanUrl.endsWith(".ico") || cleanUrl.startsWith("data:image/x-icon") || cleanUrl.startsWith("data:image/vnd.microsoft.icon")) {
+      mimeType = "image/x-icon";
+    } else if (cleanUrl.endsWith(".webp")) {
+      mimeType = "image/webp";
+    } else if (cleanUrl.endsWith(".jpg") || cleanUrl.endsWith(".jpeg")) {
+      mimeType = "image/jpeg";
+    }
+
+    const rels = ["icon", "shortcut icon", "apple-touch-icon"];
+    rels.forEach((rel) => {
+      let link = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = rel;
+        document.head.appendChild(link);
+      }
+      link.type = mimeType;
+      link.href = cleanUrl;
+    });
+  } catch (e) {
+    console.error("Failed to apply favicon globally:", e);
+  }
+}
+
+/**
+ * Global synchronization helper: fetches latest authoritative branding from database
+ */
+export async function syncGlobalBranding(): Promise<void> {
   if (typeof window === "undefined") return;
   try {
-    const cleanUrl = url && !url.includes("flaticon") ? url : DEFAULT_FAVICON_URL;
-    const isSvg = cleanUrl.endsWith(".svg") || cleanUrl === "/favicon.svg";
-
-    let iconLinks = Array.from(document.querySelectorAll<HTMLLinkElement>("link[rel~='icon'], link[rel='apple-touch-icon']"));
-    
-    if (iconLinks.length === 0) {
-      const link = document.createElement("link");
-      link.rel = "icon";
-      if (isSvg) link.type = "image/svg+xml";
-      link.href = cleanUrl;
-      document.head.appendChild(link);
-    } else {
-      iconLinks.forEach((link) => {
-        link.href = cleanUrl;
-        if (isSvg) {
-          link.setAttribute("type", "image/svg+xml");
-        }
-      });
+    const res = await fetch("/api/branding", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.success && data.branding && Object.keys(data.branding).length > 0) {
+      useBrandingStore.getState().updateBranding(data.branding);
+      if (data.branding.faviconUrl) {
+        applyFavicon(data.branding.faviconUrl);
+      }
     }
-  } catch (e) {
-    console.error("Failed to apply favicon:", e);
+  } catch (err) {
+    console.warn("Could not sync branding from server:", err);
   }
+}
+
+// Auto-trigger sync on client boot
+if (typeof window !== "undefined") {
+  syncGlobalBranding();
 }

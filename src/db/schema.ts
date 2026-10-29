@@ -1,4 +1,4 @@
-import { mysqlTable, varchar, int, text, timestamp, json, date } from 'drizzle-orm/mysql-core';
+import { mysqlTable, varchar, int, text, longtext, timestamp, json, date } from 'drizzle-orm/mysql-core';
 
 export const classes = mysqlTable('classes', {
   id: varchar('id', { length: 100 }).primaryKey(),
@@ -348,9 +348,9 @@ export const branding_settings = mysqlTable('branding_settings', {
   logoText: varchar('logoText', { length: 255 }).notNull(),
   logoType: varchar('logoType', { length: 50 }).notNull(),
   logoIcon: varchar('logoIcon', { length: 100 }),
-  logoImageUrl: text('logoImageUrl'),
-  faviconUrl: text('faviconUrl'),
-  heroBackgroundImage: text('heroBackgroundImage'),
+  logoImageUrl: longtext('logoImageUrl'),
+  faviconUrl: longtext('faviconUrl'),
+  heroBackgroundImage: longtext('heroBackgroundImage'),
   heroSlides: json('heroSlides'),
   showThemeToggle: int('showThemeToggle').default(1),
   updatedAt: timestamp('updatedAt').defaultNow(),

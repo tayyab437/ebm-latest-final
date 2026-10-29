@@ -42,6 +42,7 @@ import { motion, AnimatePresence } from "motion/react";
 import clsx from "clsx";
 import { ParentNotification } from "../../types";
 import { PTMLiveConferenceModal } from "../common/PTMLiveConferenceModal";
+import { useBrandingStore } from "../../lib/branding.store";
 
 interface ParentDashboardProps {
   notifications: ParentNotification[];
@@ -72,6 +73,7 @@ interface CheckpointResult {
 }
 
 export function ParentDashboard({ notifications, onReadNotification, onLogout }: ParentDashboardProps) {
+  const { logoText, logoImageUrl, logoType } = useBrandingStore();
   const [activeTab, setActiveTab] = useState<"overview" | "transcripts" | "incentives" | "ai_advisor" | "meetings" | "academy" | "messages" | "announcements" | "profile">("overview");
   const [showAllNotifications, setShowAllNotifications] = useState(false);
   
@@ -610,14 +612,20 @@ export function ParentDashboard({ notifications, onReadNotification, onLogout }:
           to="/"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           title="Return to Home Page"
-          className="p-6 border-b border-slate-100 flex items-center gap-3 cursor-pointer group hover:bg-slate-50 transition-colors"
+          className="p-5 border-b border-slate-100 flex items-center gap-3 cursor-pointer group hover:bg-slate-50 transition-colors"
         >
-          <div className="bg-blue-600 text-white p-2.5 rounded-2xl shadow-md group-hover:scale-105 transition-transform">
-            <Users className="h-5 w-5 text-white font-black" />
-          </div>
-          <div>
-            <span className="text-[10px] font-black uppercase text-blue-600 tracking-widest block leading-none mb-1">EBM Portal</span>
-            <h2 className="text-sm font-black text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">Parent Command Hub</h2>
+          {(logoType === "image" || logoImageUrl) && logoImageUrl ? (
+            <div className="h-9 max-w-[100px] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <img src={logoImageUrl} alt="Logo" className="h-9 max-w-[100px] object-contain bg-transparent" referrerPolicy="no-referrer" />
+            </div>
+          ) : (
+            <div className="bg-blue-600 text-white p-2.5 rounded-2xl shadow-md group-hover:scale-105 transition-transform">
+              <Users className="h-5 w-5 text-white font-black" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <span className="text-[10px] font-black uppercase text-blue-600 tracking-widest block leading-none mb-1 truncate">{logoText || "EBM Portal"}</span>
+            <h2 className="text-xs font-black text-slate-900 leading-tight group-hover:text-blue-600 transition-colors truncate">Parent Command Hub</h2>
           </div>
         </Link>
 

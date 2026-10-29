@@ -1008,20 +1008,22 @@ async function initializeDb() {
           \`logoText\` varchar(255) NOT NULL,
           \`logoType\` varchar(50) NOT NULL,
           \`logoIcon\` varchar(100),
-          \`logoImageUrl\` text,
-          \`faviconUrl\` text,
-          \`heroBackgroundImage\` text,
+          \`logoImageUrl\` longtext,
+          \`faviconUrl\` longtext,
+          \`heroBackgroundImage\` longtext,
           \`heroSlides\` json,
           \`showThemeToggle\` int DEFAULT 1,
           \`updatedAt\` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         );
       `);
       
-      // Check and add column if not existing
+      // Ensure columns are LONGTEXT and add missing columns
       try {
-        await connection.query(`ALTER TABLE \`branding_settings\` ADD COLUMN \`heroBackgroundImage\` text`);
+        await connection.query(`ALTER TABLE \`branding_settings\` MODIFY COLUMN \`logoImageUrl\` longtext`);
+        await connection.query(`ALTER TABLE \`branding_settings\` MODIFY COLUMN \`faviconUrl\` longtext`);
+        await connection.query(`ALTER TABLE \`branding_settings\` MODIFY COLUMN \`heroBackgroundImage\` longtext`);
       } catch (colErr) {
-        // column already exists
+        // ignore if already done
       }
       
       console.log("branding_settings table ready or created");

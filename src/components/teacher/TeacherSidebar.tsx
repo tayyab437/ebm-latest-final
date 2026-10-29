@@ -162,16 +162,16 @@ export function TeacherSidebar({
           title="Return to Home Page"
           className={clsx("flex items-center gap-3 min-w-0 cursor-pointer group hover:opacity-90 transition-opacity", isSidebarCollapsed && "justify-center")}
         >
-          {logoType === "icon" ? (
+          {(logoType === "image" || logoImageUrl) && logoImageUrl ? (
+            <div className="w-10 h-10 flex items-center justify-center bg-transparent shrink-0 group-hover:scale-105 transition-transform">
+              <img src={logoImageUrl} alt="Logo" className="w-full h-full object-contain bg-transparent" referrerPolicy="no-referrer" />
+            </div>
+          ) : logoType === "icon" && logoIcon && BRANDING_ICONS[logoIcon] ? (
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-200 shrink-0 group-hover:scale-105 transition-transform">
               {(() => {
                 const IconComponent = BRANDING_ICONS[logoIcon] || BookOpen;
                 return <IconComponent className="h-5 w-5 text-white" />;
               })()}
-            </div>
-          ) : logoImageUrl ? (
-            <div className="w-10 h-10 flex items-center justify-center bg-transparent shrink-0 group-hover:scale-105 transition-transform">
-              <img src={logoImageUrl} alt="Logo" className="w-full h-full object-contain bg-transparent" referrerPolicy="no-referrer" />
             </div>
           ) : (
             <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 shrink-0 group-hover:scale-105 transition-transform">

@@ -8,7 +8,7 @@ import { EBM_ROADMAP_DETAILS, INITIAL_COURSES, MOCK_DAILY_TASKS, MOCK_STUDENTS_P
 import AnnouncementBar from "./components/home/AnnouncementBar";
 import HomeFooter from "./components/home/Footer";
 const InspirationPage = React.lazy(() => import("./components/pages/InspirationPage").then(m => ({ default: m.InspirationPage })));
-import { useBrandingStore, BRANDING_ICONS } from "./lib/branding.store";
+import { useBrandingStore, BRANDING_ICONS, applyFavicon } from "./lib/branding.store";
 
 // Import EBMHomepage synchronously to ensure zero layout shift and 0ms render delay on landing
 import EBMHomepage from "./components/home/EBMHomepage";
@@ -90,21 +90,27 @@ export default function App() {
   const { logoText, logoType, logoIcon, logoImageUrl, showThemeToggle, updateBranding } = useBrandingStore();
   const initialUser = getInitialUser();
 
-  // Sync latest branding config when branding is updated via admin event
+  // Sync authoritative global branding config on initial mount and on admin updates
   useEffect(() => {
-    const handleBrandingUpdate = () => {
-      fetch("/api/branding")
+    const fetchLatestBranding = () => {
+      fetch("/api/branding", { cache: "no-store" })
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (data && data.branding && Object.keys(data.branding).length > 0) {
             updateBranding(data.branding);
+            if (data.branding.faviconUrl) {
+              applyFavicon(data.branding.faviconUrl);
+            }
           }
         })
         .catch(() => {});
     };
 
-    window.addEventListener("ebm_branding_updated", handleBrandingUpdate);
-    return () => window.removeEventListener("ebm_branding_updated", handleBrandingUpdate);
+    // Immediately fetch global branding on mount across all devices
+    fetchLatestBranding();
+
+    window.addEventListener("ebm_branding_updated", fetchLatestBranding);
+    return () => window.removeEventListener("ebm_branding_updated", fetchLatestBranding);
   }, [updateBranding]);
 
   const [isDarkMode] = useState<boolean>(false);

@@ -130,21 +130,21 @@ export function AdminSidebar({ currentView, setCurrentView, onLogout }: AdminSid
           className="flex items-center gap-3 group cursor-pointer hover:opacity-90 transition-opacity"
           title="Return to Home Page"
         >
-          {logoType === "icon" ? (
+          {(logoType === "image" || logoImageUrl) && logoImageUrl ? (
+            <div className="h-10 flex items-center justify-center bg-transparent shrink-0 group-hover:scale-105 transition-transform">
+              <img 
+                src={logoImageUrl} 
+                alt="Logo" 
+                className="h-10 max-w-[120px] object-contain bg-transparent" 
+                referrerPolicy="no-referrer" 
+              />
+            </div>
+          ) : logoType === "icon" && logoIcon && BRANDING_ICONS[logoIcon] ? (
             <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0 group-hover:scale-105 transition-transform">
               {(() => {
                 const IconComponent = BRANDING_ICONS[logoIcon] || ShieldCheck;
                 return <IconComponent className="h-6 w-6 text-white" />;
               })()}
-            </div>
-          ) : logoImageUrl ? (
-            <div className="h-10 flex items-center justify-center bg-transparent shrink-0 group-hover:scale-105 transition-transform">
-              <img 
-                src={logoImageUrl} 
-                alt="Logo" 
-                className="h-10 max-w-[90px] object-contain bg-transparent" 
-                referrerPolicy="no-referrer" 
-              />
             </div>
           ) : (
             <div className="w-10 h-10 rounded-xl overflow-hidden bg-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">

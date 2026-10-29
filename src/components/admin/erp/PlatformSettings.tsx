@@ -26,7 +26,7 @@ import {
   CheckCircle2,
   AlertCircle
 } from "lucide-react";
-import { useBrandingStore, BRANDING_ICONS, HeroSlide, applyFavicon } from "../../../lib/branding.store";
+import { useBrandingStore, BRANDING_ICONS, HeroSlide, applyFavicon, syncGlobalBranding } from "../../../lib/branding.store";
 import { FeaturedJourneysConfig } from "./FeaturedJourneysConfig";
 import { ParentsJourneyConfig } from "./ParentsJourneyConfig";
 
@@ -375,6 +375,11 @@ export function PlatformSettings() {
     fetchAnnouncement();
   }, []);
 
+  // Sync latest authoritative branding on mount so Admin settings always reflect DB state
+  useEffect(() => {
+    syncGlobalBranding();
+  }, []);
+
   const toggleSwitch = (id: string) => {
     setSwitches(prev => prev.map(sw => sw.id === id ? { ...sw, active: !sw.active } : sw));
   };
@@ -394,13 +399,27 @@ export function PlatformSettings() {
 
     updateBranding(brandingData);
 
-    // Save branding configuration to backend
+    // Save branding configuration to backend and receive CDN/uploads file URLs
     try {
-      await fetch("/api/admin/branding", {
+      const res = await fetch("/api/admin/branding", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(brandingData),
       });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.branding) {
+          updateBranding(data.branding);
+          if (data.branding.logoImageUrl) {
+            setLocalLogoImageUrl(data.branding.logoImageUrl);
+          }
+          if (data.branding.faviconUrl) {
+            setLocalFaviconUrl(data.branding.faviconUrl);
+            applyFavicon(data.branding.faviconUrl);
+          }
+        }
+      }
+      window.dispatchEvent(new Event("ebm_branding_updated"));
     } catch (err) {
       console.error("Error saving branding settings to backend:", err);
     }
@@ -562,11 +581,18 @@ export function PlatformSettings() {
     updateBranding(brandingData);
 
     try {
-      await fetch("/api/admin/branding", {
+      const res = await fetch("/api/admin/branding", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(brandingData),
       });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.branding) {
+          updateBranding(data.branding);
+        }
+      }
+      window.dispatchEvent(new Event("ebm_branding_updated"));
       setHeroBgSaveSuccess(true);
       setTimeout(() => setHeroBgSaveSuccess(false), 2500);
     } catch (err) {

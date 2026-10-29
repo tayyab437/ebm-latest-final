@@ -1,9 +1,9 @@
 {
   "logoText": "EBM Digital Learning",
-  "logoType": "icon",
+  "logoType": "image",
   "logoIcon": "GraduationCap",
-  "logoImageUrl": "",
-  "faviconUrl": "/favicon.svg",
+  "logoImageUrl": "/uploads/branding-logo.png",
+  "faviconUrl": "/uploads/branding-favicon.png",
   "heroBackgroundImage": "",
   "heroSlides": [
     {

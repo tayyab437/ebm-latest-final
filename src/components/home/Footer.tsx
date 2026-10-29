@@ -36,14 +36,7 @@ export default function Footer({ onNavigate }: FooterProps) {
           {/* Brand Bio */}
           <div className="col-span-2 space-y-4 text-left">
             <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-2">
-              {logoType === "icon" ? (
-                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black shadow-lg shadow-blue-500/15 shrink-0">
-                  {(() => {
-                    const IconComponent = BRANDING_ICONS[logoIcon] || GraduationCap;
-                    return <IconComponent className="h-5 w-5 text-white" />;
-                  })()}
-                </div>
-              ) : logoImageUrl ? (
+              {(logoType === "image" || logoImageUrl) && logoImageUrl ? (
                 <div className="h-9 flex items-center justify-center bg-transparent shrink-0">
                   <img 
                     src={logoImageUrl} 
@@ -53,6 +46,13 @@ export default function Footer({ onNavigate }: FooterProps) {
                     className="h-9 max-h-10 max-w-[160px] object-contain bg-transparent" 
                     referrerPolicy="no-referrer" 
                   />
+                </div>
+              ) : logoType === "icon" && logoIcon && BRANDING_ICONS[logoIcon] ? (
+                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black shadow-lg shadow-blue-500/15 shrink-0">
+                  {(() => {
+                    const IconComponent = BRANDING_ICONS[logoIcon] || GraduationCap;
+                    return <IconComponent className="h-5 w-5 text-white" />;
+                  })()}
                 </div>
               ) : (
                 <div className="w-9 h-9 rounded-xl overflow-hidden bg-blue-600 text-white flex items-center justify-center shrink-0">
