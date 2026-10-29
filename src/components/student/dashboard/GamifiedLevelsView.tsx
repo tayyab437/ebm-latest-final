@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Trophy, 
@@ -325,8 +326,8 @@ export function GamifiedLevelsView({
     setChestPoints(50 + chestIndex * 15);
   };
 
-  return (
-    <div className="fixed inset-0 z-[60] bg-gradient-to-b from-[#0F172A] via-[#1E1B4B] to-[#311042] flex flex-col text-white select-none overflow-hidden font-sans">
+  return createPortal(
+    <div className="fixed inset-0 top-0 left-0 w-screen h-screen min-h-[100dvh] z-[9999] bg-gradient-to-b from-[#0F172A] via-[#1E1B4B] to-[#311042] flex flex-col text-white select-none overflow-hidden font-sans">
       
       {/* Dynamic Background Stars and Floating Elements */}
       <div className="absolute inset-0 pointer-events-none opacity-40 overflow-hidden z-0">
@@ -864,6 +865,7 @@ export function GamifiedLevelsView({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </div>,
+    document.body
   );
 }

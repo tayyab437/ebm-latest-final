@@ -179,10 +179,10 @@ export function AdminSidebar({ currentView, setCurrentView, onLogout }: AdminSid
                       }
                     }}
                     className={clsx(
-                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group text-left",
+                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-75 group text-left cursor-pointer touch-manipulation active:scale-[0.98]",
                       isActive 
-                        ? "bg-blue-600/10 text-blue-400 font-bold" 
-                        : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 font-medium"
+                        ? "bg-blue-600/15 text-blue-400 font-bold" 
+                        : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 font-medium active:bg-slate-800"
                     )}
                   >
                     <Icon className={clsx(

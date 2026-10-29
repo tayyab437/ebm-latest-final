@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import Markdown from "react-markdown";
 import { 
@@ -689,8 +690,8 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
     : 100;
 
   if (isGrading) {
-    return (
-      <div className="fixed inset-0 z-[110] bg-white/95 flex flex-col items-center justify-center p-6 font-sans">
+    return createPortal(
+      <div className="fixed inset-0 top-0 left-0 w-screen h-screen min-h-[100dvh] z-[9999] bg-white/95 flex flex-col items-center justify-center p-6 font-sans">
         <div className="w-full max-w-md text-center space-y-6">
           <div className="relative w-24 h-24 mx-auto">
             <div className="absolute inset-0 rounded-full border-4 border-indigo-100 animate-pulse"></div>
@@ -703,12 +704,13 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
             </p>
           </div>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
-  return (
-    <div ref={playerRef} className={clsx("fixed inset-0 z-[100] bg-slate-50 flex flex-col animate-in fade-in duration-300 overflow-hidden font-sans", isFullScreen && "w-screen h-screen")}>
+  return createPortal(
+    <div ref={playerRef} className={clsx("fixed inset-0 top-0 left-0 w-screen h-screen min-h-[100dvh] z-[9999] bg-slate-50 flex flex-col animate-in fade-in duration-300 overflow-hidden font-sans")}>
       {/* Top Navigation Bar */}
       <header className="h-14 border-b border-slate-200/80 flex items-center justify-between px-6 md:px-10 bg-white shrink-0 shadow-xs z-20">
         <div className="flex items-center gap-4 md:gap-6">
@@ -1429,6 +1431,7 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
           )}
         </AnimatePresence>
       </main>
-    </div>
+    </div>,
+    document.body
   );
 }

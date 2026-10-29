@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Markdown from "react-markdown";
 import { InteractiveLessonPlayer } from "./InteractiveLessonPlayer";
 import { useDashboardStore } from "./dashboard.store";
@@ -1161,8 +1162,8 @@ export function MyClassesView() {
       )}
 
       {/* MODAL: ATTEMPT HISTORY */}
-      {selectedHistoryLesson && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+      {selectedHistoryLesson && createPortal(
+        <div className="fixed inset-0 top-0 left-0 w-screen h-screen min-h-[100dvh] z-[9999] overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-[2rem] border border-slate-200/80 shadow-2xl max-w-2xl w-full flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50 rounded-t-[2rem]">
@@ -1313,7 +1314,8 @@ export function MyClassesView() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
 

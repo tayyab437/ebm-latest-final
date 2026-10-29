@@ -174,7 +174,11 @@ export default function App() {
   // Auth state
   const [token, setToken] = useState<string | null>(localStorage.getItem("ebm_token"));
   const [user, setUser] = useState<{ id: string; name: string; email: string; role: UserRole; ebmYear?: EbmYear; onboardingComplete?: boolean } | null>(initialUser);
-  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(() => !!localStorage.getItem("ebm_token"));
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(() => {
+    const hasToken = !!localStorage.getItem("ebm_token");
+    const hasUser = !!localStorage.getItem("ebm_user");
+    return hasToken && !hasUser;
+  });
   const [authEmail, setAuthEmail] = useState("student@ebm.edu");
   const [authError, setAuthError] = useState<string | null>(null);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean>(true);
@@ -262,7 +266,7 @@ export default function App() {
         }
         const targetUrl = map[dest] || `/${dest}`;
         navigate(targetUrl);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo(0, 0);
       }
     };
     const handleNavigationBack = () => {
@@ -279,17 +283,37 @@ export default function App() {
     };
   }, [currentRole, navigate]);
 
+  // Idle prefetch portal modules in the background so portal clicks load at 0ms latency
+  useEffect(() => {
+    const prefetchModules = () => {
+      import("./components/student/dashboard/StudentDashboardView");
+      import("./components/admin/erp/AdminLayout");
+      import("./components/teacher/TeacherLayout");
+      import("./components/parent/ParentDashboard");
+      import("./components/pages/AssessmentPage");
+      import("./components/pages/AnalyticsPage");
+    };
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        (window as any).requestIdleCallback(prefetchModules, { timeout: 2000 });
+      } else {
+        setTimeout(prefetchModules, 800);
+      }
+    }
+  }, []);
 
-  // Load Initial API Data strictly on demand when user is authenticated
+  // Verify Auth Session ONCE on initial boot or token update — NEVER on activeTab route navigation!
   useEffect(() => {
     if (!token) {
       setIsInitialLoading(false);
       return;
     }
-
     verifySession();
+  }, [token]);
 
-    // Fetch tab-specific data only when authenticated user enters that view
+  // Fetch tab-specific data on demand without blocking or freezing navigation
+  useEffect(() => {
+    if (!token) return;
     if (activeTab === "planner" || activeTab === "dashboard") {
       fetchPlannerTasks();
     } else if (activeTab === "parent-feed") {
@@ -303,7 +327,7 @@ export default function App() {
 
   // Sync role & view tabs appropriately
   useEffect(() => {
-    if (["auth", "home", "contact", "privacy", "terms", "assessment", "analytics", "inspiration", "casestudies"].includes(activeTab)) return;
+    if (["auth", "home", "contact", "privacy", "terms", "assessment", "analytics", "inspiration", "casestudies", "about", "pricing", "programs", "blog", "learning"].includes(activeTab)) return;
     if (currentRole === UserRole.STUDENT) {
       setActiveTab("dashboard");
     } else if (currentRole === UserRole.PARENT) {
@@ -317,24 +341,30 @@ export default function App() {
 
   // Redirect unauthenticated users to the login page if they try to access protected views
   useEffect(() => {
-    const publicTabs = ["home", "auth", "contact", "privacy", "terms", "assessment", "analytics", "inspiration", "casestudies"];
+    const publicTabs = [
+      "home", "auth", "contact", "privacy", "terms", "assessment", 
+      "analytics", "inspiration", "casestudies", "about", "pricing", 
+      "programs", "blog", "learning"
+    ];
     if (!token && !publicTabs.includes(activeTab)) {
       setAuthSubView("login");
       setActiveTab("auth");
     }
   }, [activeTab, token]);
 
-
-  // API Call: Verify Auth
+  // API Call: Verify Auth (Non-blocking background validation)
   const verifySession = async () => {
     if (!token) {
       setIsInitialLoading(false);
       return;
     }
     
-    setIsInitialLoading(true);
+    // Only display full-screen loader if there is no user cached in memory or localStorage
+    if (!user) {
+      setIsInitialLoading(true);
+    }
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
     try {
       const res = await fetch("/api/auth/me", {
@@ -349,7 +379,7 @@ export default function App() {
       }
 
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.user) {
         setUser(data.user);
         setCurrentRole(data.user.role);
         localStorage.setItem("ebm_user", JSON.stringify(data.user));
@@ -359,24 +389,16 @@ export default function App() {
         if (data.user.ebmYear) {
           setSelectedYear(data.user.ebmYear);
         }
-        // Force redirect to appropriate dashboard on reload
-        const targetTab = data.user.role === UserRole.STUDENT ? "dashboard" : data.user.role === UserRole.PARENT ? "parent-feed" : data.user.role === UserRole.ADMIN ? "admin-erp" : "teacher-panel";
-        setActiveTab(targetTab);
       } else {
-        // Clear expired token
         localStorage.removeItem("ebm_token");
         localStorage.removeItem("ebm_user");
         localStorage.removeItem("ebm_onboarding_progress");
         localStorage.removeItem("ebm_dashboard_data_cache");
         setToken(null);
+        setUser(null);
       }
     } catch (err: any) {
-      console.error("Session verification failed", err);
-      if (err.name === 'AbortError') {
-        console.error("Verification timed out after 8s");
-      }
-      // If we have a token but verification fails due to network/server, 
-      // we don't necessarily want to logout, but we should stop loading
+      console.warn("Session verification check completed with fallback:", err);
     } finally {
       setIsInitialLoading(false);
     }
@@ -767,7 +789,7 @@ export default function App() {
       }
     } else {
       navigate(path);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo(0, 0);
     }
   };
 
@@ -812,8 +834,8 @@ export default function App() {
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
               to="/"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className={`tracking-tighter hover:opacity-95 transition-opacity cursor-pointer flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0070bc] focus-visible:outline-none rounded-md ${
+              onClick={() => window.scrollTo(0, 0)}
+              className={`tracking-tighter hover:opacity-95 transition-opacity cursor-pointer flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-[#0070bc] focus-visible:outline-none rounded-md touch-manipulation active:scale-95 ${
                 (logoType === "image" || logoImageUrl)
                   ? "bg-transparent p-0 shadow-none border-none"
                   : "text-[#00a3e0] font-black text-2xl sm:text-3xl"
@@ -862,9 +884,9 @@ export default function App() {
                   to={tab.path}
                   id={`nav-btn-${tab.id}`}
                   aria-current={isActive ? "page" : undefined}
-                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className={`relative py-1.5 transition-colors duration-200 cursor-pointer select-none text-xs lg:text-sm font-bold inline-block rounded-md px-1.5 focus-visible:ring-2 focus-visible:ring-[#0070bc] focus-visible:outline-none ${
-                    isActive ? "text-[#006699] dark:text-sky-400" : "text-slate-700 dark:text-slate-200 hover:text-[#006699] dark:hover:text-sky-400"
+                  onClick={() => window.scrollTo(0, 0)}
+                  className={`relative py-1.5 transition-all duration-150 cursor-pointer select-none text-xs lg:text-sm font-bold inline-block rounded-md px-1.5 focus-visible:ring-2 focus-visible:ring-[#0070bc] focus-visible:outline-none touch-manipulation active:scale-95 ${
+                    isActive ? "text-[#006699] dark:text-sky-400 font-extrabold" : "text-slate-700 dark:text-slate-200 hover:text-[#006699] dark:hover:text-sky-400"
                   }`}
                 >
                   <span>{tab.label}</span>
@@ -885,8 +907,8 @@ export default function App() {
                 <Link
                   id="header-signin-btn"
                   to="/login"
-                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] bg-[#0077aa] hover:bg-[#006692] text-white text-xs sm:text-sm font-bold rounded-md shadow-sm hover:shadow-md transition-all cursor-pointer"
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] bg-[#0077aa] hover:bg-[#006692] text-white text-xs sm:text-sm font-bold rounded-md shadow-sm hover:shadow-md transition-all cursor-pointer touch-manipulation active:scale-95"
                 >
                   <span className="inline-flex items-center gap-1.5 transform skew-x-[18deg]">
                     <User className="w-3.5 h-3.5 fill-current" />
@@ -896,8 +918,8 @@ export default function App() {
                 <Link
                   id="header-register-btn"
                   to="/register"
-                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] border-2 border-[#0077aa] text-[#006699] dark:text-sky-300 hover:bg-[#0077aa]/10 text-xs sm:text-sm font-bold rounded-md transition-all cursor-pointer bg-white dark:bg-slate-900 shadow-2xs"
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 transform -skew-x-[18deg] border-2 border-[#0077aa] text-[#006699] dark:text-sky-300 hover:bg-[#0077aa]/10 text-xs sm:text-sm font-bold rounded-md transition-all cursor-pointer bg-white dark:bg-slate-900 shadow-2xs touch-manipulation active:scale-95"
                 >
                   <span className="inline-block transform skew-x-[18deg]">
                     Registration
@@ -914,14 +936,14 @@ export default function App() {
                     else if (user?.role === UserRole.PARENT) handleNavigatePath("/parent");
                     else handleNavigatePath("/dashboard");
                   }}
-                  className="text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 px-3 py-1.5 rounded-lg border border-amber-200 transition"
+                  className="text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 active:scale-95 touch-manipulation cursor-pointer px-3 py-1.5 rounded-lg border border-amber-200 transition-all shadow-xs"
                 >
                   My Portal ({user?.role})
                 </button>
                 <button 
                   id="btn-logout"
                   onClick={handleLogout} 
-                  className="relative inline-flex items-center justify-center px-4 py-1.5 transform -skew-x-[18deg] border-2 border-[#00a3e0] text-[#00a3e0] hover:bg-[#00a3e0]/10 text-xs font-bold rounded-md transition-all cursor-pointer bg-white/90"
+                  className="relative inline-flex items-center justify-center px-4 py-1.5 transform -skew-x-[18deg] border-2 border-[#00a3e0] text-[#00a3e0] hover:bg-[#00a3e0]/10 text-xs font-bold rounded-md transition-all cursor-pointer bg-white/90 touch-manipulation active:scale-95"
                 >
                   <span className="inline-block transform skew-x-[18deg]">
                     Logout
@@ -942,9 +964,9 @@ export default function App() {
               key={tab.id}
               to={tab.path}
               id={`mob-nav-${tab.id}`}
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className={`relative px-3.5 py-2 min-h-[44px] flex items-center justify-center rounded-full text-xs font-bold transition-colors ${
-                isActive ? "text-[#005f90]" : "text-slate-700 hover:text-[#005f90]"
+              onClick={() => window.scrollTo(0, 0)}
+              className={`relative px-3.5 py-2 min-h-[44px] flex items-center justify-center rounded-full text-xs font-bold transition-transform touch-manipulation cursor-pointer active:scale-90 ${
+                isActive ? "text-[#005f90] font-extrabold bg-blue-50/80" : "text-slate-700 hover:text-[#005f90]"
               }`}
             >
               {isActive && (

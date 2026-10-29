@@ -72,15 +72,7 @@ export function DashboardSidebar({ activeContext = 'dashboard' }: { activeContex
   const groups = [...new Set(SIDEBAR_ITEMS.map(item => item.group))];
 
   const handleNavClick = (viewId: DashboardView) => {
-    if (viewId === DashboardView.OVERVIEW) {
-      window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' }));
-      setDashView(viewId);
-    } else if (viewId === DashboardView.AI_TUTOR) {
-      setDashView(viewId);
-    } else {
-      window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' }));
-      setDashView(viewId);
-    }
+    setDashView(viewId);
   };
 
   return (
@@ -151,14 +143,14 @@ export function DashboardSidebar({ activeContext = 'dashboard' }: { activeContex
                     <button
                       onClick={() => handleNavClick(item.id)}
                       className={clsx(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative outline-none",
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-75 group relative outline-none cursor-pointer touch-manipulation active:scale-[0.98]",
                         isActive 
-                          ? "bg-amber-500/10 text-amber-500 font-semibold" 
-                          : "hover:bg-slate-800/50 hover:text-slate-100 text-slate-400 font-medium"
+                          ? "bg-amber-500/15 text-amber-400 font-bold shadow-xs" 
+                          : "hover:bg-slate-800/50 hover:text-slate-100 text-slate-400 font-medium active:bg-slate-800"
                       )}
                       title={isSidebarCollapsed ? item.label : undefined}
                     >
-                      <Icon className={clsx("h-5 w-5 shrink-0 transition-colors", isActive ? "text-amber-500" : "group-hover:text-amber-400")} />
+                      <Icon className={clsx("h-5 w-5 shrink-0 transition-colors", isActive ? "text-amber-400" : "group-hover:text-amber-400")} />
                       {!isSidebarCollapsed && (
                         <span className="text-xs truncate text-left flex-1">{item.label}</span>
                       )}
@@ -182,15 +174,12 @@ export function DashboardSidebar({ activeContext = 'dashboard' }: { activeContex
       {/* Bottom Actions */}
       <div className="p-3 border-t border-slate-800/50 space-y-1 shrink-0">
         <button
-          onClick={() => {
-            window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' }));
-            setDashView(DashboardView.PROFILE);
-          }}
+          onClick={() => setDashView(DashboardView.PROFILE)}
           className={clsx(
-            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group outline-none",
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-75 group outline-none cursor-pointer touch-manipulation active:scale-[0.98]",
             activeContext === 'dashboard' && dashView === DashboardView.PROFILE 
-              ? "bg-amber-500/10 text-amber-500 font-semibold" 
-              : "hover:bg-slate-800/50 hover:text-slate-100 text-slate-400 font-medium"
+              ? "bg-amber-500/15 text-amber-400 font-bold" 
+              : "hover:bg-slate-800/50 hover:text-slate-100 text-slate-400 font-medium active:bg-slate-800"
           )}
           title={isSidebarCollapsed ? "Profile" : undefined}
         >
@@ -198,12 +187,9 @@ export function DashboardSidebar({ activeContext = 'dashboard' }: { activeContex
           {!isSidebarCollapsed && <span className="text-xs truncate">Profile</span>}
         </button>
         <button
-          onClick={() => {
-            window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' }));
-            setDashView(DashboardView.SUPPORT);
-          }}
+          onClick={() => setDashView(DashboardView.SUPPORT)}
           className={clsx(
-            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group outline-none hover:bg-slate-800/50 hover:text-slate-100 text-slate-400 font-medium"
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-75 group outline-none cursor-pointer touch-manipulation active:scale-[0.98] hover:bg-slate-800/50 hover:text-slate-100 text-slate-400 font-medium active:bg-slate-800"
           )}
           title={isSidebarCollapsed ? "Support" : undefined}
         >

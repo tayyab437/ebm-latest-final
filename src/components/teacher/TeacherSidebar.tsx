@@ -115,13 +115,13 @@ export function TeacherSidebar({
         }}
         title={isSidebarCollapsed ? item.label : undefined}
         className={clsx(
-          "w-full flex items-center rounded-xl transition-all duration-200 group text-left relative",
+          "w-full flex items-center rounded-xl transition-all duration-75 group text-left relative cursor-pointer touch-manipulation active:scale-[0.98]",
           isSidebarCollapsed ? "justify-center p-2.5" : "justify-between px-3 py-2",
           isActive
             ? item.highlight
               ? "bg-amber-100 text-amber-800 font-bold"
               : "bg-blue-50 text-blue-700 font-semibold"
-            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium",
+            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium active:bg-slate-100",
         )}
       >
         <div className={clsx("flex items-center gap-3 min-w-0", isSidebarCollapsed && "justify-center")}>

@@ -8,44 +8,34 @@ export function MobileNavigation() {
   const { currentView, setView, isMobileNavOpen, toggleMobileNav } = useDashboardStore();
 
   const handleNavClick = (viewId: DashboardView) => {
-    if (viewId === DashboardView.OVERVIEW) {
-      window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' }));
-      setView(viewId);
-    } else if (viewId === DashboardView.MESSAGES) {
-      window.dispatchEvent(new CustomEvent('navigate', { detail: 'communication' }));
-    } else if (viewId === DashboardView.AI_TUTOR) {
-      setView(viewId);
-    } else {
-      window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' }));
-      setView(viewId);
-    }
+    setView(viewId);
     if (isMobileNavOpen) toggleMobileNav();
   };
 
   return (
     <>
       {/* Mobile Bottom Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex justify-between items-center z-40 pb-safe">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-6 py-2 flex justify-between items-center z-40 pb-safe">
         <button 
           onClick={() => handleNavClick(DashboardView.OVERVIEW)}
-          className={clsx("flex flex-col items-center gap-1", currentView === DashboardView.OVERVIEW ? "text-amber-500" : "text-slate-500")}
+          className={clsx("flex flex-col items-center gap-1 p-1.5 touch-manipulation cursor-pointer active:scale-90 transition-transform", currentView === DashboardView.OVERVIEW ? "text-amber-500 font-bold" : "text-slate-500")}
         >
           <LayoutDashboard className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Home</span>
+          <span className="text-[10px]">Home</span>
         </button>
         <button 
           onClick={() => handleNavClick(DashboardView.ASSIGNMENTS)}
-          className={clsx("flex flex-col items-center gap-1", currentView === DashboardView.ASSIGNMENTS ? "text-amber-500" : "text-slate-500")}
+          className={clsx("flex flex-col items-center gap-1 p-1.5 touch-manipulation cursor-pointer active:scale-90 transition-transform", currentView === DashboardView.ASSIGNMENTS ? "text-amber-500 font-bold" : "text-slate-500")}
         >
           <FileText className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Tasks</span>
+          <span className="text-[10px]">Tasks</span>
         </button>
         <button 
           onClick={toggleMobileNav}
-          className={clsx("flex flex-col items-center gap-1", isMobileNavOpen ? "text-amber-500" : "text-slate-500")}
+          className={clsx("flex flex-col items-center gap-1 p-1.5 touch-manipulation cursor-pointer active:scale-90 transition-transform", isMobileNavOpen ? "text-amber-500 font-bold" : "text-slate-500")}
         >
           <Menu className="h-5 w-5" />
-          <span className="text-[10px] font-medium">More</span>
+          <span className="text-[10px]">More</span>
         </button>
       </nav>
 
