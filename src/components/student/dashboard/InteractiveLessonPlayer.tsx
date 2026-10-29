@@ -621,6 +621,15 @@ export function InteractiveLessonPlayer({ lesson, onClose, onSubmit }: Interacti
       if (resData.success) {
         setSubmitSuccess(true);
         
+        // Save completed lesson ID locally immediately for zero-delay instant UI reflection
+        try {
+          const localCache = JSON.parse(localStorage.getItem("ebm_completed_lessons_cache") || "[]");
+          if (!localCache.includes(lesson.id)) {
+            localCache.push(lesson.id);
+            localStorage.setItem("ebm_completed_lessons_cache", JSON.stringify(localCache));
+          }
+        } catch (e) {}
+
         // Optimistically update local dashboard store and cache immediately so progress is instant
         const currentData = useDashboardStore.getState().data;
         if (currentData && currentData.statistics) {

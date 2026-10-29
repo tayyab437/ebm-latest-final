@@ -198,50 +198,81 @@ export function MyClassesView() {
         "Content-Type": "application/json"
       };
 
-      // 1. Fetch Classes
-      const classesRes = await fetch("/api/student/classes", { headers });
-      const classesData = await classesRes.json();
-      if (classesData.success) {
-        setClasses(classesData.classes);
-        if (viewContext?.classId) {
-          const cls = classesData.classes.find((c: any) => c.id === viewContext.classId);
-          if (cls) {
-            setSelectedClass(cls);
-            if (viewContext.subject) setSelectedSubject(viewContext.subject);
+      // 1. Fetch Classes with Persistent Local Cache Fallback
+      let fetchedClassesList: ClassData[] = [];
+      try {
+        const classesRes = await fetch("/api/student/classes", { headers });
+        const classesData = await classesRes.json();
+        if (classesData.success && Array.isArray(classesData.classes) && classesData.classes.length > 0) {
+          fetchedClassesList = classesData.classes;
+          setClasses(fetchedClassesList);
+          try { localStorage.setItem("ebm_cached_classes", JSON.stringify(fetchedClassesList)); } catch (e) {}
+        } else {
+          const cached = localStorage.getItem("ebm_cached_classes");
+          if (cached) {
+            fetchedClassesList = JSON.parse(cached);
+            setClasses(fetchedClassesList);
           }
-        } else if (classesData.classes.length > 0 && !selectedClass) {
-          setSelectedClass(classesData.classes[0]);
+        }
+      } catch (e) {
+        const cached = localStorage.getItem("ebm_cached_classes");
+        if (cached) {
+          fetchedClassesList = JSON.parse(cached);
+          setClasses(fetchedClassesList);
         }
       }
 
-      // 2. Fetch Assignments
-      const assignmentsRes = await fetch("/api/teacher/assignments", { headers });
-      const assignmentsData = await assignmentsRes.json();
-      if (assignmentsData.success) {
-        setAssignments(assignmentsData.assignments);
+      if (viewContext?.classId && fetchedClassesList.length > 0) {
+        const cls = fetchedClassesList.find((c: any) => c.id === viewContext.classId);
+        if (cls) {
+          setSelectedClass(cls);
+          if (viewContext.subject) setSelectedSubject(viewContext.subject);
+        }
+      } else if (fetchedClassesList.length > 0 && !selectedClass) {
+        setSelectedClass(fetchedClassesList[0]);
       }
+
+      // 2. Fetch Assignments
+      try {
+        const assignmentsRes = await fetch("/api/teacher/assignments", { headers });
+        const assignmentsData = await assignmentsRes.json();
+        if (assignmentsData.success && Array.isArray(assignmentsData.assignments)) {
+          setAssignments(assignmentsData.assignments);
+        }
+      } catch (e) {}
 
       // 3. Fetch Student Submissions
-      const submissionsRes = await fetch("/api/student/submissions", { headers });
-      const submissionsData = await submissionsRes.json();
       let combinedSubmissions: any[] = [];
-      if (submissionsData.success && Array.isArray(submissionsData.submissions)) {
-        combinedSubmissions = submissionsData.submissions;
-        setSubmissions(combinedSubmissions);
-      }
+      try {
+        const submissionsRes = await fetch("/api/student/submissions", { headers });
+        const submissionsData = await submissionsRes.json();
+        if (submissionsData.success && Array.isArray(submissionsData.submissions)) {
+          combinedSubmissions = submissionsData.submissions;
+          setSubmissions(combinedSubmissions);
+        }
+      } catch (e) {}
 
-      const completedRes = await fetch("/api/student/completed-lessons", { headers });
-      const completedData = await completedRes.json();
-      const completedFromDb: string[] = (completedData.success && Array.isArray(completedData.completedLessons))
-        ? completedData.completedLessons.map((cl: any) => cl.lessonId)
-        : [];
+      let completedFromDb: string[] = [];
+      try {
+        const completedRes = await fetch("/api/student/completed-lessons", { headers });
+        const completedData = await completedRes.json();
+        if (completedData.success && Array.isArray(completedData.completedLessons)) {
+          completedFromDb = completedData.completedLessons.map((cl: any) => cl.lessonId);
+        }
+      } catch (e) {}
 
       const completedFromSubmissions: string[] = combinedSubmissions
         .filter((s: any) => (s.score >= 80 || s.status === "COMPLETED") && s.assessmentId)
         .map((s: any) => s.assessmentId);
 
-      const allCompleted = Array.from(new Set([...completedFromDb, ...completedFromSubmissions]));
+      let cachedLocalCompleted: string[] = [];
+      try {
+        cachedLocalCompleted = JSON.parse(localStorage.getItem("ebm_completed_lessons_cache") || "[]");
+      } catch (e) {}
+
+      const allCompleted = Array.from(new Set([...completedFromDb, ...completedFromSubmissions, ...cachedLocalCompleted]));
       setCompletedLessons(allCompleted);
+      try { localStorage.setItem("ebm_completed_lessons_cache", JSON.stringify(allCompleted)); } catch (e) {}
     } catch (err) {
       console.error("Failed to fetch student classes and assignments data:", err);
     } finally {

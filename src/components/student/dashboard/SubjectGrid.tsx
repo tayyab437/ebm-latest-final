@@ -25,36 +25,66 @@ export function SubjectGrid({ limit }: SubjectGridProps) {
           "Content-Type": "application/json"
         };
         
-        // 1. Fetch Classes
-        const classesRes = await fetch("/api/student/classes", { headers });
-        const classesData = await classesRes.json();
-        let fetchedClasses = [];
-        if (classesData.success) {
-          fetchedClasses = classesData.classes;
-          if (isMounted) setClasses(fetchedClasses);
+        // 1. Fetch Classes with Persistent Cache Fallback
+        let fetchedClasses: any[] = [];
+        try {
+          const classesRes = await fetch("/api/student/classes", { headers });
+          const classesData = await classesRes.json();
+          if (classesData.success && Array.isArray(classesData.classes) && classesData.classes.length > 0) {
+            fetchedClasses = classesData.classes;
+            if (isMounted) setClasses(fetchedClasses);
+            try { localStorage.setItem("ebm_cached_classes", JSON.stringify(fetchedClasses)); } catch (e) {}
+          } else {
+            const cached = localStorage.getItem("ebm_cached_classes");
+            if (cached) {
+              fetchedClasses = JSON.parse(cached);
+              if (isMounted) setClasses(fetchedClasses);
+            }
+          }
+        } catch (e) {
+          const cached = localStorage.getItem("ebm_cached_classes");
+          if (cached) {
+            fetchedClasses = JSON.parse(cached);
+            if (isMounted) setClasses(fetchedClasses);
+          }
         }
 
         // 2. Fetch Submissions
-        const submissionsRes = await fetch("/api/student/submissions", { headers });
-        const submissionsData = await submissionsRes.json();
-        if (submissionsData.success && isMounted) {
-          setSubmissions(submissionsData.submissions);
-        }
+        try {
+          const submissionsRes = await fetch("/api/student/submissions", { headers });
+          const submissionsData = await submissionsRes.json();
+          if (submissionsData.success && Array.isArray(submissionsData.submissions) && isMounted) {
+            setSubmissions(submissionsData.submissions);
+          }
+        } catch (e) {}
 
-        const completedRes = await fetch("/api/student/completed-lessons", { headers });
-        const completedData = await completedRes.json();
-        if (completedData.success && completedData.completedLessons && isMounted) {
-          setCompletedLessons(completedData.completedLessons.map((cl: any) => cl.lessonId));
-        }
+        let completedFromDb: string[] = [];
+        try {
+          const completedRes = await fetch("/api/student/completed-lessons", { headers });
+          const completedData = await completedRes.json();
+          if (completedData.success && Array.isArray(completedData.completedLessons)) {
+            completedFromDb = completedData.completedLessons.map((cl: any) => cl.lessonId);
+          }
+        } catch (e) {}
+
+        let cachedLocalCompleted: string[] = [];
+        try {
+          cachedLocalCompleted = JSON.parse(localStorage.getItem("ebm_completed_lessons_cache") || "[]");
+        } catch (e) {}
+
+        const allCompleted = Array.from(new Set([...completedFromDb, ...cachedLocalCompleted]));
+        if (isMounted) setCompletedLessons(allCompleted);
 
         // 3. Fetch Curriculums for default class
         if (fetchedClasses.length > 0) {
           const defaultClass = fetchedClasses[0];
-          const res = await fetch(`/api/curriculum?classId=${defaultClass.id}`);
-          const result = await res.json();
-          if (result.success && isMounted) {
-            setClassCurriculums(result.curriculum || []);
-          }
+          try {
+            const res = await fetch(`/api/curriculum?classId=${defaultClass.id}`);
+            const result = await res.json();
+            if (result.success && isMounted) {
+              setClassCurriculums(result.curriculum || []);
+            }
+          } catch (e) {}
         }
       } catch (e) {
         console.error("Failed to load SubjectGrid data:", e);
