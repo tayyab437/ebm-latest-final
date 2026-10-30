@@ -813,7 +813,7 @@ export default function App() {
 
   return (
 
-    <div id="ebm-root" className={`min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-amber-100 dark:selection:bg-amber-900/50 selection:text-amber-900 dark:selection:text-amber-200 transition-colors duration-300 ${isPortalPage ? "h-screen w-screen overflow-hidden" : ""}`}>
+    <div id="ebm-root" className={`min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-amber-100 dark:selection:bg-amber-900/50 selection:text-amber-900 dark:selection:text-amber-200 transition-colors duration-300 ${isPortalPage ? "h-[100dvh] md:h-screen w-full min-h-0 overflow-hidden" : ""}`}>
       {/* Skip to Main Content for Accessibility */}
       <a 
         href="#main-content" 
@@ -987,7 +987,7 @@ export default function App() {
       <SEOHead />
 
       {/* ================== MAIN CONTENT ROUTER ================== */}
-      <main id="main-content" tabIndex={-1} className={`flex-grow flex flex-col focus:outline-none ${isPortalPage ? "h-screen w-full overflow-hidden" : "min-h-screen"}`}>
+      <main id="main-content" tabIndex={-1} className={`flex-grow flex flex-col focus:outline-none min-h-0 ${isPortalPage ? "h-[100dvh] md:h-screen w-full overflow-hidden" : "min-h-screen"}`}>
         <React.Suspense fallback={
           <div className="flex-grow min-h-screen flex items-center justify-center bg-[#F8FAFC]">
             <div className="w-8 h-8 border-3 border-[#00a3e0] border-t-transparent rounded-full animate-spin"></div>
@@ -1189,7 +1189,7 @@ export default function App() {
 
             {/* Portal Layouts */}
             <Route path="/dashboard" element={
-              <div className="w-full h-screen overflow-hidden animate-fade-in">
+              <div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in">
                 <SEOHead
                   title="Student Learning Dashboard | EBM Academic Mastery Portal"
                   description="View personalized learning roadmap milestones, daily diagnostic tasks, concept mastery progress, and cognitive speed metrics on your EBM student portal."
@@ -1200,7 +1200,7 @@ export default function App() {
               </div>
             } />
             <Route path="/learning" element={
-              <div className="w-full h-screen overflow-hidden animate-fade-in">
+              <div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in">
                 <SEOHead
                   title="EBM Learning Portal | Interactive Courses & Study Modules"
                   description="Access structured learning modules, interactive lessons, syllabus plans, and adaptive practice exercises designed for Grade 1 through Cambridge O/A Levels."
@@ -1209,14 +1209,14 @@ export default function App() {
                 <LearningLayout />
               </div>
             } />
-            <Route path="/content" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><ContentLayout /></div>} />
-            <Route path="/student-success" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><SuccessLayout /></div>} />
-            <Route path="/adaptive" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AdaptiveLayout /></div>} />
-            <Route path="/live" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><LiveLayout /></div>} />
-            <Route path="/growth" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><GrowthLayout /></div>} />
-            <Route path="/exams" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AssessmentLayout /></div>} />
+            <Route path="/content" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><ContentLayout /></div>} />
+            <Route path="/student-success" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><SuccessLayout /></div>} />
+            <Route path="/adaptive" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><AdaptiveLayout /></div>} />
+            <Route path="/live" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><LiveLayout /></div>} />
+            <Route path="/growth" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><GrowthLayout /></div>} />
+            <Route path="/exams" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><AssessmentLayout /></div>} />
             <Route path="/parent" element={
-              <div className="w-full h-screen overflow-hidden animate-fade-in">
+              <div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in">
                 <ParentDashboard 
                   notifications={notifications} 
                   onReadNotification={handleReadNotification} 
@@ -1224,9 +1224,9 @@ export default function App() {
                 />
               </div>
             } />
-            <Route path="/admin" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AdminErpLayout onLogout={handleLogout} /></div>} />
-            <Route path="/curriculum" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><CurriculumLayout /></div>} />
-            <Route path="/teacher" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><TeacherLayout onLogout={handleLogout} /></div>} />
+            <Route path="/admin" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><AdminErpLayout onLogout={handleLogout} /></div>} />
+            <Route path="/curriculum" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><CurriculumLayout /></div>} />
+            <Route path="/teacher" element={<div className="w-full h-[100dvh] md:h-screen min-h-0 flex flex-col flex-1 overflow-hidden animate-fade-in"><TeacherLayout onLogout={handleLogout} /></div>} />
 
             {/* Legacy Redirects */}
             <Route path="/admin-erp" element={<Navigate to="/admin" replace />} />

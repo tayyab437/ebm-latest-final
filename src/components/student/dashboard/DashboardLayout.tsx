@@ -35,17 +35,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [updateStudyHoursLocally]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row overflow-hidden selection:bg-amber-100 selection:text-amber-900 font-sans">
+    <div className="h-full md:h-screen h-[100dvh] min-h-0 w-full bg-slate-50 flex flex-col md:flex-row overflow-hidden selection:bg-amber-100 selection:text-amber-900 font-sans">
       {/* Desktop Sidebar */}
-      <div className="hidden md:block">
+      <div className="hidden md:block h-full shrink-0">
         <DashboardSidebar />
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full md:h-screen h-[100dvh] overflow-hidden relative">
         <DashboardHeader />
         
-        <main id="dashboard-main" className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth p-3 sm:p-5 md:p-6 lg:p-8 flex items-start justify-center text-left">
+        <main id="dashboard-main" className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden touch-pan-y scroll-smooth p-3 sm:p-5 md:p-6 lg:p-8 flex items-start justify-center text-left">
           {/* Constrain width for main content and ensure bottom padding clears mobile nav bar */}
           <div className="w-full max-w-5xl 2xl:max-w-7xl relative mx-auto pb-28 md:pb-6 flex flex-col gap-5 lg:gap-8">
             <div className="flex-1 min-w-0">
