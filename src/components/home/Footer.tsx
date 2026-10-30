@@ -132,17 +132,6 @@ export default function Footer({ onNavigate }: FooterProps) {
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-700 dark:text-slate-300 font-sans">
           <div className="flex flex-col gap-1 text-center md:text-left">
             <p>&copy; {currentYear} {logoText || "EBM Digital Learning"}. All Rights Reserved.</p>
-            <p className="text-xs text-slate-700 dark:text-slate-300">
-              Website created and SEO by{" "}
-              <a 
-                href="https://wa.me/923176369458" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-blue-700 dark:text-blue-400 underline underline-offset-2 hover:text-blue-900 dark:hover:text-blue-300 font-semibold cursor-pointer inline-flex items-center min-h-[44px] py-1"
-              >
-                Tayyab Ashfaq
-              </a>
-            </p>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300">
             <Shield className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" />

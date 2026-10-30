@@ -10,7 +10,6 @@ import {
 } from "./index";
 import { MyClassesView } from "./MyClassesView";
 import { ExamDashboard } from "../exams";
-import { AILayout } from "../ai";
 import { ProfileSettings } from "../../ProfileSettings";
 import { Inbox, AnnouncementCenter } from "../../communication";
 
@@ -55,11 +54,6 @@ export default function StudentDashboardView() {
            <CertificatesView />
         </div>
       )}
-      {currentView === "ai_tutor" && (
-        <div className="h-[calc(100vh-6rem)] bg-white rounded-2xl border border-slate-200/50 overflow-hidden shadow-sm">
-           <AILayout />
-        </div>
-      )}
       {currentView === "profile" && (
         <ProfileSettings role="STUDENT" onBack={() => setView('overview' as any)} />
       )}
@@ -82,7 +76,7 @@ export default function StudentDashboardView() {
       )}
       
       {/* Placeholder for other views */}
-      {currentView !== "overview" && currentView !== "messages" && currentView !== "announcements" && currentView !== "my_classes" && currentView !== "achievements" && currentView !== "assignments" && currentView !== "assessments" && currentView !== "certificates" && currentView !== "ai_tutor" && currentView !== "profile" && currentView !== "settings" && (
+      {currentView !== "overview" && currentView !== "messages" && currentView !== "announcements" && currentView !== "my_classes" && currentView !== "achievements" && currentView !== "assignments" && currentView !== "assessments" && currentView !== "certificates" && currentView !== "profile" && currentView !== "settings" && (
         <div className="flex items-center justify-center h-64 bg-white rounded-2xl border border-slate-200/50">
           <p className="text-slate-500 font-medium">Coming soon...</p>
         </div>

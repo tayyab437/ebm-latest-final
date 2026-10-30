@@ -27,7 +27,6 @@ const TeacherLayout = React.lazy(() => import("./components/teacher/TeacherLayou
 const ParentDashboard = React.lazy(() => import("./components/parent/ParentDashboard").then(m => ({ default: m.ParentDashboard })));
 
 const LearningLayout = React.lazy(() => import("./components/student/learning/LearningLayout").then(m => ({ default: m.LearningLayout })));
-const AILayout = React.lazy(() => import("./components/student/ai/AILayout").then(m => ({ default: m.AILayout })));
 const AdaptiveLayout = React.lazy(() => import("./components/student/adaptive/AdaptiveLayout").then(m => ({ default: m.AdaptiveLayout })));
 const LiveLayout = React.lazy(() => import("./components/student/live/LiveLayout").then(m => ({ default: m.LiveLayout })));
 const GrowthLayout = React.lazy(() => import("./components/student/growth/GrowthLayout").then(m => ({ default: m.GrowthLayout })));
@@ -1212,7 +1211,6 @@ export default function App() {
             } />
             <Route path="/content" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><ContentLayout /></div>} />
             <Route path="/student-success" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><SuccessLayout /></div>} />
-            <Route path="/ai-tutor" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AILayout /></div>} />
             <Route path="/adaptive" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><AdaptiveLayout /></div>} />
             <Route path="/live" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><LiveLayout /></div>} />
             <Route path="/growth" element={<div className="w-full h-screen overflow-hidden animate-fade-in"><GrowthLayout /></div>} />

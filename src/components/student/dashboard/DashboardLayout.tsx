@@ -45,9 +45,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
         <DashboardHeader />
         
-        <main id="dashboard-main" className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth p-4 md:p-6 lg:p-8 flex items-start justify-center">
-          {/* Constrain width for main content and reduce bottom padding */}
-          <div className="w-full max-w-5xl 2xl:max-w-7xl relative mx-auto pb-12 md:pb-4 flex flex-col gap-6 lg:gap-8">
+        <main id="dashboard-main" className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth p-3 sm:p-5 md:p-6 lg:p-8 flex items-start justify-center text-left">
+          {/* Constrain width for main content and ensure bottom padding clears mobile nav bar */}
+          <div className="w-full max-w-5xl 2xl:max-w-7xl relative mx-auto pb-28 md:pb-6 flex flex-col gap-5 lg:gap-8">
             <div className="flex-1 min-w-0">
                {children}
             </div>

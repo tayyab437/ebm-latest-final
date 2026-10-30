@@ -37,9 +37,9 @@ export function DashboardHeader() {
           <Menu className="h-5 w-5" />
         </button>
         
-        <div className="hidden sm:block">
-          <h1 className="text-sm font-bold text-slate-900">
-            Welcome back, {data?.studentName || (() => {
+        <div className="flex flex-col min-w-0">
+          <h1 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate max-w-[130px] min-[380px]:max-w-[180px] sm:max-w-none leading-tight">
+            Hi, {data?.studentName || (() => {
               const userStr = localStorage.getItem("ebm_user");
               if (userStr) {
                 try {
@@ -50,8 +50,8 @@ export function DashboardHeader() {
               return "Student";
             })()} 👋
           </h1>
-          <p className="text-[11px] text-slate-500 font-medium">
-            {dateString} • {data?.currentGrade || "Grade 1"}
+          <p className="text-[9px] sm:text-[11px] text-slate-500 font-semibold truncate leading-none mt-0.5">
+            {data?.currentGrade || "Grade 1"}
           </p>
         </div>
       </div>
@@ -77,17 +77,17 @@ export function DashboardHeader() {
       </div>
 
       {/* Right Stats & Actions */}
-      <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+      <div className="flex items-center gap-2.5 sm:gap-5 shrink-0">
         
-        {/* Streak & XP - Hidden on tiny screens */}
-        <div className="hidden min-[400px]:flex items-center gap-3">
-          <div className="flex items-center gap-1.5" title="Learning Streak">
-            <Flame className="h-4 w-4 text-orange-500 fill-orange-500/20" />
-            <span className="text-xs font-bold text-slate-700">{data?.statistics?.learningStreakDays || 0}</span>
+        {/* Streak & XP - Compact on mobile */}
+        <div className="flex items-center gap-2 sm:gap-3 bg-slate-50 sm:bg-transparent px-2 py-1 rounded-lg border sm:border-none border-slate-100">
+          <div className="flex items-center gap-1" title="Learning Streak">
+            <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 fill-orange-500/20 shrink-0" />
+            <span className="text-[11px] sm:text-xs font-bold text-slate-700">{data?.statistics?.learningStreakDays || 0}d</span>
           </div>
-          <div className="flex items-center gap-1.5" title="Total XP">
-            <Zap className="h-4 w-4 text-amber-500 fill-amber-500/20" />
-            <span className="text-xs font-bold text-slate-700">{data?.statistics?.totalXp?.toLocaleString() || 0}</span>
+          <div className="flex items-center gap-1" title="Total XP">
+            <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 fill-amber-500/20 shrink-0" />
+            <span className="text-[11px] sm:text-xs font-bold text-slate-700">{data?.statistics?.totalXp?.toLocaleString() || 0}</span>
           </div>
         </div>
 

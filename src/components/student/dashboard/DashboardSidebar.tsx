@@ -37,8 +37,6 @@ const SIDEBAR_ITEMS = [
   { id: DashboardView.ASSIGNMENTS, label: "Assignments", icon: FileText, group: "ASSESSMENTS" },
   { id: DashboardView.ASSESSMENTS, label: "Assessments", icon: CheckCircle, group: "ASSESSMENTS" },
   
-  { id: DashboardView.AI_TUTOR, label: "AI Tutor", icon: Sparkles, group: "TOOLS" },
-  
   { id: DashboardView.ACHIEVEMENTS, label: "Achievements", icon: Trophy, group: "PROGRESS" },
   { id: DashboardView.CERTIFICATES, label: "Certificates", icon: Award, group: "PROGRESS" },
 ];
@@ -46,12 +44,6 @@ const SIDEBAR_ITEMS = [
 export function DashboardSidebar({ activeContext = 'dashboard' }: { activeContext?: string }) {
   const { currentView: dashView, setView: setDashView, isSidebarCollapsed, toggleSidebar } = useDashboardStore();
   const { conversations, fetchConversations } = useCommunicationStore();
-
-  useEffect(() => {
-    if (dashView === DashboardView.AI_TUTOR) {
-      useDashboardStore.setState({ isSidebarCollapsed: true });
-    }
-  }, [dashView]);
 
   useEffect(() => {
     fetchConversations(true);
